@@ -4,8 +4,6 @@
 #include "TrayIcon.h"
 #include "resource.h"
 
-#define APP_NAME _T("My Notes")
-
 class CTrayWnd : public CWindowImpl<CTrayWnd> 
 {
 public:

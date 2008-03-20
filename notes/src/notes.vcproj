@@ -289,6 +289,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\common\fileutils.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\fileutils.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\common\guiutils.cpp"
 				>
 			</File>

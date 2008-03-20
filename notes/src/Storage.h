@@ -14,7 +14,4 @@ public:
 	void DeleteNote(int nNoteId);
 	int GetNotesCount() const;
 	void GetAllNotes(NotesList& list);
-private:
-	void NewNote(CNote& note);
-	void UpdateNote(CNote const& note);
 };

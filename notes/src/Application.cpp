@@ -1,8 +1,10 @@
 
 #include "stdafx.h"
+#include "resource.h"
 #include "Application.h"
 #include "NoteWnd.h"
 #include "atlwinmisc.h"
+#include "resutils.h"
 
 CApplication::CApplication() : m_pFocused(NULL)
 {
@@ -17,7 +19,7 @@ void CApplication::CreateAppWindow()
 {
 	if (!::IsWindow(m_TrayWnd.m_hWnd))
 	{
-		if (!m_TrayWnd.Create(NULL/*HWND_MESSAGE*/, CRect(0, 0, 0, 0)/*CWindow::rcDefault*/, APP_NAME, 
+		if (!m_TrayWnd.Create(NULL/*HWND_MESSAGE*/, CRect(0, 0, 0, 0)/*CWindow::rcDefault*/, RESSTR(IDS_APP_NAME), 
 			WS_POPUP  /*|WS_VISIBLE | WS_SYSMENU *//*| WS_MINIMIZEBOX*/))
 		{
 			ThrowError(_T("can not create app window"));
@@ -80,7 +82,6 @@ void CApplication::OnNoteClosed(CNoteWnd* pWnd)
 	{
 		SetFocused(m_listNotes.back());
 		RestoreFocus();
-		UpdateAppWindowPos(GetLastNotePoint());
 	}
 }
 
@@ -100,28 +101,6 @@ void CApplication::RestoreFocus()
 void CApplication::SetFocused( CNoteWnd* pWnd )
 {
 	m_pFocused = pWnd;
-}
-
-void CApplication::OnNoteMoved( CNoteWnd* pWnd, CPoint pt )
-{
-	UpdateAppWindowPos(pt);
-}
-
-void CApplication::UpdateAppWindowPos( CPoint pt )
-{
-//	m_TrayWnd.MoveWindow(CRect(pt, pt), FALSE); // need if Tray window has WS_MINIMIZEBOX style
-}
-
-CPoint CApplication::GetLastNotePoint()
-{
-	CPoint pt;
-	if (!m_listNotes.empty())
-	{
-		CNoteWnd* pLastNote = m_listNotes.back();
-		CWindowRect wr(pLastNote->m_hWnd);
-		pt = wr.TopLeft();
-	}
-	return pt;
 }
 
 /**/
