@@ -25,15 +25,12 @@ public:
 	void RestoreFocus();
 	void SetFocused(CNoteWnd* pWnd);
 
-	void OnNoteMoved(CNoteWnd* pWnd, CPoint pt);
 	void OnNoteClosed(CNoteWnd* pWnd);
 
 protected:
 	CApplication();
 	virtual ~CApplication();
 private:
-	void UpdateAppWindowPos(CPoint pt);
-	CPoint GetLastNotePoint();
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;
 	CNoteWnd* m_pFocused;

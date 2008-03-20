@@ -348,7 +348,6 @@ WM_MOVE
 void CNoteWnd::OnMove(CPoint pt)
 {
 	m_edit.SetModify(TRUE);
-	CApplication::Get().OnNoteMoved(this, pt);
 }
 
 /**/
