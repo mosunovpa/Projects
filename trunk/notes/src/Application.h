@@ -21,18 +21,25 @@ public:
 	void ShowAllNotes();
 	void CloseAllNotes();
 	int GetOpenedNotesCount() const;
-	int IsAllNotesOpened() const;
+	int GetHiddenNotesCount() const;
 	void RestoreFocus();
 	void SetFocused(CNoteWnd* pWnd);
-
+	LPCTSTR GetDataFileName();
 	void OnNoteClosed(CNoteWnd* pWnd);
 
 protected:
 	CApplication();
 	virtual ~CApplication();
+
+
 private:
+	CNoteWnd* FindNote(int nNoteId) const;
+	void OpenNote(CNote const& note);
+	CNoteWnd* CreateNoteWnd(CRect& rc);
+
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;
 	CNoteWnd* m_pFocused;
 	CStorage m_storage;
+	CString m_sDataFile;
 };

@@ -26,15 +26,15 @@ CRect CNote::GetPos() const
 
 void CNote::SetId( int id )
 {
-
+	m_id = id;
 }
 
 void CNote::SetText( CString const& text )
 {
-
+	m_text = text;
 }
 
-void CNote::SetPos( CRect const& rc )
+void CNote::SetPos( CRect const& pos )
 {
-
+	m_pos = pos;
 }

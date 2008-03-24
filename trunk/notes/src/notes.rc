@@ -68,7 +68,7 @@ BEGIN
     BEGIN
         MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
         MENUITEM SEPARATOR
-        MENUITEM "&Show All Notes",             ID_POPUP_SHOWALLNOTES
+        MENUITEM "&Show Hidden Notes",          ID_POPUP_SHOWALLNOTES
         MENUITEM "&Hide All Notes",             ID_POPUP_HIDEALLNOTES
         MENUITEM "&About...",                   ID_POPUP_ABOUT
         MENUITEM SEPARATOR
