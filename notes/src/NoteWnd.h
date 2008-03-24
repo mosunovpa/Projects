@@ -44,7 +44,9 @@ public:
 	virtual ~CNoteWnd();
 
 	int GetId() const;
+	void SetId(int id);
 	CString GetText() const;
+	void SetText(CString const& text);
 
 	DECLARE_WND_CLASS(_T("NoteWnd"))
 
@@ -121,4 +123,6 @@ private:
 
 	BOOL m_bCaptured;
 	int m_nNoteId;
+	BOOL m_bSaveError;
+
 };

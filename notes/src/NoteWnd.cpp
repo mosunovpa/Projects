@@ -31,7 +31,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 :	m_drDownWas(drNoWhere), 
 	m_bActive(FALSE), 
 	m_bCaptured(FALSE),
-	m_nNoteId(nNoteId)
+	m_nNoteId(nNoteId),
+	m_bSaveError(FALSE)
 {
 }
 
@@ -147,10 +148,18 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	lstrcpy(cf.szFaceName, _T("MS Shell Dlg"));
 	m_edit.SetDefaultCharFormat(cf);
 
+	PARAFORMAT pf;
+	ZeroMemory(&pf, sizeof(PARAFORMAT));
+	pf.cbSize = sizeof(PARAFORMAT);
+	pf.dwMask = PFM_OFFSETINDENT;
+	pf.dxStartIndent = 100;
+	m_edit.SetParaFormat(pf);
+
+
 	m_edit.SetTextMode(TM_PLAINTEXT);
 
-	RECT rc = {0, 0, 200, 165 };
-	SetWindowPos(NULL, &rc, SWP_NOZORDER | SWP_NOMOVE);
+//	RECT rc = {0, 0, 200, 165 };
+//	SetWindowPos(NULL, &rc, SWP_NOZORDER | SWP_NOMOVE);
 
 	m_edit.SetFocus();
 
@@ -364,7 +373,18 @@ WM_KILLFOCUS
 */
 void CNoteWnd::OnKillFocus(CWindow wndFocus)
 {
-	StoreNote();
+	try 
+	{
+		if (!m_bSaveError) // need for prevent recursion when error occurs
+		{
+			StoreNote();
+		}
+	}
+	catch(...)
+	{
+		m_bSaveError = TRUE;
+		throw;
+	}
 }
 
 /*
@@ -397,4 +417,14 @@ CString CNoteWnd::GetText() const
 	CString s;
 	m_edit.GetWindowText(s);
 	return s.Trim();
+}
+
+void CNoteWnd::SetId( int id )
+{
+	m_nNoteId = id;
+}
+
+void CNoteWnd::SetText( CString const& text )
+{
+	m_edit.SetWindowText(text);
 }

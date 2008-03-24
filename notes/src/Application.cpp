@@ -5,6 +5,7 @@
 #include "NoteWnd.h"
 #include "atlwinmisc.h"
 #include "resutils.h"
+#include "fileutils.h"
 
 CApplication::CApplication() : m_pFocused(NULL)
 {
@@ -29,17 +30,12 @@ void CApplication::CreateAppWindow()
 
 void CApplication::CreateNote()
 {
-	m_listNotes.push_back(new CNoteWnd());
-	CNoteWnd* pWnd = m_listNotes.back();
-
-	pWnd->Create(m_TrayWnd, CWindow::rcDefault, _T("NoteWnd"), 
-		WS_POPUPWINDOW | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_THICKFRAME /*| WS_SYSMENU| WS_MINIMIZEBOX*/, WS_EX_NOPARENTNOTIFY | WS_EX_TOOLWINDOW /*WS_CAPTION | , WS_EX_TOOLWINDOW | WS_EX_APPWINDOW*/
-		//  		WS_CAPTION | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_SYSMENU | 
-		//  		WS_THICKFRAME | WS_OVERLAPPED /*| WS_MINIMIZEBOX | WS_MAXIMIZEBOX*/, 
-		//  		WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR | WS_EX_WINDOWEDGE | WS_EX_APPWINDOW
-		);
-	m_TrayWnd.ShowWindow(SW_SHOW);
+	CRect rc(0, 0, 200, 165 );
+	CNoteWnd* pWnd = CreateNoteWnd(rc);
+	if (pWnd)
+	{
+		pWnd->SetFocus();
+	}
 }
 
 void CApplication::CloseAllNotes()
@@ -59,6 +55,20 @@ void CApplication::CloseAllNotes()
 
 void CApplication::ShowAllNotes()
 {
+	CStorage::NotesList list;
+	m_storage.GetAllNotes(list);
+	for (int i = 0; i < list.size(); ++i)
+	{
+		CNoteWnd* pNoteWnd = FindNote(list[i].GetId());
+		if (pNoteWnd)
+		{
+			
+		}
+		else
+		{
+			OpenNote(list[i]);
+		}
+	}
 }
 
 void CApplication::OnNoteClosed(CNoteWnd* pWnd)
@@ -121,22 +131,81 @@ int CApplication::GetOpenedNotesCount() const
 }
 
 /**/
-BOOL CApplication::IsAllNotesOpened() const
+int CApplication::GetHiddenNotesCount() const
 {
-	int nOpened = 0;
-	for (std::list<CNoteWnd*>::const_iterator it = m_listNotes.begin();
-		it != m_listNotes.end(); ++it)
+	CStorage::NotesIdsList list;
+	m_storage.GetAllNotesIds(list);
+	int nCount = 0;
+	for (int i = 0; i < list.size(); ++i)
 	{
-		if ((*it)->GetId() > 0)
+		if (!FindNote(list[i]))
 		{
-			++nOpened;
+			++nCount;
 		}
 	}
-	return nOpened == m_storage.GetNotesCount();
+	return nCount;
 }
 
 /**/
 void CApplication::DeleteNote( CNoteWnd* pWnd )
 {
 	m_storage.DeleteNote(pWnd->GetId());
+}
+
+/**/
+LPCTSTR CApplication::GetDataFileName()
+{
+	if (m_sDataFile.IsEmpty())
+	{
+		LPTSTR szFile = m_sDataFile.GetBufferSetLength(MAX_PATH);
+		::SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_DEFAULT, szFile);
+		::PathCombine(szFile, szFile, RESSTR(IDS_APP_NAME));
+		if (!::PathFileExists(szFile))
+		{
+			fileutils::CreateDirectoryRecursive(szFile);
+		}
+		::PathCombine(szFile, szFile, _T("notes.dat"));
+		m_sDataFile.ReleaseBuffer();
+	}
+	return m_sDataFile;
+}
+
+CNoteWnd* CApplication::FindNote(int nNoteId) const
+{
+	for (std::list<CNoteWnd*>::const_iterator it = m_listNotes.begin();
+		it != m_listNotes.end(); ++it)
+	{
+		if ((*it)->GetId() == nNoteId)
+		{
+			return (*it);
+		}
+	}
+	return NULL;
+}
+
+void CApplication::OpenNote( CNote const& note )
+{
+	CNoteWnd* pWnd = CreateNoteWnd(note.GetPos());
+	if (pWnd)
+	{
+		pWnd->SetId(note.GetId());
+		pWnd->SetText(note.GetText());
+		pWnd->SetFocus();
+	}
+}
+
+CNoteWnd* CApplication::CreateNoteWnd(CRect& rc)
+{
+	m_listNotes.push_back(new CNoteWnd());
+	CNoteWnd* pWnd = m_listNotes.back();
+
+	pWnd->Create(m_TrayWnd, rc, _T("NoteWnd"), 
+		WS_POPUPWINDOW | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		WS_THICKFRAME /*| WS_SYSMENU| WS_MINIMIZEBOX*/, WS_EX_NOPARENTNOTIFY | WS_EX_TOOLWINDOW /*WS_CAPTION | , WS_EX_TOOLWINDOW | WS_EX_APPWINDOW*/
+		//  		WS_CAPTION | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_SYSMENU | 
+		//  		WS_THICKFRAME | WS_OVERLAPPED /*| WS_MINIMIZEBOX | WS_MAXIMIZEBOX*/, 
+		//  		WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR | WS_EX_WINDOWEDGE | WS_EX_APPWINDOW
+		);
+	m_TrayWnd.ShowWindow(SW_SHOW);
+	return pWnd;
 }

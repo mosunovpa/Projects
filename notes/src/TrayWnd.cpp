@@ -118,9 +118,18 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	{
 		menuTrackPopup.DeleteMenu(ID_POPUP_HIDEALLNOTES, MF_BYCOMMAND);
 	}
-	if (CApplication::Get().IsAllNotesOpened())
+	int nHiddenNotes = CApplication::Get().GetHiddenNotesCount();
+	if (nHiddenNotes == 0)
 	{
 		menuTrackPopup.DeleteMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND);
+	}
+	else
+	{
+		CString csMenu;
+		menuTrackPopup.GetMenuString(ID_POPUP_SHOWALLNOTES, csMenu, MF_BYCOMMAND);
+		csMenu = (csMenu + _T(" (") + strutils::to_string(nHiddenNotes).c_str() + _T(")"));
+		menuTrackPopup.ModifyMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND | MF_STRING, 
+			(UINT_PTR)ID_POPUP_SHOWALLNOTES, (LPCTSTR)csMenu);
 	}
 
 	// Display the shortcut menu. Track the right mouse button
