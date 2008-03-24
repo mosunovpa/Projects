@@ -21,7 +21,7 @@ void CApplication::CreateAppWindow()
 	if (!::IsWindow(m_TrayWnd.m_hWnd))
 	{
 		if (!m_TrayWnd.Create(NULL/*HWND_MESSAGE*/, CRect(0, 0, 0, 0)/*CWindow::rcDefault*/, RESSTR(IDS_APP_NAME), 
-			WS_POPUP  /*|WS_VISIBLE | WS_SYSMENU *//*| WS_MINIMIZEBOX*/))
+			WS_POPUP | WS_SYSMENU  /*|WS_VISIBLE *//*| WS_MINIMIZEBOX*/))
 		{
 			ThrowError(_T("can not create app window"));
 		}
