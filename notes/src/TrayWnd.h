@@ -26,6 +26,7 @@ public:
 		MSG_WM_DESTROY(OnDestroy)
 		MSG_WM_QUERYENDSESSION(OnQueryEndSession)
 		MSG_WM_SETFOCUS(OnFocus)
+		MSG_WM_SYSCOMMAND(OnSysCommand)
 		MESSAGE_HANDLER(WMU_NOTIFYICON, OnNotifyIcon)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_SHOWALLNOTES, OnPopupShowAllnotes)
@@ -46,6 +47,7 @@ public:
 	LRESULT OnPopupAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupExit(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	void OnFocus(HWND hWnd);
+	void OnSysCommand(UINT nID, CPoint pt);
 private:
 	LRESULT DisplayShortcutMenu();
 

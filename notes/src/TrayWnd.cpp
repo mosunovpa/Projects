@@ -34,6 +34,18 @@ LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		ATLTRACE(_T("Icon was not added to the taskbar!\n"));
 		return 0;
 	}
+
+	// adjust system menu
+	CMenuHandle menu = GetSystemMenu(FALSE);
+	int nCount = menu.GetMenuItemCount();
+	for (int i = nCount - 1; i >= 0;  --i)
+	{
+		int id = menu.GetMenuItemID(i);
+		if (id != SC_CLOSE)
+		{
+			menu.DeleteMenu(id, MF_BYCOMMAND);
+		}
+	}
 	return 0;
 }
 
@@ -185,4 +197,19 @@ void CTrayWnd::OnFocus(HWND hWnd)
 {
 	CApplication::Get().RestoreFocus();
 	SetMsgHandled(FALSE);
+}
+
+/*
+WM_SYSCOMMAND
+*/
+void CTrayWnd::OnSysCommand(UINT nID, CPoint pt)
+{
+	if (nID == SC_CLOSE)
+	{
+		CApplication::Get().CloseAllNotes();
+	}
+	else
+	{
+		SetMsgHandled(FALSE);
+	}
 }
