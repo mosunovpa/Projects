@@ -66,10 +66,14 @@ IDR_TRAYMENU MENU
 BEGIN
     POPUP "Popup"
     BEGIN
-        MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
+        POPUP "&Notes"
+        BEGIN
+            MENUITEM "&Show Hidden Notes",          ID_POPUP_SHOWALLNOTES
+            MENUITEM "&Hide All Notes",             ID_POPUP_HIDEALLNOTES
+            MENUITEM SEPARATOR
+            MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
+        END
         MENUITEM SEPARATOR
-        MENUITEM "&Show Hidden Notes",          ID_POPUP_SHOWALLNOTES
-        MENUITEM "&Hide All Notes",             ID_POPUP_HIDEALLNOTES
         MENUITEM "&About...",                   ID_POPUP_ABOUT
         MENUITEM SEPARATOR
         MENUITEM "&Exit",                       ID_POPUP_EXIT
