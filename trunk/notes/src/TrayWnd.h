@@ -4,6 +4,8 @@
 #include "TrayIcon.h"
 #include "resource.h"
 
+const UINT WM_CREATENOTE = WM_USER + 111;
+
 class CTrayWnd : public CWindowImpl<CTrayWnd> 
 {
 public:
@@ -27,7 +29,8 @@ public:
 		MSG_WM_QUERYENDSESSION(OnQueryEndSession)
 		MSG_WM_SETFOCUS(OnFocus)
 		MSG_WM_SYSCOMMAND(OnSysCommand)
-		MESSAGE_HANDLER(WMU_NOTIFYICON, OnNotifyIcon)
+		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
+		MESSAGE_HANDLER_EX(WM_CREATENOTE, OnCreateNote);
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_SHOWALLNOTES, OnPopupShowAllnotes)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_HIDEALLNOTES, OnPopupHideAllnotes)
@@ -41,7 +44,8 @@ public:
 	LRESULT OnDestroy(void);
 	LRESULT OnQueryEndSession(UINT wParam, UINT lParam);
 	void OnFocus(HWND hWnd);
-	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT OnCreateNote(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnPopupNewnote(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupShowAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupHideAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl);

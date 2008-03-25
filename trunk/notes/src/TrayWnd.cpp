@@ -69,7 +69,7 @@ LRESULT CTrayWnd::OnQueryEndSession(UINT wParam, UINT lParam)
 	return TRUE;
 }
 
-LRESULT CTrayWnd::OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CTrayWnd::OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	// Determine the tray message
 	switch (lParam)
@@ -81,14 +81,21 @@ LRESULT CTrayWnd::OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 		// Left mouse button double-click - create a new note
 	case WM_LBUTTONDBLCLK:
 //		CApplication::Get().CreateNote();
+//		PostMessage(WM_CREATENOTE);
 		break;
-//	case WM_LBUTTONUP:
-	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+//	case WM_LBUTTONDOWN:
 		DisplayShortcutMenu(FALSE);
 		break;
 	default:
 		break;
 	}
+	return 0;
+}
+
+LRESULT CTrayWnd::OnCreateNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	CApplication::Get().CreateNote();
 	return 0;
 }
 
