@@ -3,6 +3,8 @@
 #include "resutils.h"
 #include "Application.h"
 
+const UINT ID_DBLCLICK_DELAY_TIMER = 1;
+
 CTrayWnd::CTrayWnd()
 {
 
@@ -74,15 +76,15 @@ LRESULT CTrayWnd::OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 	{
 		// Right mouse button click - display a popup menu
 	case WM_RBUTTONUP:
-		DisplayShortcutMenu();
+		DisplayShortcutMenu(TRUE);
 		break;
 		// Left mouse button double-click - create a new note
 	case WM_LBUTTONDBLCLK:
-		CApplication::Get().CreateNote();
+//		CApplication::Get().CreateNote();
 		break;
-		// activate opened notes
-	case WM_LBUTTONUP:
-		SetForegroundWindow(m_hWnd);
+//	case WM_LBUTTONUP:
+	case WM_LBUTTONDOWN:
+		DisplayShortcutMenu(FALSE);
 		break;
 	default:
 		break;
@@ -90,9 +92,47 @@ LRESULT CTrayWnd::OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 	return 0;
 }
 
-
-LRESULT CTrayWnd::DisplayShortcutMenu()
+void ModifyNotesMenu(CMenuHandle menuNotes)
 {
+	// set menu item states
+	//MENUITEMINFO mif;
+	//ZeroMemory(&mif, sizeof(MENUITEMINFO));
+	//mif.cbSize = sizeof(MENUITEMINFO);
+	//mif.fMask = MIIM_STATE;
+	//mif.fState = MFS_DEFAULT;
+	//::SetMenuItemInfo(menuNotes, ID_POPUP_NEWNOTE, FALSE, &mif);
+
+	if (CApplication::Get().GetOpenedNotesCount() == 0)
+	{
+		menuNotes.DeleteMenu(ID_POPUP_HIDEALLNOTES, MF_BYCOMMAND);
+	}
+	int nHiddenNotes = CApplication::Get().GetHiddenNotesCount();
+	if (nHiddenNotes == 0)
+	{
+		menuNotes.DeleteMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND);
+	}
+	else
+	{
+		CString csMenu;
+		menuNotes.GetMenuString(ID_POPUP_SHOWALLNOTES, csMenu, MF_BYCOMMAND);
+		csMenu = (csMenu + _T(" (") + strutils::to_string(nHiddenNotes).c_str() + _T(")"));
+		menuNotes.ModifyMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND | MF_STRING, 
+			(UINT_PTR)ID_POPUP_SHOWALLNOTES, (LPCTSTR)csMenu);
+	}
+
+	int nState = menuNotes.GetMenuState(0, MF_BYPOSITION);
+	if ((nState & MF_SEPARATOR) == MF_SEPARATOR)
+	{
+		menuNotes.DeleteMenu(0, MF_BYPOSITION);
+	}
+}
+
+LRESULT CTrayWnd::DisplayShortcutMenu(BOOL bRightButton /*= TRUE*/)
+{
+	if (m_menuPopup.m_hMenu)
+	{
+		return 0;
+	}
 	// Load the menu resource
 	if (!m_menuPopup.LoadMenu(IDR_TRAYMENU))
 	{
@@ -118,43 +158,30 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 		return 0;
 	}
 
-	// set menu item states
-	MENUITEMINFO mif;
-	ZeroMemory(&mif, sizeof(MENUITEMINFO));
-	mif.cbSize = sizeof(MENUITEMINFO);
-	mif.fMask = MIIM_STATE;
-	mif.fState = MFS_DEFAULT;
-	::SetMenuItemInfo(menuTrackPopup, ID_POPUP_NEWNOTE, FALSE, &mif);
+	CMenuHandle menuNotes = menuTrackPopup.GetSubMenu(0);
+	ModifyNotesMenu(menuNotes);
 
-	if (CApplication::Get().GetOpenedNotesCount() == 0)
+	// Display the shortcut menu. Track the right mouse button
+	CMenuHandle menuContext;
+	if (bRightButton)
 	{
-		menuTrackPopup.DeleteMenu(ID_POPUP_HIDEALLNOTES, MF_BYCOMMAND);
-	}
-	int nHiddenNotes = CApplication::Get().GetHiddenNotesCount();
-	if (nHiddenNotes == 0)
-	{
-		menuTrackPopup.DeleteMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND);
+		menuContext = menuTrackPopup;
 	}
 	else
 	{
-		CString csMenu;
-		menuTrackPopup.GetMenuString(ID_POPUP_SHOWALLNOTES, csMenu, MF_BYCOMMAND);
-		csMenu = (csMenu + _T(" (") + strutils::to_string(nHiddenNotes).c_str() + _T(")"));
-		menuTrackPopup.ModifyMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND | MF_STRING, 
-			(UINT_PTR)ID_POPUP_SHOWALLNOTES, (LPCTSTR)csMenu);
+		menuContext = menuNotes;
 	}
-
-	// Display the shortcut menu. Track the right mouse button
-	if (!menuTrackPopup.TrackPopupMenu(TPM_RIGHTALIGN|TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd, NULL))
+	if (!menuContext.TrackPopupMenu(TPM_RIGHTALIGN|TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd, NULL))
 	{
 		ATLTRACE(_T("Shortcut menu was not displayed!\n"));
+		m_menuPopup.DestroyMenu();
+		m_menuPopup.m_hMenu = NULL;
 		return 0;
 	}
 
 	::PostMessage(m_hWnd, WM_NULL, 0, 0);
 
 	// Destroy the menu and free any memory that the menu occupies
-	menuTrackPopup.DestroyMenu();
 	m_menuPopup.DestroyMenu();
 	m_menuPopup.m_hMenu = NULL;
 

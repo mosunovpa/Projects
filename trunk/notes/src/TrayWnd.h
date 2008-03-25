@@ -39,16 +39,16 @@ public:
 
 	LRESULT OnCreate(LPCREATESTRUCT lpCreateStruct);
 	LRESULT OnDestroy(void);
-	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnQueryEndSession(UINT wParam, UINT lParam);
+	void OnFocus(HWND hWnd);
+	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPopupNewnote(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupShowAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupHideAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupExit(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-	void OnFocus(HWND hWnd);
 	void OnSysCommand(UINT nID, CPoint pt);
 private:
-	LRESULT DisplayShortcutMenu();
+	LRESULT DisplayShortcutMenu(BOOL bRightButton = TRUE);
 
 };
