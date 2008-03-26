@@ -124,8 +124,11 @@ WM_CREATE
 */
 LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 {
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIconSm, FALSE);
+//	SetIcon(m_hIcon, TRUE);
+//	SetIcon(m_hIconSm, FALSE);
+
+	m_icon.Create(m_hWnd, GetIconRect(), NULL, WS_CHILD|WS_VISIBLE|SS_ICON|SS_CENTERIMAGE|SS_NOTIFY);
+	m_icon.SetIcon(m_hIconSm);
 
 	AdjustSystemMenu();
 
@@ -155,11 +158,7 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	pf.dxStartIndent = 100;
 	m_edit.SetParaFormat(pf);
 
-
 	m_edit.SetTextMode(TM_PLAINTEXT);
-
-//	RECT rc = {0, 0, 200, 165 };
-//	SetWindowPos(NULL, &rc, SWP_NOZORDER | SWP_NOMOVE);
 
 	m_edit.SetFocus();
 
@@ -194,10 +193,6 @@ LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 	if (GetBottomRightRect().PtInRect(pt))
 	{
 		return HTBOTTOMRIGHT;
-	}
-	if (GetIconRect().PtInRect(pt))
-	{
-//		return HTSYSMENU;
 	}
 	SetMsgHandled(FALSE);
 	return 0;
@@ -245,7 +240,7 @@ void CNoteWnd::OnPaint(HDC hdc)
 		memDc.FillRect(&rcClient, m_hBgBrush);
 
 		// Draw icon
-		memDc.DrawIconEx(0, 0, GetIcon(FALSE), s_nCaptionSize, s_nCaptionSize);
+//		memDc.DrawIconEx(0, 0, GetIcon(FALSE), s_nCaptionSize, s_nCaptionSize);
 
 		// Draw close button
 		DrawCloseButton(memDc);
@@ -265,9 +260,10 @@ void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 /**
  WM_LBUTTONDOWN
  */
-void CNoteWnd::OnLButtonDown(UINT wParam, CPoint point)
+void CNoteWnd::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	if (GetCloseButtonRect().PtInRect(point))
+	CRect rc = GetCloseButtonRect();
+	if (rc.PtInRect(point))
 	{
 		m_drDownWas = drOnCloseButton;
 		CClientDC dc(m_hWnd);
@@ -275,13 +271,12 @@ void CNoteWnd::OnLButtonDown(UINT wParam, CPoint point)
 		SetCapture();
 		m_bCaptured = TRUE;
 	}
-	SetMsgHandled(FALSE);
 }
 
 /**
 WM_LBUTTONUP
 */
-void CNoteWnd::OnLButtonUp(UINT wParam, CPoint point)
+void CNoteWnd::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if (GetCloseButtonRect().PtInRect(point) && m_drDownWas == drOnCloseButton)
 	{
@@ -293,7 +288,6 @@ void CNoteWnd::OnLButtonUp(UINT wParam, CPoint point)
 		ReleaseCapture();
 		m_bCaptured = FALSE;
 	}
-	SetMsgHandled(FALSE);
 }
 
 /**
@@ -359,13 +353,12 @@ void CNoteWnd::OnMove(CPoint pt)
 	m_edit.SetModify(TRUE);
 }
 
-/**/
-void CNoteWnd::AdjustSystemMenu()
+/*
+WM_CTLCOLORSTATIC
+*/
+HBRUSH CNoteWnd::OnCtlColorStatic(CDCHandle dc, CStatic wndStatic)
 {
-	CMenuHandle menu = GetSystemMenu(FALSE);
-	menu.DeleteMenu(SC_MINIMIZE, MF_BYCOMMAND);
-	menu.DeleteMenu(SC_MAXIMIZE, MF_BYCOMMAND);
-	menu.DeleteMenu(SC_RESTORE, MF_BYCOMMAND);
+	return m_hBgBrush;
 }
 
 /*
@@ -419,12 +412,40 @@ CString CNoteWnd::GetText() const
 	return s.Trim();
 }
 
+/**/
 void CNoteWnd::SetId( int id )
 {
 	m_nNoteId = id;
 }
 
+/**/
 void CNoteWnd::SetText( CString const& text )
 {
 	m_edit.SetWindowText(text);
+}
+
+/**/
+CMenuHandle CNoteWnd::AdjustSystemMenu()
+{
+	CMenuHandle menu = GetSystemMenu(FALSE);
+	menu.DeleteMenu(SC_MINIMIZE, MF_BYCOMMAND);
+	menu.DeleteMenu(SC_MAXIMIZE, MF_BYCOMMAND);
+	menu.DeleteMenu(SC_RESTORE, MF_BYCOMMAND);
+	return menu;
+}
+
+/* ID_CLOSE */
+void CNoteWnd::OnNoteClose( UINT uNotifyCode, int nID, CWindow wndCtl )
+{
+	PostMessage(WM_CLOSE);
+}
+
+/* ID_DELETE */
+void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
+{
+	if (AtlMessageBox(m_hWnd, IDS_DELETE_NOTE_CONFIRM, IDS_APP_NAME, MB_YESNO | MB_ICONQUESTION) == IDYES)
+	{
+		SetText(CString());
+		PostMessage(WM_CLOSE);
+	}
 }

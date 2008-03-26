@@ -20,6 +20,7 @@ private:
 	CMenu m_menuPopup;
 
 public:
+	DECLARE_WND_CLASS(_T("TrayWnd"))
 
 	BEGIN_MSG_MAP_EX(CTrayWnd)
 	try

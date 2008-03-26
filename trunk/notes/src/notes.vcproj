@@ -181,6 +181,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\StaticSysIcon.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -228,6 +232,10 @@
 			</File>
 			<File
 				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\StaticSysIcon.h"
 				>
 			</File>
 			<File
