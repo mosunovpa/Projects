@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include "StaticSysIcon.h"
+#include "resource.h"
+
 //////////////////////////////////////////////////////////////////////////
 //
 class CNoteEdit : public CWindowImpl<CNoteEdit, CRichEditCtrl>,
@@ -69,6 +72,10 @@ public:
 			MSG_WM_SETFOCUS(OnFocus)
 			MSG_WM_KILLFOCUS(OnKillFocus)
 			MSG_WM_MOVE(OnMove)
+			MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
+			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
+			COMMAND_ID_HANDLER_EX(ID_DELETE, OnNoteDelete)
+
 		} 
 		CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()
@@ -81,9 +88,9 @@ public:
 	void OnPaint(HDC hdc);
 	void OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther);
 	void OnNcPaint(HRGN wParam);
-	LRESULT OnErasebkgnd(HDC hdc) { return TRUE; }
-	void OnLButtonDown(UINT wParam, CPoint point);
-	void OnLButtonUp(UINT wParam, CPoint point);
+	BOOL OnErasebkgnd(HDC hdc) { return TRUE; }
+	void OnLButtonDown(UINT nFlags, CPoint point);
+	void OnLButtonUp(UINT nFlags, CPoint point);
 	void OnMouseMove(UINT wParam, CPoint point);
 	void OnGetMinMaxInfo(LPMINMAXINFO lParam);
 	void OnSize(UINT wParam, CSize sz);
@@ -91,7 +98,9 @@ public:
 	void OnFocus(HWND hWnd);
 	void OnKillFocus(CWindow wndFocus);
 	void OnMove(CPoint pt);
-
+	HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
+	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 private:
 	enum DownRegion
 	{
@@ -106,7 +115,7 @@ private:
 	CRect GetCloseButtonRect();
 	CRect GetClientRect();
 	void DrawCloseButton(CDC& dc, BOOL bDown = FALSE);
-	void AdjustSystemMenu();
+	CMenuHandle AdjustSystemMenu();
 	void StoreNote();
 	void RemoveNote();
 
@@ -117,6 +126,7 @@ private:
 
 	CToolTipCtrl m_tooltip;
 	CNoteEdit m_edit;
+	CStaticSysIcon m_icon;
 		
 	BOOL m_bActive;
 	DownRegion m_drDownWas;
