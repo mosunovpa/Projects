@@ -30,6 +30,14 @@ void CStaticSysIcon::OnLButtonDown( UINT nFlags, CPoint point )
 		m_menuNotes.DestroyMenu();
 		return;
 	}
+
+	MENUITEMINFO mif;
+	ZeroMemory(&mif, sizeof(MENUITEMINFO));
+	mif.cbSize = sizeof(MENUITEMINFO);
+	mif.fMask = MIIM_STATE;
+	mif.fState = MFS_DEFAULT;
+	::SetMenuItemInfo(menuPopup, ID_CLOSE, FALSE, &mif);
+
 	if (!menuPopup.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
 		rc.left, rc.bottom, GetParent()))
 	{

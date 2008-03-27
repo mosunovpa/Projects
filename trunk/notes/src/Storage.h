@@ -5,14 +5,18 @@
 class CStorage
 {
 public:
+	enum
+	{
+		GNM_ID = 0x01,
+		GNM_TEXT = 0x02,
+		GNM_POS = 0x4
+	};
 	typedef std::vector<CNote> NotesList;
-	typedef std::vector<int> NotesIdsList;
 
 	CStorage(void);
 	~CStorage(void);
 
 	void SaveNote(CNote& note);
 	void DeleteNote(int nNoteId);
-	void GetAllNotes(NotesList& list) const;
-	void GetAllNotesIds(NotesIdsList& list) const;
+	void GetAllNotes(NotesList& list, UINT nMask) const;
 };

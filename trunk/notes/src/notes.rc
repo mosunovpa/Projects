@@ -84,9 +84,9 @@ IDR_NOTEMENU MENU
 BEGIN
     POPUP "NoteMenu"
     BEGIN
-        MENUITEM "&Always On Top",              ID_STAYONTOP
+        MENUITEM "&Always On Top",              ID_ALWAYS_ON_TOP
         MENUITEM SEPARATOR
-        MENUITEM "&Delete...",                  ID_DELETE
+        MENUITEM "&Delete",                     ID_DELETE
         MENUITEM SEPARATOR
         MENUITEM "&Close",                      ID_CLOSE
     END

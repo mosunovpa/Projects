@@ -36,6 +36,11 @@ private:
 	CNoteWnd* FindNote(int nNoteId) const;
 	void OpenNote(CNote const& note);
 	CNoteWnd* CreateNoteWnd(CRect& rc);
+	CRect CalcNewNoteRect();
+	void GetAllNotesPositions(CStorage::NotesList& notes);
+	void GetSomePossiblePositions(CRect const& center, std::vector<CRect>& poss);
+	CRect GetOptimumPosition(std::vector<CRect> const& vPossiblePositions, 
+		CStorage::NotesList const& notes);
 
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;

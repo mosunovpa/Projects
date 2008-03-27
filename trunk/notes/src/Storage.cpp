@@ -10,7 +10,7 @@
 #define CHECK_HR_MSG(x, s) { HRESULT hr = x; if (FAILED(hr)) ThrowError(s); }
 #define CHECK_HR(x) CHECK_HR_MSG(x, _T("Xml operation error"))
 
-CComPtr<IXMLDOMDocument> GetDocument()
+static CComPtr<IXMLDOMDocument> _GetDocument()
 {
 	CComPtr<IXMLDOMDocument> spDoc;
 	CHECK_HR_MSG(spDoc.CoCreateInstance(__uuidof(DOMDocument)), _T("Create document error"));
@@ -29,7 +29,7 @@ CComPtr<IXMLDOMDocument> GetDocument()
 	return spDoc;
 }
 
-CComPtr<IXMLDOMNode> GetRootNode(CComPtr<IXMLDOMDocument>& spDoc)
+static CComPtr<IXMLDOMNode> _GetRootNode(CComPtr<IXMLDOMDocument>& spDoc)
 {
 	CComPtr<IXMLDOMNode> spRoot;
 	CHECK_HR(spDoc->selectSingleNode(CComBSTR(_T("notes")),&spRoot));
@@ -40,7 +40,7 @@ CComPtr<IXMLDOMNode> GetRootNode(CComPtr<IXMLDOMDocument>& spDoc)
 	return spRoot;
 }
 
-CComPtr<IXMLDOMNode> FindNote(CComPtr<IXMLDOMDocument>& spDoc, int nNoteId)
+static CComPtr<IXMLDOMNode> _FindNote(CComPtr<IXMLDOMDocument>& spDoc, int nNoteId)
 {
 	CComPtr<IXMLDOMNode> spNode;
 	CString csPath;
@@ -53,8 +53,9 @@ CComPtr<IXMLDOMNode> FindNote(CComPtr<IXMLDOMDocument>& spDoc, int nNoteId)
 	return spNode;
 }
 
-void GetNotesIds(CComPtr<IXMLDOMDocument>& spDoc, CStorage::NotesIdsList& vIds)
+static void _GetAllNotes(CStorage::NotesList& list, UINT nMask)
 {
+	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	long len = 0;
 	CComPtr<IXMLDOMNodeList> spNotes;
 	CHECK_HR(spDoc->getElementsByTagName(L"note", &spNotes));
@@ -65,20 +66,79 @@ void GetNotesIds(CComPtr<IXMLDOMDocument>& spDoc, CStorage::NotesIdsList& vIds)
 		CHECK_HR(spNotes->get_item(i, &spNode));
 		CComPtr<IXMLDOMElement> spElement;
 		CHECK_HR(spNode.QueryInterface(&spElement));
+		CNote note;
 		CComVariant val;
-		CHECK_HR(spElement->getAttribute(L"id", &val));
-		if (val.vt != VT_BSTR)
+
+		if ((nMask & CStorage::GNM_ID) == CStorage::GNM_ID)
 		{
-			ThrowError(_T("Attribute id not found"));
+			CHECK_HR(spElement->getAttribute(L"id", &val));
+			if (val.vt != VT_BSTR)
+			{
+				ThrowError(_T("Attribute id not found"));
+			}
+			note.SetId(_ttoi(val.bstrVal));
 		}
-		vIds.push_back(_ttoi(val.bstrVal));
+		if ((nMask & CStorage::GNM_POS) == CStorage::GNM_POS)
+		{
+			CRect rc;
+			CHECK_HR(spElement->getAttribute(L"left", &val));
+			if (val.vt != VT_BSTR)
+			{
+				rc.left = 0;
+			}
+			else
+			{
+				rc.left = _ttoi(val.bstrVal);
+			}
+			CHECK_HR(spElement->getAttribute(L"top", &val));
+			if (val.vt != VT_BSTR)
+			{
+				rc.top = 0;
+			}
+			else
+			{
+				rc.top = _ttoi(val.bstrVal);
+			}
+			CHECK_HR(spElement->getAttribute(L"right", &val));
+			if (val.vt != VT_BSTR)
+			{
+				rc.right = rc.left + 200;
+			}
+			else
+			{
+				rc.right = _ttoi(val.bstrVal);
+			}
+			CHECK_HR(spElement->getAttribute(L"bottom", &val));
+			if (val.vt != VT_BSTR)
+			{
+				rc.bottom = rc.top + 165;
+			}
+			else
+			{
+				rc.bottom = _ttoi(val.bstrVal);
+			}
+			note.SetPos(rc);
+		}
+
+		if ((nMask & CStorage::GNM_TEXT) == CStorage::GNM_TEXT)
+		{
+			CComBSTR bstr;
+			CHECK_HR(spElement->get_text(&bstr));
+			note.SetText((LPCTSTR)bstr);
+		}
+		list.push_back(note);
 	}
 }
 
-int GetNextId(CComPtr<IXMLDOMDocument>& spDoc)
+static int _GetNextId(CComPtr<IXMLDOMDocument>& spDoc)
 {
-	CStorage::NotesIdsList ids;
-	GetNotesIds(spDoc, ids);
+	CStorage::NotesList notes;
+	_GetAllNotes(notes, CStorage::GNM_ID);
+	std::vector<int> ids;
+	for (int j = 0; j < notes.size(); ++j)
+	{
+		ids.push_back(notes[j].GetId());
+	}
 	std::sort(ids.begin(), ids.end());
 	int nNextId = 1;
 	for (int i = 0; i < ids.size(); ++i)
@@ -92,7 +152,7 @@ int GetNextId(CComPtr<IXMLDOMDocument>& spDoc)
 	return nNextId;
 }
 
-void SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& note)
+static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& note)
 {
 	CHECK_HR(spElement->setAttribute(L"id", CComVariant(note.GetId())));
 	CRect pos = note.GetPos();
@@ -103,18 +163,18 @@ void SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& note)
 	CHECK_HR(spElement->put_text(CComBSTR(note.GetText())));
 }
 
-void NewNote(CNote& note)
+static void _NewNote(CNote& note)
 {
 	if (note.GetId() > 0)
 	{
 		ThrowError(_T("Can not add note with not null id"));
 	}
-	CComPtr<IXMLDOMDocument> spDoc = GetDocument();
+	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	CComPtr<IXMLDOMElement> spElement;
-	note.SetId(GetNextId(spDoc));
+	note.SetId(_GetNextId(spDoc));
 	CHECK_HR(spDoc->createElement(L"note", &spElement));
-	SetNoteContent(spElement, note);
-	CComPtr<IXMLDOMNode> spRoot = GetRootNode(spDoc);
+	_SetNoteContent(spElement, note);
+	CComPtr<IXMLDOMNode> spRoot = _GetRootNode(spDoc);
 	CComPtr<IXMLDOMNode> spChild;
 	CHECK_HR(spRoot->appendChild(spElement, &spChild));
 	if (!spChild)
@@ -124,13 +184,13 @@ void NewNote(CNote& note)
 	CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
 }
 
-void UpdateNote(CNote const& note)
+static void _UpdateNote(CNote const& note)
 {
-	CComPtr<IXMLDOMDocument> spDoc = GetDocument();
-	CComPtr<IXMLDOMNode> spNode = FindNote(spDoc, note.GetId());
+	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
+	CComPtr<IXMLDOMNode> spNode = _FindNote(spDoc, note.GetId());
 	CComPtr<IXMLDOMElement> spElement;
 	CHECK_HR(spNode.QueryInterface(&spElement));
-	SetNoteContent(spElement, note);
+	_SetNoteContent(spElement, note);
 	CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
 }
 
@@ -149,90 +209,26 @@ void CStorage::SaveNote(CNote& note)
 {
 	if (note.GetId() == 0) // new note
 	{
-		NewNote(note);
+		_NewNote(note);
 	}
 	else
 	{
-		UpdateNote(note);
+		_UpdateNote(note);
 	}
 }
 
-void CStorage::GetAllNotes(CStorage::NotesList& list) const
+void CStorage::GetAllNotes(CStorage::NotesList& list, UINT nMask) const
 {
-	CComPtr<IXMLDOMDocument> spDoc = GetDocument();
-	long len = 0;
-	CComPtr<IXMLDOMNodeList> spNotes;
-	CHECK_HR(spDoc->getElementsByTagName(L"note", &spNotes));
-	CHECK_HR(spNotes->get_length(&len));
-	for (int i = 0; i < len; ++i)
-	{
-		CComPtr<IXMLDOMNode> spNode;
-		CHECK_HR(spNotes->get_item(i, &spNode));
-		CComPtr<IXMLDOMElement> spElement;
-		CHECK_HR(spNode.QueryInterface(&spElement));
-		CNote note;
-		CComVariant val;
-		CHECK_HR(spElement->getAttribute(L"id", &val));
-		if (val.vt != VT_BSTR)
-		{
-			ThrowError(_T("Attribute id not found"));
-		}
-		note.SetId(_ttoi(val.bstrVal));
-
-		CRect rc;
-		CHECK_HR(spElement->getAttribute(L"left", &val));
-		if (val.vt != VT_BSTR)
-		{
-			rc.left = 0;
-		}
-		else
-		{
-			rc.left = _ttoi(val.bstrVal);
-		}
-		CHECK_HR(spElement->getAttribute(L"top", &val));
-		if (val.vt != VT_BSTR)
-		{
-			rc.top = 0;
-		}
-		else
-		{
-			rc.top = _ttoi(val.bstrVal);
-		}
-		CHECK_HR(spElement->getAttribute(L"right", &val));
-		if (val.vt != VT_BSTR)
-		{
-			rc.right = rc.left + 200;
-		}
-		else
-		{
-			rc.right = _ttoi(val.bstrVal);
-		}
-		CHECK_HR(spElement->getAttribute(L"bottom", &val));
-		if (val.vt != VT_BSTR)
-		{
-			rc.bottom = rc.top + 165;
-		}
-		else
-		{
-			rc.bottom = _ttoi(val.bstrVal);
-		}
-		note.SetPos(rc);
-
-		CComBSTR bstr;
-		CHECK_HR(spElement->get_text(&bstr));
-		note.SetText((LPCTSTR)bstr);
-
-		list.push_back(note);
-	}
+	_GetAllNotes(list, nMask);
 }
 
 void CStorage::DeleteNote(int nNoteId)
 {
 	if (nNoteId > 0)
 	{
-		CComPtr<IXMLDOMDocument> spDoc = GetDocument();
-		CComPtr<IXMLDOMNode> spRoot = GetRootNode(spDoc);
-		CComPtr<IXMLDOMNode> spNode = FindNote(spDoc, nNoteId);
+		CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
+		CComPtr<IXMLDOMNode> spRoot = _GetRootNode(spDoc);
+		CComPtr<IXMLDOMNode> spNode = _FindNote(spDoc, nNoteId);
 		CComPtr<IXMLDOMNode> spChild;
 		CHECK_HR(spRoot->removeChild(spNode, &spChild));
 		if (!spChild)
@@ -241,10 +237,4 @@ void CStorage::DeleteNote(int nNoteId)
 		}
 		CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
 	}
-}
-
-void CStorage::GetAllNotesIds(CStorage::NotesIdsList& list) const
-{
-	CComPtr<IXMLDOMDocument> spDoc = GetDocument();
-	GetNotesIds(spDoc, list);
 }

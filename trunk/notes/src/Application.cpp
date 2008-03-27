@@ -6,6 +6,8 @@
 #include "atlwinmisc.h"
 #include "resutils.h"
 #include "fileutils.h"
+#include "guiutils.h"
+#include <math.h>
 
 CApplication::CApplication() : m_pFocused(NULL)
 {
@@ -28,10 +30,108 @@ void CApplication::CreateAppWindow()
 	}
 }
 
+void CApplication::GetAllNotesPositions(CStorage::NotesList& notes)
+{
+	m_storage.GetAllNotes(notes, CStorage::GNM_POS);
+	for (std::list<CNoteWnd*>::iterator it = m_listNotes.begin(); it != m_listNotes.end(); ++it)
+	{
+		if ((*it)->GetId() == 0) // new not saved note
+		{
+			CNote note;
+			note.SetPos(CWindowRect((*it)->m_hWnd));
+			notes.push_back(note);
+		}
+	}
+}
+
+void CApplication::GetSomePossiblePositions(CRect const& center, std::vector<CRect>& poss)
+{
+	const int nRadius = 150;
+	for (int i = 0; i < 10; ++i) // 10 possible positions
+	{
+		CRect rc(center);
+		int nRandAngle = ((double)rand() / (double)RAND_MAX) * 360;
+		int dx = nRadius * cos((double)nRandAngle);
+		int dy = nRadius * sin((double)nRandAngle);
+		rc += CPoint(dx, dy);
+		if (guiutils::WinPosIsValid(rc))
+		{
+			poss.push_back(rc);
+		}
+	}
+}
+
+CRect CApplication::GetOptimumPosition(std::vector<CRect> const& vPossiblePositions, 
+									   CStorage::NotesList const& notes)
+{
+	CRect rc;
+	int nUnderTopLeftMin = 100000; // notes under top left corner on the new note
+	int nOverlappedTopLeftMin = 100000; // top left corners under new note area
+	for (int i = 0; i < vPossiblePositions.size(); ++i)
+	{
+		int nUnderTopLeft = 0;
+		int nOverlappedTopLeft = 0;
+		for (int j = 0; j < notes.size(); ++j)
+		{
+			if (notes[j].GetPos().PtInRect(vPossiblePositions[i].TopLeft()))
+			{
+				++nUnderTopLeft;
+			}
+			if (vPossiblePositions[i].PtInRect(notes[j].GetPos().TopLeft()))
+			{
+				++nOverlappedTopLeft;
+			}
+		}
+		if (nUnderTopLeft < nUnderTopLeftMin)
+		{
+			nUnderTopLeftMin = nUnderTopLeft;
+			nOverlappedTopLeftMin = nOverlappedTopLeft;
+			rc = vPossiblePositions[i];
+		}
+		else if (nUnderTopLeft == nUnderTopLeftMin && nOverlappedTopLeft < nOverlappedTopLeftMin)
+		{
+			nOverlappedTopLeftMin = nOverlappedTopLeft;
+			rc = vPossiblePositions[i];
+		}
+	}
+	return rc;
+}
+
+CRect CApplication::CalcNewNoteRect()
+{
+	const int nNewNoteWidth = 200;
+	const int nNewNoteHeight = 160;
+
+	// collect all notes positions
+	CStorage::NotesList notes;
+	GetAllNotesPositions(notes);
+
+	// if first note return center point
+	if (!notes.empty())
+	{
+		// get some possible position
+		std::vector<CRect> vPossiblePositions;
+		CRect rcLast = notes.back().GetPos();
+		GetSomePossiblePositions(rcLast, vPossiblePositions);
+
+		// select minimum overlapped window
+		CRect rc(GetOptimumPosition(vPossiblePositions, notes));
+		if (!rc.IsRectNull())
+		{
+			return rc;
+		}
+	}
+
+	// default value
+	CRect war;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &war, 0);
+	CPoint center(war.right / 2, war.bottom / 2);
+	return CRect(center.x, center.y, center.x + nNewNoteWidth, center.y + nNewNoteHeight);
+}
+
 void CApplication::CreateNote()
 {
-	CRect rc(0, 0, 200, 165 );
-	CNoteWnd* pWnd = CreateNoteWnd(rc);
+	CNoteWnd* pWnd = CreateNoteWnd(CalcNewNoteRect());
 	if (pWnd)
 	{
 		pWnd->SetFocus();
@@ -56,7 +156,7 @@ void CApplication::CloseAllNotes()
 void CApplication::ShowAllNotes()
 {
 	CStorage::NotesList list;
-	m_storage.GetAllNotes(list);
+	m_storage.GetAllNotes(list, CStorage::GNM_ID | CStorage::GNM_TEXT | CStorage::GNM_POS);
 	for (int i = 0; i < list.size(); ++i)
 	{
 		CNoteWnd* pNoteWnd = FindNote(list[i].GetId());
@@ -133,12 +233,12 @@ int CApplication::GetOpenedNotesCount() const
 /**/
 int CApplication::GetHiddenNotesCount() const
 {
-	CStorage::NotesIdsList list;
-	m_storage.GetAllNotesIds(list);
+	CStorage::NotesList notes;
+	m_storage.GetAllNotes(notes, CStorage::GNM_ID);
 	int nCount = 0;
-	for (int i = 0; i < list.size(); ++i)
+	for (int i = 0; i < notes.size(); ++i)
 	{
-		if (!FindNote(list[i]))
+		if (!FindNote(notes[i].GetId()))
 		{
 			++nCount;
 		}
