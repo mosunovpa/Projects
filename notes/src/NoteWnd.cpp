@@ -462,6 +462,9 @@ void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 
 void CNoteWnd::OnInitMenu( CMenu menu )
 {
-	menu.CheckMenuItem(ID_ALWAYS_ON_TOP, MF_BYCOMMAND | (m_bAlwaisOnTop ? MF_CHECKED : MF_UNCHECKED));
+	if (menu.IsMenu())
+	{
+		menu.CheckMenuItem(ID_ALWAYS_ON_TOP, MF_BYCOMMAND | (m_bAlwaisOnTop ? MF_CHECKED : MF_UNCHECKED));
+	}
 }
 
