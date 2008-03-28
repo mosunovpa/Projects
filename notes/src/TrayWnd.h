@@ -31,29 +31,28 @@ public:
 		MSG_WM_SETFOCUS(OnFocus)
 		MSG_WM_SYSCOMMAND(OnSysCommand)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
-		MESSAGE_HANDLER_EX(WM_CREATENOTE, OnCreateNote);
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_SHOWALLNOTES, OnPopupShowAllnotes)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_HIDEALLNOTES, OnPopupHideAllnotes)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_EXIT, OnPopupExit)
+		COMMAND_ID_HANDLER_EX(ID_POPUP_ALWAYS_ON_TOP, OnAlwaysOnTop);
 	}
 	CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()
 
 	LRESULT OnCreate(LPCREATESTRUCT lpCreateStruct);
 	LRESULT OnDestroy(void);
-	LRESULT OnQueryEndSession(UINT wParam, UINT lParam);
+	LRESULT	OnQueryEndSession(UINT wParam, UINT lParam);
 	void OnFocus(HWND hWnd);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	LRESULT OnCreateNote(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnPopupNewnote(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupShowAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupHideAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupExit(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	void OnSysCommand(UINT nID, CPoint pt);
+	void OnAlwaysOnTop(UINT uNotifyCode, int nID, CWindow wndCtl);
 private:
 	LRESULT DisplayShortcutMenu(BOOL bRightButton = TRUE);
-
 };

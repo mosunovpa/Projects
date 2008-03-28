@@ -2,6 +2,8 @@
 
 #include "note.h"
 
+class COptions;
+
 class CStorage
 {
 public:
@@ -19,4 +21,6 @@ public:
 	void SaveNote(CNote& note);
 	void DeleteNote(int nNoteId);
 	void GetAllNotes(NotesList& list, UINT nMask) const;
+	void ReadOptions(COptions& opt) const;
+	void WriteOptions(COptions const& opt) const;
 };

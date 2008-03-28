@@ -3,13 +3,13 @@
 #include "resutils.h"
 #include "Application.h"
 
-const UINT ID_DBLCLICK_DELAY_TIMER = 1;
-
+/* constructor*/
 CTrayWnd::CTrayWnd()
 {
 
 }
 
+/* destructor */
 CTrayWnd::~CTrayWnd()
 {
 	// Destroy the menu
@@ -17,6 +17,7 @@ CTrayWnd::~CTrayWnd()
 		m_menuPopup.DestroyMenu();
 }
 
+/* WM_CREATE */
 LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	m_Icon.LoadIcon(IDR_MAINFRAME, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
@@ -51,6 +52,7 @@ LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
+/* WM_DESTROY */
 LRESULT CTrayWnd::OnDestroy(void)
 {
 	// Delete the icon from the taskbar status area
@@ -63,12 +65,14 @@ LRESULT CTrayWnd::OnDestroy(void)
 	return 0;
 }
 
+/* WM_QUERYENDSESSION */
 LRESULT CTrayWnd::OnQueryEndSession(UINT wParam, UINT lParam)
 {
 	OnDestroy();
 	return TRUE;
 }
 
+/* WMU_NOTIFYICON */
 LRESULT CTrayWnd::OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	// Determine the tray message
@@ -78,13 +82,9 @@ LRESULT CTrayWnd::OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_RBUTTONUP:
 		DisplayShortcutMenu(TRUE);
 		break;
-		// Left mouse button double-click - create a new note
 	case WM_LBUTTONDBLCLK:
-//		CApplication::Get().CreateNote();
-//		PostMessage(WM_CREATENOTE);
 		break;
 	case WM_LBUTTONUP:
-//	case WM_LBUTTONDOWN:
 		DisplayShortcutMenu(FALSE);
 		break;
 	default:
@@ -93,22 +93,34 @@ LRESULT CTrayWnd::OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-LRESULT CTrayWnd::OnCreateNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
+
+/*
+WM_SETFOCUS
+*/
+void CTrayWnd::OnFocus(HWND hWnd)
 {
-	CApplication::Get().CreateNote();
-	return 0;
+	CApplication::Get().ActivateTopNote();
+	SetMsgHandled(FALSE);
 }
 
+/*
+WM_SYSCOMMAND
+*/
+void CTrayWnd::OnSysCommand(UINT nID, CPoint pt)
+{
+	if (nID == SC_CLOSE)
+	{
+		CApplication::Get().CloseAllNotes();
+	}
+	else
+	{
+		SetMsgHandled(FALSE);
+	}
+}
+
+/**/
 void ModifyNotesMenu(CMenuHandle menuNotes)
 {
-	// set menu item states
-	//MENUITEMINFO mif;
-	//ZeroMemory(&mif, sizeof(MENUITEMINFO));
-	//mif.cbSize = sizeof(MENUITEMINFO);
-	//mif.fMask = MIIM_STATE;
-	//mif.fState = MFS_DEFAULT;
-	//::SetMenuItemInfo(menuNotes, ID_POPUP_NEWNOTE, FALSE, &mif);
-
 	if (CApplication::Get().GetOpenedNotesCount() == 0)
 	{
 		menuNotes.DeleteMenu(ID_POPUP_HIDEALLNOTES, MF_BYCOMMAND);
@@ -134,6 +146,7 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 	}
 }
 
+/**/
 LRESULT CTrayWnd::DisplayShortcutMenu(BOOL bRightButton /*= TRUE*/)
 {
 	if (m_menuPopup.m_hMenu)
@@ -165,6 +178,9 @@ LRESULT CTrayWnd::DisplayShortcutMenu(BOOL bRightButton /*= TRUE*/)
 		return 0;
 	}
 
+	BOOL bAlwaisOnTop = CApplication::Get().GetOptions().GetAlwaysOnTop();
+	menuTrackPopup.CheckMenuItem(ID_POPUP_ALWAYS_ON_TOP, MF_BYCOMMAND | (bAlwaisOnTop ? MF_CHECKED : MF_UNCHECKED));
+
 	CMenuHandle menuNotes = menuTrackPopup.GetSubMenu(0);
 	ModifyNotesMenu(menuNotes);
 
@@ -195,55 +211,46 @@ LRESULT CTrayWnd::DisplayShortcutMenu(BOOL bRightButton /*= TRUE*/)
 	return 0;
 }
 
+/* ID_POPUP_NEWNOTE */
 LRESULT CTrayWnd::OnPopupNewnote(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	CApplication::Get().CreateNote();
 	return 0;
 }
 
+/* ID_POPUP_SHOWALLNOTES */
 LRESULT CTrayWnd::OnPopupShowAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	CApplication::Get().ShowAllNotes();
 	return 0;
 }
 
+/* ID_POPUP_HIDEALLNOTES */
 LRESULT CTrayWnd::OnPopupHideAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	CApplication::Get().CloseAllNotes();
 	return 0;
 }
 
+/* ID_POPUP_ABOUT */
 LRESULT CTrayWnd::OnPopupAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	return 0;
 }
 
+/* ID_POPUP_EXIT */
 LRESULT CTrayWnd::OnPopupExit(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	PostMessage(WM_CLOSE);
 	return 0;
 }
 
-/*
-WM_SETFOCUS
-*/
-void CTrayWnd::OnFocus(HWND hWnd)
+/* ID_POPUP_ALWAYS_ON_TOP */
+void CTrayWnd::OnAlwaysOnTop( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
-	CApplication::Get().RestoreFocus();
-	SetMsgHandled(FALSE);
+	BOOL bAlwaisOnTop = CApplication::Get().GetOptions().GetAlwaysOnTop();
+	bAlwaisOnTop = !bAlwaisOnTop;
+	SetWindowPos(bAlwaisOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, CRect(0,0,0,0), SWP_NOSIZE | SWP_NOMOVE);
+	CApplication::Get().GetOptions().SetAlwaysOnTop(bAlwaisOnTop);
 }
 
-/*
-WM_SYSCOMMAND
-*/
-void CTrayWnd::OnSysCommand(UINT nID, CPoint pt)
-{
-	if (nID == SC_CLOSE)
-	{
-		CApplication::Get().CloseAllNotes();
-	}
-	else
-	{
-		SetMsgHandled(FALSE);
-	}
-}

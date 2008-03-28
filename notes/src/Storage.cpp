@@ -3,6 +3,7 @@
 #include "resource.h"
 #include "fileutils.h"
 #include "Application.h"
+#include "Options.h"
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -237,4 +238,14 @@ void CStorage::DeleteNote(int nNoteId)
 		}
 		CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
 	}
+}
+
+void CStorage::ReadOptions( COptions& opt ) const
+{
+
+}
+
+void CStorage::WriteOptions( COptions const& opt ) const
+{
+
 }

@@ -3,6 +3,7 @@
 #include "resource.h"
 #include "resutils.h"
 #include "Application.h"
+#include "apputils.h"
 
 CAppModule _Module;
 
@@ -42,6 +43,12 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
+	if (apputils::SetOneInstance(_T("706CB7A9-A3B4-40e2-AB12-9E5B0A3D4C8B")))
+	{
+		// application already started
+		return 0;
+	}
+
 	HRESULT hRes = ::CoInitialize(NULL);
 	// If you are running on NT 4.0 or higher you can use the following call instead to 
 	// make the EXE free threaded. This means that calls come in on a random RPC thread.

@@ -4,6 +4,7 @@
 #include "simplesinglton.h"
 #include "TrayWnd.h"
 #include "Storage.h"
+#include "Options.h"
 
 class CNoteWnd;
 
@@ -22,10 +23,11 @@ public:
 	void CloseAllNotes();
 	int GetOpenedNotesCount() const;
 	int GetHiddenNotesCount() const;
-	void RestoreFocus();
-	void SetFocused(CNoteWnd* pWnd);
+	void ActivateTopNote();
 	LPCTSTR GetDataFileName();
 	void OnNoteClosed(CNoteWnd* pWnd);
+	COptions& GetOptions();
+	void SaveOptions();
 
 protected:
 	CApplication();
@@ -44,7 +46,7 @@ private:
 
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;
-	CNoteWnd* m_pFocused;
 	CStorage m_storage;
 	CString m_sDataFile;
+	COptions m_options;
 };

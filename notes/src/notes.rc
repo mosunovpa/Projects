@@ -68,12 +68,13 @@ BEGIN
     BEGIN
         POPUP "&Notes"
         BEGIN
-            MENUITEM "&Show Hidden Notes",          ID_POPUP_SHOWALLNOTES
+            MENUITEM "&Show All Hidden Notes",      ID_POPUP_SHOWALLNOTES
             MENUITEM "&Hide All Notes",             ID_POPUP_HIDEALLNOTES
             MENUITEM SEPARATOR
             MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
         END
         MENUITEM SEPARATOR
+        MENUITEM "&Always On Top",              ID_POPUP_ALWAYS_ON_TOP
         MENUITEM "&About...",                   ID_POPUP_ABOUT
         MENUITEM SEPARATOR
         MENUITEM "&Exit",                       ID_POPUP_EXIT
@@ -84,11 +85,9 @@ IDR_NOTEMENU MENU
 BEGIN
     POPUP "NoteMenu"
     BEGIN
-        MENUITEM "&Always On Top",              ID_ALWAYS_ON_TOP
-        MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_DELETE
         MENUITEM SEPARATOR
-        MENUITEM "&Close",                      ID_CLOSE
+        MENUITEM "&Close\tEsc",                 ID_CLOSE
     END
 END
 
@@ -100,6 +99,13 @@ END
 
 IDB_CLOSE               BITMAP                  "res\\close.bmp"
 IDB_CLOSE_PRESS         BITMAP                  "res\\close_press.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

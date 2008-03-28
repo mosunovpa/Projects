@@ -181,6 +181,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Options.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\StaticSysIcon.cpp"
 				>
 			</File>
@@ -212,6 +216,10 @@
 				RelativePath=".\TrayWnd.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\common\winutils.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -228,6 +236,10 @@
 			</File>
 			<File
 				RelativePath=".\NoteWnd.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Options.h"
 				>
 			</File>
 			<File
@@ -248,6 +260,10 @@
 			</File>
 			<File
 				RelativePath=".\TrayWnd.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\winutils.h"
 				>
 			</File>
 		</Filter>
@@ -288,6 +304,14 @@
 		<Filter
 			Name="common"
 			>
+			<File
+				RelativePath="..\..\common\apputils.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\apputils.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\common\errors.cpp"
 				>

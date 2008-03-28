@@ -10,6 +10,8 @@
 #include "StaticSysIcon.h"
 #include "resource.h"
 
+#define NOTE_WND_CLASS_NAME _T("MyNoteWnd")
+
 //////////////////////////////////////////////////////////////////////////
 //
 class CNoteEdit : public CWindowImpl<CNoteEdit, CRichEditCtrl>,
@@ -51,7 +53,7 @@ public:
 	CString GetText() const;
 	void SetText(CString const& text);
 
-	DECLARE_WND_CLASS(_T("NoteWnd"))
+	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
 	BEGIN_MSG_MAP_EX(CNoteWnd)
 		try
@@ -73,8 +75,6 @@ public:
 			MSG_WM_KILLFOCUS(OnKillFocus)
 			MSG_WM_MOVE(OnMove)
 			MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
-			MSG_WM_INITMENU(OnInitMenu)
-			COMMAND_ID_HANDLER_EX(ID_ALWAYS_ON_TOP, OnNoteAlwaysOnTop);
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
 			COMMAND_ID_HANDLER_EX(ID_DELETE, OnNoteDelete)
 		} 
@@ -100,8 +100,6 @@ public:
 	void OnKillFocus(CWindow wndFocus);
 	void OnMove(CPoint pt);
 	HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
-	void OnInitMenu(CMenu menu);
-	void OnNoteAlwaysOnTop(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 private:
@@ -137,7 +135,4 @@ private:
 	BOOL m_bCaptured;
 	int m_nNoteId;
 	BOOL m_bSaveError;
-	BOOL m_bAlwaisOnTop;
-
-
 };
