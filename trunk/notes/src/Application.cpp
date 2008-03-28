@@ -6,12 +6,12 @@
 #include "atlwinmisc.h"
 #include "resutils.h"
 #include "fileutils.h"
-#include "guiutils.h"
+#include "winutils.h"
 #include <math.h>
 
-CApplication::CApplication() : m_pFocused(NULL)
+CApplication::CApplication()
 {
-	
+	m_storage.ReadOptions(m_options);
 }
 
 CApplication::~CApplication()
@@ -54,7 +54,7 @@ void CApplication::GetSomePossiblePositions(CRect const& center, std::vector<CRe
 		int dx = nRadius * cos((double)nRandAngle);
 		int dy = nRadius * sin((double)nRandAngle);
 		rc += CPoint(dx, dy);
-		if (guiutils::WinPosIsValid(rc))
+		if (winutils::WinPosIsValid(rc))
 		{
 			poss.push_back(rc);
 		}
@@ -185,32 +185,18 @@ void CApplication::OnNoteClosed(CNoteWnd* pWnd)
 		{
 			m_TrayWnd.ShowWindow(SW_HIDE);
 		}
-		SetFocused(NULL);
 		SetActiveWindow(NULL); // activate previous application in z-order
 	}
 	else
 	{
-		SetFocused(m_listNotes.back());
-		RestoreFocus();
+		ActivateTopNote();
 	}
 }
 
-void CApplication::RestoreFocus()
+void CApplication::ActivateTopNote()
 {
-	std::list<CNoteWnd*>::iterator it = std::find(m_listNotes.begin(), m_listNotes.end(), m_pFocused);
-	if (it != m_listNotes.end() && ::IsWindow((*it)->m_hWnd))
-	{
-		(*it)->SetFocus();
-	}
-	else
-	{
-		SetFocused(NULL);
-	}
-}
+	::SetFocus(winutils::GetTopWnd(NOTE_WND_CLASS_NAME));
 
-void CApplication::SetFocused( CNoteWnd* pWnd )
-{
-	m_pFocused = pWnd;
 }
 
 /**/
@@ -308,4 +294,14 @@ CNoteWnd* CApplication::CreateNoteWnd(CRect& rc)
 		);
 	m_TrayWnd.ShowWindow(SW_SHOW);
 	return pWnd;
+}
+
+COptions& CApplication::GetOptions()
+{
+	return m_options;
+}
+
+void CApplication::SaveOptions()
+{
+	m_storage.WriteOptions(m_options);
 }

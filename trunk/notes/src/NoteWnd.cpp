@@ -32,8 +32,7 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_bActive(FALSE), 
 	m_bCaptured(FALSE),
 	m_nNoteId(nNoteId),
-	m_bSaveError(FALSE),
-	m_bAlwaisOnTop(FALSE)
+	m_bSaveError(FALSE)
 {
 }
 
@@ -162,7 +161,6 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 
 	m_edit.SetTextMode(TM_PLAINTEXT);
 
-	SetWindowPos(m_bAlwaisOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, CRect(0,0,0,0), SWP_NOSIZE | SWP_NOMOVE);
 	m_edit.SetFocus();
 
 	return 0;
@@ -343,7 +341,6 @@ WM_SETFOCUS
 */
 void CNoteWnd::OnFocus(HWND hWnd)
 {
-	CApplication::Get().SetFocused(this);
 	m_edit.SetFocus();
 	SetMsgHandled(FALSE);
 }
@@ -437,13 +434,6 @@ CMenuHandle CNoteWnd::AdjustSystemMenu()
 	return menu;
 }
 
-/* ID_ALWAYS_ON_TOP */
-void CNoteWnd::OnNoteAlwaysOnTop( UINT uNotifyCode, int nID, CWindow wndCtl )
-{
-	m_bAlwaisOnTop = !m_bAlwaisOnTop;
-	SetWindowPos(m_bAlwaisOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, CRect(0,0,0,0), SWP_NOSIZE | SWP_NOMOVE);
-}
-
 /* ID_CLOSE */
 void CNoteWnd::OnNoteClose( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
@@ -453,18 +443,8 @@ void CNoteWnd::OnNoteClose( UINT uNotifyCode, int nID, CWindow wndCtl )
 /* ID_DELETE */
 void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
-//	if (AtlMessageBox(m_hWnd, IDS_DELETE_NOTE_CONFIRM, IDS_APP_NAME, MB_YESNO | MB_ICONQUESTION) == IDYES)
-	{
-		SetText(CString());
-		PostMessage(WM_CLOSE);
-	}
+	SetText(CString());
+	PostMessage(WM_CLOSE);
 }
 
-void CNoteWnd::OnInitMenu( CMenu menu )
-{
-	if (menu.IsMenu())
-	{
-		menu.CheckMenuItem(ID_ALWAYS_ON_TOP, MF_BYCOMMAND | (m_bAlwaisOnTop ? MF_CHECKED : MF_UNCHECKED));
-	}
-}
 
