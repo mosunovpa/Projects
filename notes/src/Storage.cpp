@@ -195,6 +195,16 @@ static void _UpdateNote(CNote const& note)
 	CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
 }
 
+static CComPtr<IXMLDOMNode> _GetOptionsNode(CComPtr<IXMLDOMDocument>& spDoc)
+{
+	CComPtr<IXMLDOMNode> spOptions;
+	CHECK_HR(spDoc->selectSingleNode(CComBSTR(_T("notes/options")),&spOptions));
+	if (!spOptions)
+	{
+		ThrowError(_T("Options node not found"));
+	}
+	return spOptions;
+}
 //////////////////////////////////////////////////////////////////////////
 //
 
@@ -242,10 +252,31 @@ void CStorage::DeleteNote(int nNoteId)
 
 void CStorage::ReadOptions( COptions& opt ) const
 {
-
+	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
+	CComPtr<IXMLDOMNode> spOptions = _GetOptionsNode(spDoc);
+	CComPtr<IXMLDOMNode> spNode;
+	CHECK_HR(spOptions->selectSingleNode(CComBSTR(_T("always-on-top")),&spNode));
+	if (spNode)
+	{
+		CComBSTR s;
+		spNode->get_text(&s);
+		opt.SetAlwaysOnTop(_ttoi(s));
+	}
 }
 
 void CStorage::WriteOptions( COptions const& opt ) const
 {
-
+	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
+	CComPtr<IXMLDOMNode> spOptions = _GetOptionsNode(spDoc);
+	CComPtr<IXMLDOMNode> spNode;
+	CComPtr<IXMLDOMNode> spChild;
+	CHECK_HR(spOptions->selectSingleNode(CComBSTR(_T("always-on-top")), &spNode));
+	if (!spNode)
+	{
+		CComPtr<IXMLDOMElement> spElem;
+		CHECK_HR(spDoc->createElement(L"always-on-top", &spElem));
+		CHECK_HR(spOptions->appendChild(spElem, &spNode));
+	}
+	spNode->put_text(CComBSTR(strutils::to_string(opt.GetAlwaysOnTop()).c_str()));
+	CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
 }
