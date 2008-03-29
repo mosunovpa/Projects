@@ -49,6 +49,10 @@ LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			menu.DeleteMenu(id, MF_BYCOMMAND);
 		}
 	}
+
+	BOOL bAlwaisOnTop = CApplication::Get().GetOptions().GetAlwaysOnTop();
+	SetWindowPos(bAlwaisOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, CRect(0,0,0,0), SWP_NOSIZE | SWP_NOMOVE);
+
 	return 0;
 }
 
@@ -144,6 +148,8 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 	{
 		menuNotes.DeleteMenu(0, MF_BYPOSITION);
 	}
+
+
 }
 
 /**/
@@ -252,5 +258,6 @@ void CTrayWnd::OnAlwaysOnTop( UINT uNotifyCode, int nID, CWindow wndCtl )
 	bAlwaisOnTop = !bAlwaisOnTop;
 	SetWindowPos(bAlwaisOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, CRect(0,0,0,0), SWP_NOSIZE | SWP_NOMOVE);
 	CApplication::Get().GetOptions().SetAlwaysOnTop(bAlwaisOnTop);
+	CApplication::Get().SaveOptions();
 }
 
