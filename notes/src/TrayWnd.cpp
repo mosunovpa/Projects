@@ -3,6 +3,8 @@
 #include "resutils.h"
 #include "Application.h"
 
+static const int NOTE_CMD_OFFSET = 2000;
+
 /* constructor*/
 CTrayWnd::CTrayWnd()
 {
@@ -143,13 +145,26 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 			(UINT_PTR)ID_POPUP_SHOWALLNOTES, (LPCTSTR)csMenu);
 	}
 
+	CNote::List notes;
+	CApplication::Get().GetAllNotes(notes, CNote::GNM_ID | CNote::GNM_TEXT);
+
+	/* check separator */
 	int nState = menuNotes.GetMenuState(0, MF_BYPOSITION);
-	if ((nState & MF_SEPARATOR) == MF_SEPARATOR)
+	if (notes.empty() && (nState & MF_SEPARATOR) == MF_SEPARATOR)
 	{
 		menuNotes.DeleteMenu(0, MF_BYPOSITION);
 	}
-
-
+	if (!notes.empty() && (nState & MF_SEPARATOR) != MF_SEPARATOR)
+	{
+		menuNotes.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR);
+	}
+	
+	// show all notes
+	for (int i = 0; i < notes.size(); ++i)
+	{
+		_tstring sCaption = strutils::trim_string(notes[i].GetText());
+		menuNotes.InsertMenu(0, MF_BYPOSITION, NOTE_CMD_OFFSET + notes[i].GetId(), sCaption.c_str());
+	}
 }
 
 /**/

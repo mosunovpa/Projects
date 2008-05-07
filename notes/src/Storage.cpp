@@ -54,7 +54,10 @@ static CComPtr<IXMLDOMNode> _FindNote(CComPtr<IXMLDOMDocument>& spDoc, int nNote
 	return spNode;
 }
 
-static void _GetAllNotes(CStorage::NotesList& list, UINT nMask)
+/*
+@param UINT nMask see CStorage::GetAllNotes() flags
+*/
+static void _GetAllNotes(CNote::List& list, UINT nMask)
 {
 	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	long len = 0;
@@ -70,7 +73,7 @@ static void _GetAllNotes(CStorage::NotesList& list, UINT nMask)
 		CNote note;
 		CComVariant val;
 
-		if ((nMask & CStorage::GNM_ID) == CStorage::GNM_ID)
+		if ((nMask & CNote::GNM_ID) == CNote::GNM_ID)
 		{
 			CHECK_HR(spElement->getAttribute(L"id", &val));
 			if (val.vt != VT_BSTR)
@@ -79,7 +82,7 @@ static void _GetAllNotes(CStorage::NotesList& list, UINT nMask)
 			}
 			note.SetId(_ttoi(val.bstrVal));
 		}
-		if ((nMask & CStorage::GNM_POS) == CStorage::GNM_POS)
+		if ((nMask & CNote::GNM_POS) == CNote::GNM_POS)
 		{
 			CRect rc;
 			CHECK_HR(spElement->getAttribute(L"left", &val));
@@ -121,7 +124,7 @@ static void _GetAllNotes(CStorage::NotesList& list, UINT nMask)
 			note.SetPos(rc);
 		}
 
-		if ((nMask & CStorage::GNM_TEXT) == CStorage::GNM_TEXT)
+		if ((nMask & CNote::GNM_TEXT) == CNote::GNM_TEXT)
 		{
 			CComBSTR bstr;
 			CHECK_HR(spElement->get_text(&bstr));
@@ -133,8 +136,8 @@ static void _GetAllNotes(CStorage::NotesList& list, UINT nMask)
 
 static int _GetNextId(CComPtr<IXMLDOMDocument>& spDoc)
 {
-	CStorage::NotesList notes;
-	_GetAllNotes(notes, CStorage::GNM_ID);
+	CNote::List notes;
+	_GetAllNotes(notes, CNote::GNM_ID);
 	std::vector<int> ids;
 	for (int j = 0; j < notes.size(); ++j)
 	{
@@ -216,6 +219,7 @@ CStorage::~CStorage(void)
 {
 }
 
+/**/
 void CStorage::SaveNote(CNote& note)
 {
 	if (note.GetId() == 0) // new note
@@ -228,11 +232,15 @@ void CStorage::SaveNote(CNote& note)
 	}
 }
 
-void CStorage::GetAllNotes(CStorage::NotesList& list, UINT nMask) const
+/*
+see CStorage::GetAllNotes() flags
+*/
+void CStorage::GetAllNotes(CNote::List& list, UINT nMask) const
 {
 	_GetAllNotes(list, nMask);
 }
 
+/**/
 void CStorage::DeleteNote(int nNoteId)
 {
 	if (nNoteId > 0)

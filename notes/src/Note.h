@@ -3,6 +3,14 @@
 class CNote
 {
 public:
+	enum
+	{
+		GNM_ID = 0x01,
+		GNM_TEXT = 0x02,
+		GNM_POS = 0x4
+	};
+	typedef std::vector<CNote> List;
+
 	CNote(void);
 	~CNote(void);
 
