@@ -102,6 +102,11 @@ _tstring strutils::trim_string(LPCTSTR text, UINT nLimit /*= 256*/)
 	{
 		res.erase(pos);
 	}
+	pos = res.find(_tstring(_T("\n")));
+	if (pos != _tstring::npos)
+	{
+		res.erase(pos);
+	}
 	if (res.size() > nLimit)
 	{
 		pos = res.rfind(_tstring(_T(" ")), nLimit);
