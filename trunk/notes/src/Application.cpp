@@ -30,9 +30,9 @@ void CApplication::CreateAppWindow()
 	}
 }
 
-void CApplication::GetAllNotesPositions(CStorage::NotesList& notes)
+void CApplication::GetAllNotesPositions(CNote::List& notes)
 {
-	m_storage.GetAllNotes(notes, CStorage::GNM_POS);
+	m_storage.GetAllNotes(notes, CNote::GNM_POS);
 	for (std::list<CNoteWnd*>::iterator it = m_listNotes.begin(); it != m_listNotes.end(); ++it)
 	{
 		if ((*it)->GetId() == 0) // new not saved note
@@ -62,7 +62,7 @@ void CApplication::GetSomePossiblePositions(CRect const& center, std::vector<CRe
 }
 
 CRect CApplication::GetOptimumPosition(std::vector<CRect> const& vPossiblePositions, 
-									   CStorage::NotesList const& notes)
+									   CNote::List const& notes)
 {
 	CRect rc;
 	int nUnderTopLeftMin = 100000; // notes under top left corner on the new note
@@ -103,7 +103,7 @@ CRect CApplication::CalcNewNoteRect()
 	const int nNewNoteHeight = 160;
 
 	// collect all notes positions
-	CStorage::NotesList notes;
+	CNote::List notes;
 	GetAllNotesPositions(notes);
 
 	// if first note return center point
@@ -155,8 +155,8 @@ void CApplication::CloseAllNotes()
 
 void CApplication::ShowAllNotes()
 {
-	CStorage::NotesList list;
-	m_storage.GetAllNotes(list, CStorage::GNM_ID | CStorage::GNM_TEXT | CStorage::GNM_POS);
+	CNote::List list;
+	m_storage.GetAllNotes(list, CNote::GNM_ID | CNote::GNM_TEXT | CNote::GNM_POS);
 	for (int i = 0; i < list.size(); ++i)
 	{
 		CNoteWnd* pNoteWnd = FindNote(list[i].GetId());
@@ -217,10 +217,17 @@ int CApplication::GetOpenedNotesCount() const
 }
 
 /**/
+int CApplication::GetAllNotes(CNote::List& notes, UINT nMask) const
+{
+	m_storage.GetAllNotes(notes, CNote::GNM_TEXT);
+	return notes.size();
+}
+
+/**/
 int CApplication::GetHiddenNotesCount() const
 {
-	CStorage::NotesList notes;
-	m_storage.GetAllNotes(notes, CStorage::GNM_ID);
+	CNote::List notes;
+	m_storage.GetAllNotes(notes, CNote::GNM_ID);
 	int nCount = 0;
 	for (int i = 0; i < notes.size(); ++i)
 	{

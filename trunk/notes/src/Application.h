@@ -22,6 +22,7 @@ public:
 	void ShowAllNotes();
 	void CloseAllNotes();
 	int GetOpenedNotesCount() const;
+	int GetAllNotes(CNote::List& notes, UINT nMask) const;
 	int GetHiddenNotesCount() const;
 	void ActivateTopNote();
 	LPCTSTR GetDataFileName();
@@ -39,10 +40,10 @@ private:
 	void OpenNote(CNote const& note);
 	CNoteWnd* CreateNoteWnd(CRect& rc);
 	CRect CalcNewNoteRect();
-	void GetAllNotesPositions(CStorage::NotesList& notes);
+	void GetAllNotesPositions(CNote::List& notes);
 	void GetSomePossiblePositions(CRect const& center, std::vector<CRect>& poss);
 	CRect GetOptimumPosition(std::vector<CRect> const& vPossiblePositions, 
-		CStorage::NotesList const& notes);
+		CNote::List const& notes);
 
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;
