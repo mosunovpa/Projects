@@ -86,12 +86,12 @@ LRESULT CTrayWnd::OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		// Right mouse button click - display a popup menu
 	case WM_RBUTTONUP:
-		DisplayShortcutMenu(TRUE);
+		DisplayShortcutMenu();
 		break;
 	case WM_LBUTTONDBLCLK:
 		break;
 	case WM_LBUTTONUP:
-		DisplayShortcutMenu(FALSE);
+		CApplication::Get().CreateNote();
 		break;
 	default:
 		break;
@@ -168,7 +168,7 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 }
 
 /**/
-LRESULT CTrayWnd::DisplayShortcutMenu(BOOL bRightButton /*= TRUE*/)
+LRESULT CTrayWnd::DisplayShortcutMenu()
 {
 	if (m_menuPopup.m_hMenu)
 	{
@@ -199,23 +199,22 @@ LRESULT CTrayWnd::DisplayShortcutMenu(BOOL bRightButton /*= TRUE*/)
 		return 0;
 	}
 
+	// set menu item states
+	MENUITEMINFO mif;
+	ZeroMemory(&mif, sizeof(MENUITEMINFO));
+	mif.cbSize = sizeof(MENUITEMINFO);
+	mif.fMask = MIIM_STATE;
+	mif.fState = MFS_DEFAULT;
+	::SetMenuItemInfo(menuTrackPopup, ID_POPUP_NEWNOTE, FALSE, &mif);
+
 	BOOL bAlwaisOnTop = CApplication::Get().GetOptions().GetAlwaysOnTop();
 	menuTrackPopup.CheckMenuItem(ID_POPUP_ALWAYS_ON_TOP, MF_BYCOMMAND | (bAlwaisOnTop ? MF_CHECKED : MF_UNCHECKED));
 
-	CMenuHandle menuNotes = menuTrackPopup.GetSubMenu(0);
-	ModifyNotesMenu(menuNotes);
+	ModifyNotesMenu(menuTrackPopup);
 
 	// Display the shortcut menu. Track the right mouse button
-	CMenuHandle menuContext;
-	if (bRightButton)
-	{
-		menuContext = menuTrackPopup;
-	}
-	else
-	{
-		menuContext = menuNotes;
-	}
-	if (!menuContext.TrackPopupMenu(TPM_RIGHTALIGN|TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd, NULL))
+
+	if (!menuTrackPopup.TrackPopupMenu(TPM_RIGHTALIGN|TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd, NULL))
 	{
 		ATLTRACE(_T("Shortcut menu was not displayed!\n"));
 		m_menuPopup.DestroyMenu();
