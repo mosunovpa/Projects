@@ -54,5 +54,5 @@ public:
 	void OnSysCommand(UINT nID, CPoint pt);
 	void OnAlwaysOnTop(UINT uNotifyCode, int nID, CWindow wndCtl);
 private:
-	LRESULT DisplayShortcutMenu(BOOL bRightButton = TRUE);
+	LRESULT DisplayShortcutMenu();
 };
