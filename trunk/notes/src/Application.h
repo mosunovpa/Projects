@@ -15,11 +15,21 @@ class CApplication : public CSimpleSinglton<CApplication>
 	friend class CSimpleSinglton<CApplication>;
 
 public:
+	// GetAllNotes mask
+	enum
+	{
+		GNM_ID = 0x01,
+		GNM_TEXT = 0x02,
+		GNM_POS = 0x4,
+		GNM_ALL = GNM_ID | GNM_TEXT | GNM_POS
+	};
+
 	void CreateAppWindow();
 	void CreateNote();
 	int SaveNote(CNoteWnd* pWnd);
 	void DeleteNote(CNoteWnd* pWnd);
 	void ShowAllNotes();
+	void ShowNote(int nNoteId);
 	void CloseAllNotes();
 	int GetOpenedNotesCount() const;
 	int GetAllNotes(CNote::List& notes, UINT nMask) const;

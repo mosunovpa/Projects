@@ -3,7 +3,6 @@
 #include "resutils.h"
 #include "Application.h"
 
-static const int NOTE_CMD_OFFSET = 2000;
 
 /* constructor*/
 CTrayWnd::CTrayWnd()
@@ -146,7 +145,7 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 	}
 
 	CNote::List notes;
-	CApplication::Get().GetAllNotes(notes, CNote::GNM_ID | CNote::GNM_TEXT);
+	CApplication::Get().GetAllNotes(notes, CApplication::GNM_ID | CApplication::GNM_TEXT);
 
 	/* check separator */
 	int nState = menuNotes.GetMenuState(0, MF_BYPOSITION);
@@ -162,7 +161,12 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 	// show all notes
 	for (int i = 0; i < notes.size(); ++i)
 	{
+		CString csNote = notes[i].GetText();
 		_tstring sCaption = strutils::trim_string(notes[i].GetText());
+		if (sCaption.size() > 0 && sCaption.size() < csNote.GetLength())
+		{
+			sCaption += _T("...");
+		}
 		menuNotes.InsertMenu(0, MF_BYPOSITION, NOTE_CMD_OFFSET + notes[i].GetId(), sCaption.c_str());
 	}
 }
@@ -275,3 +279,8 @@ void CTrayWnd::OnAlwaysOnTop( UINT uNotifyCode, int nID, CWindow wndCtl )
 	CApplication::Get().SaveOptions();
 }
 
+void CTrayWnd::OnCommandRangeHandlerEX(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	int nNotesId = nID - NOTE_CMD_OFFSET;
+	CApplication::Get().ShowNote(nNotesId);
+}
