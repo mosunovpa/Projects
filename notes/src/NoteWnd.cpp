@@ -159,7 +159,8 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	pf.dxStartIndent = 100;
 	m_edit.SetParaFormat(pf);
 
-	m_edit.SetTextMode(TM_PLAINTEXT);
+//	m_edit.SetTextMode(TM_PLAINTEXT);
+	m_edit.SetOleCallback(&m_edit.m_OleCallback);
 
 	m_edit.SetFocus();
 

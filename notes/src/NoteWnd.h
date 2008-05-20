@@ -37,6 +37,72 @@ public:
 		return 0;
 	}
 
+	class CRichEditOleCallback : public IRichEditOleCallback
+	{
+	public:
+		STDMETHOD_(ULONG, AddRef)() 
+		{ 
+			return 1; 
+		}
+		STDMETHOD_(ULONG, Release)() 
+		{ 
+			return 1; 
+		}
+		STDMETHOD(QueryInterface)(REFIID riid, LPVOID* ppvObj)
+		{
+			if (riid == IID_IUnknown || riid == IID_IRichEditOleCallback)  
+			{  
+				*ppvObj = (void*)this;  
+				return S_OK;  
+			}  
+			else  
+			{  
+				*ppvObj   =   NULL;  
+				return   E_NOINTERFACE;  
+			} 
+		}
+		STDMETHOD(GetNewStorage)(LPSTORAGE* lplpstg)
+		{
+			return E_NOTIMPL;  
+		}
+		STDMETHOD(GetInPlaceContext)(LPOLEINPLACEFRAME*, LPOLEINPLACEUIWINDOW*, LPOLEINPLACEFRAMEINFO)
+		{
+			return E_NOTIMPL;  
+		}
+		STDMETHOD(ShowContainerUI)(BOOL)
+		{
+			return E_NOTIMPL;  
+		}
+		STDMETHOD(QueryInsertObject)(LPCLSID, LPSTORAGE, LONG)
+		{
+			return E_NOTIMPL;  
+		}
+		STDMETHOD(DeleteObject)(LPOLEOBJECT)
+		{
+			return E_NOTIMPL;  
+		}
+		STDMETHOD(QueryAcceptData)(LPDATAOBJECT, CLIPFORMAT* pcfFormat, DWORD,BOOL, HGLOBAL)
+		{
+			*pcfFormat = CF_TEXT;
+			return S_OK;  
+		}
+		STDMETHOD(ContextSensitiveHelp)(BOOL)
+		{
+			return E_NOTIMPL;  
+		}
+		STDMETHOD(GetClipboardData)(CHARRANGE*, DWORD, LPDATAOBJECT*)
+		{
+			return E_NOTIMPL;  
+		}
+		STDMETHOD(GetDragDropEffect)(BOOL, DWORD, LPDWORD)
+		{
+			return E_NOTIMPL;  
+		}
+		STDMETHOD(GetContextMenu)(WORD, LPOLEOBJECT, CHARRANGE*, HMENU*)
+		{
+			return E_NOTIMPL;  
+		}
+	} m_OleCallback;
 };
 
 //////////////////////////////////////////////////////////////////////////
