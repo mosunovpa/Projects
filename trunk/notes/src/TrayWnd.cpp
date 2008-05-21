@@ -90,7 +90,8 @@ LRESULT CTrayWnd::OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDBLCLK:
 		break;
 	case WM_LBUTTONUP:
-		CApplication::Get().CreateNote();
+		::SetForegroundWindow(m_hWnd);
+		PostMessage(WM_COMMAND, ID_POPUP_NEWNOTE);
 		break;
 	default:
 		break;
