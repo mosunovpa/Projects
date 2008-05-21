@@ -283,7 +283,6 @@ void CApplication::OpenNote( CNote const& note )
 	{
 		pWnd->SetId(note.GetId());
 		pWnd->SetText(note.GetText());
-		pWnd->SetFocus();
 	}
 }
 
