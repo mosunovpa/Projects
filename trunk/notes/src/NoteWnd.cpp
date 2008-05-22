@@ -15,7 +15,7 @@
 
 const INT s_nCaptionSize = 16;
 const INT s_nCornerSize = 14;
-const INT s_nStatusBarSize = 0; //15;
+const INT s_nStatusBarSize = 15;
 
 CBrush CNoteWnd::m_hBgBrush = CreateSolidBrush(RGB(255, 255, 204));
 CIcon CNoteWnd::m_hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
@@ -117,6 +117,42 @@ void CNoteWnd::DrawCloseButton(CDC& dc, BOOL bDown /*= FALSE*/)
 		bmp.LoadBitmap(IDB_CLOSE);
 	}
 	guiutils::DrawBitmap(dc, bmp, GetCloseButtonRect());
+}
+
+/* draw status bar */
+void CNoteWnd::DrawStatusBar(CDC& dc)
+{
+
+	HPEN hOldPen, hPenLine;
+
+	CRect rectDlg;
+	::GetClientRect(m_hWnd,&rectDlg);
+
+	// Create a grey pen
+	hPenLine = ::CreatePen(PS_SOLID, 1, RGB(125,125,125));
+	ATLASSERT(hPenLine);	
+
+	// Select the new pen into the device context
+	hOldPen = (HPEN)::SelectObject(dc, hPenLine);
+	ATLASSERT(hOldPen);
+	ATLASSERT(hOldPen != HGDI_ERROR);
+
+	// Draw the gripper
+	int offset = s_nStatusBarSize;
+	while (offset > 0)
+	{
+		dc.MoveTo(rectDlg.Width() - offset, rectDlg.Height());
+		dc.LineTo(rectDlg.Width(), rectDlg.Height() - offset);
+		offset -= 4;
+	}
+
+	// Draw the horizontal line
+	dc.MoveTo(0, rectDlg.Height() - s_nStatusBarSize);
+	dc.LineTo(rectDlg.Width(), rectDlg.Height() - s_nStatusBarSize);
+
+	// Clean up
+	::SelectObject(dc, hOldPen);
+	::DeleteObject(hPenLine);
 }
 
 /**
@@ -246,6 +282,8 @@ void CNoteWnd::OnPaint(HDC hdc)
 
 		// Draw close button
 		DrawCloseButton(memDc);
+
+		DrawStatusBar(memDc);
 	}
 }
 
@@ -282,7 +320,11 @@ void CNoteWnd::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if (GetCloseButtonRect().PtInRect(point) && m_drDownWas == drOnCloseButton)
 	{
-		SendMessage(WM_CLOSE);
+		if (GetKeyState(VK_CONTROL) & 0x8000)
+		{
+			CApplication::Get().CloseAllNotes(this); // close all but this
+		}
+		SendMessage(WM_CLOSE); // close this
 	}
 	m_drDownWas = drNoWhere;
 	if (m_bCaptured)

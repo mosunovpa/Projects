@@ -30,7 +30,7 @@ public:
 	void DeleteNote(CNoteWnd* pWnd);
 	void ShowAllNotes();
 	void ShowNote(int nNoteId);
-	void CloseAllNotes();
+	void CloseAllNotes(CNoteWnd* pExceptWnd = NULL);
 	int GetOpenedNotesCount() const;
 	int GetAllNotes(CNote::List& notes, UINT nMask) const;
 	int GetHiddenNotesCount() const;
