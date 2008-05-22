@@ -106,7 +106,7 @@ STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "Notes"
     IDS_APP_NAME            "My Notes"
-    IDS_CLOSE               "Close"
+    IDS_CLOSE               "Close (Hold 'Ctrl' for close all)"
     IDS_DELETE_NOTE_CONFIRM "Do you really want to delete this note?"
 END
 

@@ -138,19 +138,27 @@ void CApplication::CreateNote()
 	}
 }
 
-void CApplication::CloseAllNotes()
+void CApplication::CloseAllNotes(CNoteWnd* pExceptWnd /*= NULL*/)
 {
 	std::vector<HWND> listNotes;
+	// copy to other list for deletion
 	for (std::list<CNoteWnd*>::reverse_iterator it = m_listNotes.rbegin();
 		it != m_listNotes.rend(); ++it)
 	{
-		listNotes.push_back((*it)->m_hWnd);
+		if (pExceptWnd != (*it))
+		{
+			listNotes.push_back((*it)->m_hWnd);
+		}
 	}
 	for (int i = 0; i < listNotes.size(); ++i)
 	{
-		::DestroyWindow(listNotes[i]); // OnNoteClosed will be invoked in CNoteWnd::OnFinalMessage
+		if (pExceptWnd->m_hWnd != listNotes[i])
+		{
+			::DestroyWindow(listNotes[i]); // OnNoteClosed will be invoked in CNoteWnd::OnFinalMessage
+		}
 	}
-	ATLASSERT(m_listNotes.empty());
+	ATLASSERT((pExceptWnd == NULL && m_listNotes.empty()) || 
+		(pExceptWnd != NULL && m_listNotes.size() == 1));
 }
 
 void CApplication::ShowAllNotes()
