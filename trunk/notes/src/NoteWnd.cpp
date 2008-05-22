@@ -480,14 +480,25 @@ CMenuHandle CNoteWnd::AdjustSystemMenu()
 /* ID_CLOSE */
 void CNoteWnd::OnNoteClose( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
-	PostMessage(WM_CLOSE);
+	SendMessage(WM_CLOSE);
 }
 
 /* ID_DELETE */
 void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
 	SetText(CString());
-	PostMessage(WM_CLOSE);
+	SendMessage(WM_CLOSE);
 }
 
+/* ID_CLOSEALL */
+void CNoteWnd::OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CApplication::Get().CloseAllNotes(this); // close all but this
+	SendMessage(WM_CLOSE); // close this
+}
 
+/* ID_CLOSEALLBUTTHIS */
+void CNoteWnd::OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CApplication::Get().CloseAllNotes(this); // close all but this
+}

@@ -152,7 +152,7 @@ void CApplication::CloseAllNotes(CNoteWnd* pExceptWnd /*= NULL*/)
 	}
 	for (int i = 0; i < listNotes.size(); ++i)
 	{
-		if (pExceptWnd->m_hWnd != listNotes[i])
+		if (pExceptWnd == NULL || pExceptWnd->m_hWnd != listNotes[i])
 		{
 			::DestroyWindow(listNotes[i]); // OnNoteClosed will be invoked in CNoteWnd::OnFinalMessage
 		}

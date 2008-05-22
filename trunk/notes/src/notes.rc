@@ -84,6 +84,8 @@ BEGIN
     BEGIN
         MENUITEM "&Delete",                     ID_DELETE
         MENUITEM SEPARATOR
+        MENUITEM "Close &All",                  ID_CLOSEALL
+        MENUITEM "Close All But &This",         ID_CLOSEALLBUTTHIS
         MENUITEM "&Close\tEsc",                 ID_CLOSE
     END
 END
