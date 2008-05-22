@@ -141,6 +141,8 @@ public:
 			MSG_WM_KILLFOCUS(OnKillFocus)
 			MSG_WM_MOVE(OnMove)
 			MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
+			COMMAND_ID_HANDLER_EX(ID_CLOSEALL, OnNoteCloseAll)
+			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
 			COMMAND_ID_HANDLER_EX(ID_DELETE, OnNoteDelete)
 		} 
@@ -166,6 +168,8 @@ public:
 	void OnKillFocus(CWindow wndFocus);
 	void OnMove(CPoint pt);
 	HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
+	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 private:

@@ -2,6 +2,7 @@
 #include "StaticSysIcon.h"
 #include "resource.h"
 #include "atlwinmisc.h"
+#include "Application.h"
 
 CStaticSysIcon::CStaticSysIcon(void)
 {
@@ -38,6 +39,11 @@ void CStaticSysIcon::OnLButtonDown( UINT nFlags, CPoint point )
 	mif.fState = MFS_DEFAULT;
 	::SetMenuItemInfo(menuPopup, ID_CLOSE, FALSE, &mif);
 
+	if (CApplication::Get().GetOpenedNotesCount() == 1)
+	{
+		m_menuNotes.DeleteMenu(ID_CLOSEALL, MF_BYCOMMAND);
+		m_menuNotes.DeleteMenu(ID_CLOSEALLBUTTHIS, MF_BYCOMMAND);
+	}
 	if (!menuPopup.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
 		rc.left, rc.bottom, GetParent()))
 	{
