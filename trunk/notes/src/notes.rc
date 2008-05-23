@@ -90,6 +90,22 @@ BEGIN
     END
 END
 
+IDR_EDIT MENU 
+BEGIN
+    POPUP "Edit"
+    BEGIN
+        MENUITEM "&Undo",                       ID_EDIT_UNDO
+        MENUITEM "&Redo",                       ID_EDIT_REDO
+        MENUITEM SEPARATOR
+        MENUITEM "Cu&t",                        ID_EDIT_CUT
+        MENUITEM "&Copy",                       ID_EDIT_COPY
+        MENUITEM "&Paste",                      ID_EDIT_PASTE
+        MENUITEM "&Delete",                     ID_EDIT_CLEAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Select All",                 ID_EDIT_SELECT_ALL
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

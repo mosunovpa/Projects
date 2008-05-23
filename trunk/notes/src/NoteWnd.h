@@ -98,9 +98,13 @@ public:
 		{
 			return E_NOTIMPL;  
 		}
-		STDMETHOD(GetContextMenu)(WORD, LPOLEOBJECT, CHARRANGE*, HMENU*)
+		STDMETHOD(GetContextMenu)(WORD, LPOLEOBJECT, CHARRANGE*, HMENU* hMenu)
 		{
-			return E_NOTIMPL;  
+			CMenuHandle hEditMenu;
+			hEditMenu.LoadMenu(IDR_EDIT);
+			CMenuHandle menuPopup = hEditMenu.GetSubMenu(0);
+			*hMenu = menuPopup.m_hMenu;
+			return S_OK;  
 		}
 	} m_OleCallback;
 };
@@ -141,6 +145,7 @@ public:
 			MSG_WM_KILLFOCUS(OnKillFocus)
 			MSG_WM_MOVE(OnMove)
 			MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
+			MSG_WM_CTLCOLOREDIT(OnCtlColorEdit)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALL, OnNoteCloseAll)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
@@ -168,6 +173,7 @@ public:
 	void OnKillFocus(CWindow wndFocus);
 	void OnMove(CPoint pt);
 	HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
+	HBRUSH OnCtlColorEdit(CDCHandle dc, CEdit edit);
 	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -194,9 +200,11 @@ private:
 	static CIcon m_hIcon;
 	static CIcon m_hIconSm;
 	static CPen m_hPen;
+	static CFont m_hStatusFont;
 
 	CToolTipCtrl m_tooltip;
 	CNoteEdit m_edit;
+	CEdit m_editCreated;
 	CStaticSysIcon m_icon;
 		
 	BOOL m_bActive;
