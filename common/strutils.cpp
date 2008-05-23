@@ -112,11 +112,10 @@ _tstring strutils::trim_string(LPCTSTR text, UINT nLimit /*= 256*/)
 		pos = res.rfind(_tstring(_T(" ")), nLimit);
 		if (pos == _tstring::npos)
 		{
-			pos = nLimit - 3;
+			pos = nLimit;
 		}
-		res.erase(pos > nLimit - 3 ? nLimit - 3 : pos);
+		res.erase(pos);
 		boost::trim_right(res);
-		res += (_T("..."));
 	}
 	return res;
 }
