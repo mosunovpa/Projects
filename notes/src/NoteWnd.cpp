@@ -24,6 +24,8 @@ CIcon CNoteWnd::m_hIconSm = (HICON)::LoadImage(_Module.GetResourceInstance(), MA
 								  IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 CPen CNoteWnd::m_hPen = ::CreatePen(PS_SOLID, 1, RGB(0,0,0));
 
+CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell Dlg"));
+
 /**
  Constructor
  */
@@ -122,6 +124,7 @@ void CNoteWnd::DrawCloseButton(CDC& dc, BOOL bDown /*= FALSE*/)
 /* draw status bar */
 void CNoteWnd::DrawStatusBar(CDC& dc)
 {
+	
 
 	HPEN hOldPen, hPenLine;
 
@@ -147,8 +150,8 @@ void CNoteWnd::DrawStatusBar(CDC& dc)
 	}
 
 	// Draw the horizontal line
-	dc.MoveTo(0, rectDlg.Height() - s_nStatusBarSize);
-	dc.LineTo(rectDlg.Width(), rectDlg.Height() - s_nStatusBarSize);
+// 	dc.MoveTo(0, rectDlg.Height() - s_nStatusBarSize);
+// 	dc.LineTo(rectDlg.Width(), rectDlg.Height() - s_nStatusBarSize);
 
 	// Clean up
 	::SelectObject(dc, hOldPen);
@@ -174,6 +177,12 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	m_tooltip.AddTool(&CToolInfo( TTF_SUBCLASS, m_hWnd, 1, &(GetCloseButtonRect()), &sTooltip[0]));
 	m_tooltip.SetMaxTipWidth(300);
 
+
+	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
+	m_editCreated.SetWindowText(_T("Created"));
+
+ 	m_editCreated.SetFont(m_hStatusFont);
+
 	m_edit.Create(m_hWnd, NULL, NULL, 
 		WS_CHILD | WS_VISIBLE | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL, 
 		WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR /*| WS_EX_NOPARENTNOTIFY*/, 2);
@@ -195,7 +204,6 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	pf.dxStartIndent = 100;
 	m_edit.SetParaFormat(pf);
 
-//	m_edit.SetTextMode(TM_PLAINTEXT);
 	m_edit.SetOleCallback(&m_edit.m_OleCallback);
 
 	m_edit.SetFocus();
@@ -359,6 +367,11 @@ void CNoteWnd::OnGetMinMaxInfo(LPMINMAXINFO lParam)
  */
 void CNoteWnd::OnSize(UINT wParam, CSize sz)
 {
+	CRect rc;
+	::GetClientRect(m_hWnd, &rc);
+	CRect rcCreated(0, rc.bottom - s_nStatusBarSize + 1, 100, rc.bottom);
+	m_editCreated.MoveWindow(&rcCreated, TRUE);
+
 	m_tooltip.SetToolRect(m_hWnd, 1, &(GetCloseButtonRect()));
 	m_edit.MoveWindow(&(GetClientRect()), TRUE);
 	m_edit.SetModify(TRUE);
@@ -400,6 +413,17 @@ void CNoteWnd::OnMove(CPoint pt)
 WM_CTLCOLORSTATIC
 */
 HBRUSH CNoteWnd::OnCtlColorStatic(CDCHandle dc, CStatic wndStatic)
+{
+	if (wndStatic.m_hWnd == m_editCreated.m_hWnd)
+	{
+		dc.SetBkColor(RGB(255, 255, 204));
+		dc.SetTextColor(RGB(125, 125, 125));
+	}
+	return m_hBgBrush;
+}
+
+/* WM_CTLCOLOREDIT */
+HBRUSH CNoteWnd::OnCtlColorEdit(CDCHandle dc, CEdit edit)
 {
 	return m_hBgBrush;
 }
