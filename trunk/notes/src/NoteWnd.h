@@ -9,6 +9,7 @@
 
 #include "StaticSysIcon.h"
 #include "resource.h"
+#include "menuutils.h"
 
 #define NOTE_WND_CLASS_NAME _T("MyNoteWnd")
 
@@ -19,10 +20,10 @@ class CNoteEdit : public CWindowImpl<CNoteEdit, CRichEditCtrl>,
 {
 public:
 	DECLARE_WND_SUPERCLASS(NULL, CRichEditCtrl::GetWndClassName())
-    BEGIN_MSG_MAP(CNoteEdit)
+    BEGIN_MSG_MAP_EX(CNoteEdit)
 		MESSAGE_HANDLER_EX(WM_KEYDOWN, OnKeyDown)
         CHAIN_MSG_MAP_ALT(CRichEditCommands<CNoteEdit>, 1)
-    END_MSG_MAP()
+    END_MSG_MAP_EX()
 
 	LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
@@ -146,13 +147,16 @@ public:
 			MSG_WM_MOVE(OnMove)
 			MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
 			MSG_WM_CTLCOLOREDIT(OnCtlColorEdit)
+			MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALL, OnNoteCloseAll)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
 			COMMAND_ID_HANDLER_EX(ID_DELETE, OnNoteDelete)
+			CHAIN_COMMANDS_MEMBER(m_edit)
 		} 
 		CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()
+
 
 	virtual void OnFinalMessage(HWND hWnd);
 
@@ -174,6 +178,7 @@ public:
 	void OnMove(CPoint pt);
 	HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
 	HBRUSH OnCtlColorEdit(CDCHandle dc, CEdit edit);
+	void OnInitMenuPopup(CMenu menuPopup, UINT nIndex, BOOL bSysMenu);
 	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);

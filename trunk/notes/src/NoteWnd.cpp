@@ -188,6 +188,7 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 		WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR /*| WS_EX_NOPARENTNOTIFY*/, 2);
 	m_edit.SetBackgroundColor(RGB(255, 255, 204));
 
+
 	CHARFORMAT cf;
 	ZeroMemory(&cf, sizeof(CHARFORMAT));
 	cf.cbSize = sizeof(CHARFORMAT);
@@ -197,12 +198,14 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	lstrcpy(cf.szFaceName, _T("MS Shell Dlg"));
 	m_edit.SetDefaultCharFormat(cf);
 
-	PARAFORMAT pf;
-	ZeroMemory(&pf, sizeof(PARAFORMAT));
-	pf.cbSize = sizeof(PARAFORMAT);
-	pf.dwMask = PFM_OFFSETINDENT;
-	pf.dxStartIndent = 100;
-	m_edit.SetParaFormat(pf);
+	// format changing lead to increase undo queue
+
+	//PARAFORMAT pf;
+	//ZeroMemory(&pf, sizeof(PARAFORMAT));
+	//pf.cbSize = sizeof(PARAFORMAT);
+	//pf.dwMask = PFM_OFFSETINDENT;
+	//pf.dxStartIndent = 100;
+	//m_edit.SetParaFormat(pf);
 
 	m_edit.SetOleCallback(&m_edit.m_OleCallback);
 
@@ -525,4 +528,15 @@ void CNoteWnd::OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl)
 void CNoteWnd::OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CApplication::Get().CloseAllNotes(this); // close all but this
+}
+
+void CNoteWnd::OnInitMenuPopup(CMenu menuPopup, UINT nIndex, BOOL bSysMenu)
+{
+	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_UNDO, m_edit.CanUndo());
+	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_REDO, m_edit.CanRedo());
+	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_CUT, m_edit.CanCut());
+	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_COPY, m_edit.CanCopy());
+	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_PASTE, m_edit.CanPaste());
+	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_CLEAR, m_edit.CanClear());
+	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_SELECT_ALL, m_edit.CanSelectAll());
 }
