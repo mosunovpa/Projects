@@ -513,8 +513,12 @@ void CNoteWnd::OnNoteClose( UINT uNotifyCode, int nID, CWindow wndCtl )
 /* ID_DELETE */
 void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
-	SetText(CString());
-	SendMessage(WM_CLOSE);
+	CSimpleDialog<IDD_DELETENOTECONFIRM> dlg;
+	if (dlg.DoModal() == IDYES)
+	{
+		SetText(CString());
+		SendMessage(WM_CLOSE);
+	}
 }
 
 /* ID_CLOSEALL */
