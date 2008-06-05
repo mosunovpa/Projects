@@ -16,6 +16,11 @@ time_t dateutils::GetCurrentDate()
 
 _tstring dateutils::ToString(time_t t, BOOL bLocal /*= TRUE*/)
 {
+	return ToString(t, _T("%Y-%m-%d %H:%M:%S"), bLocal);
+}
+
+_tstring dateutils::ToString(time_t t, LPCTSTR format, BOOL bLocal /*= TRUE*/)
+{
 	tm gt;
 	if (bLocal)
 		localtime_s(&gt, &t);
@@ -23,7 +28,7 @@ _tstring dateutils::ToString(time_t t, BOOL bLocal /*= TRUE*/)
 		gmtime_s(&gt, &t);
 
 	TCHAR sDest[20];
-	_tcsftime(sDest, sizeof(sDest)/sizeof(TCHAR), _T("%Y-%m-%d %H:%M:%S"), &gt);
+	_tcsftime(sDest, sizeof(sDest)/sizeof(TCHAR), format, &gt);
 
 	return _tstring(sDest);
 }
