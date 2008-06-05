@@ -313,6 +313,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\common\dateutils.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\dateutils.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\common\errors.cpp"
 				>
 			</File>

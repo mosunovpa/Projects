@@ -9,6 +9,7 @@
 #define IDI_NOTES_SM                    104
 #define IDS_DELETE_NOTE_CONFIRM         104
 #define IDB_CLOSE                       105
+#define IDS_CREATED_FRM                 105
 #define IDB_CLOSE_PRESS                 107
 #define IDR_NOTEMENU                    108
 #define IDR_ACCELERATOR1                109

@@ -13,6 +13,7 @@
 #include "resutils.h"
 #include "Application.h"
 #include "guiutils.h"
+#include "dateutils.h"
 
 const INT s_nCaptionSize = 16;
 const INT s_nCornerSize = 14;
@@ -35,7 +36,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_bActive(FALSE), 
 	m_bCaptured(FALSE),
 	m_nNoteId(nNoteId),
-	m_bSaveError(FALSE)
+	m_bSaveError(FALSE),
+	m_dtCreated(0)
 {
 }
 
@@ -180,7 +182,6 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 
 
 	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
-	m_editCreated.SetWindowText(_T("Created"));
 
  	m_editCreated.SetFont(m_hStatusFont);
 
@@ -364,7 +365,7 @@ void CNoteWnd::OnMouseMove(UINT wParam, CPoint point)
  */
 void CNoteWnd::OnGetMinMaxInfo(LPMINMAXINFO lParam)
 {
-	lParam->ptMinTrackSize = CPoint(150, s_nCaptionSize + 46);
+	lParam->ptMinTrackSize = CPoint(160, s_nCaptionSize + 46);
 }
 
 /**
@@ -374,7 +375,7 @@ void CNoteWnd::OnSize(UINT wParam, CSize sz)
 {
 	CRect rc;
 	::GetClientRect(m_hWnd, &rc);
-	CRect rcCreated(0, rc.bottom - s_nStatusBarSize + 1, 100, rc.bottom);
+	CRect rcCreated(0, rc.bottom - s_nStatusBarSize + 1, 135, rc.bottom);
 	m_editCreated.MoveWindow(&rcCreated, TRUE);
 
 	m_tooltip.SetToolRect(m_hWnd, 1, &(GetCloseButtonRect()));
@@ -504,6 +505,23 @@ void CNoteWnd::SetText(LPCTSTR text)
 }
 
 /**/
+time_t CNoteWnd::GetCreated() const
+{
+	return m_dtCreated;
+}
+
+/**/
+void CNoteWnd::SetCreated(time_t dt)
+{
+	m_dtCreated = dt;
+	if (dt != 0)
+	{
+		_tstring sDate = dateutils::ToString(dt, _T("%#d %b %Y, %H:%M"));
+		m_editCreated.SetWindowText(RESSTR_FMT(IDS_CREATED_FRM, sDate.c_str()).c_str());
+	}
+}
+
+/**/
 CMenuHandle CNoteWnd::AdjustSystemMenu()
 {
 	CMenuHandle menu = GetSystemMenu(FALSE);
@@ -568,3 +586,4 @@ LRESULT CNoteWnd::OnLink(LPNMHDR pnmh)
 	}
 	return 0;
 }
+
