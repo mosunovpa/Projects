@@ -21,7 +21,8 @@ public:
 		GNM_ID = 0x01,
 		GNM_TEXT = 0x02,
 		GNM_POS = 0x4,
-		GNM_ALL = GNM_ID | GNM_TEXT | GNM_POS
+		GNM_CREATED = 0x8,
+		GNM_ALL = GNM_ID | GNM_TEXT | GNM_POS | GNM_CREATED
 	};
 
 	void CreateAppWindow();

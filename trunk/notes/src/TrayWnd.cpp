@@ -164,7 +164,7 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 	for (int i = 0; i < notes.size(); ++i)
 	{
 		_tstring csNote = notes[i].GetText();
-		_tstring sCaption = strutils::trim_string(notes[i].GetText().c_str(), 64);
+		_tstring sCaption = strutils::trim_string(notes[i].GetText(), 64);
 		if (sCaption.size() > 0 && sCaption.size() < csNote.size())
 		{
 			sCaption += _T("...");

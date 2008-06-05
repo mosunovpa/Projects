@@ -135,7 +135,7 @@ void CApplication::CreateNote()
 	CNoteWnd* pWnd = CreateNoteWnd(CalcNewNoteRect());
 	if (pWnd)
 	{
-//		pWnd->SetCreated(dateutils::ToString(dateutils::GetCurrentDate()).c_str());
+		pWnd->SetCreated(dateutils::GetCurrentDate());
 		pWnd->SetFocus();
 	}
 }
@@ -166,7 +166,7 @@ void CApplication::CloseAllNotes(CNoteWnd* pExceptWnd /*= NULL*/)
 void CApplication::ShowAllNotes()
 {
 	CNote::List list;
-	m_storage.GetAllNotes(list, CApplication::GNM_ID | CApplication::GNM_TEXT | CApplication::GNM_POS);
+	m_storage.GetAllNotes(list, CApplication::GNM_ALL);
 	for (int i = 0; i < list.size(); ++i)
 	{
 		CNoteWnd* pNoteWnd = FindNote(list[i].GetId());
@@ -216,6 +216,7 @@ int CApplication::SaveNote(CNoteWnd* pWnd)
 	note.SetId(pWnd->GetId());
 	note.SetText(pWnd->GetText().c_str());
 	note.SetPos(CWindowRect(pWnd->m_hWnd));
+	note.SetCreated(pWnd->GetCreated());
 	m_storage.SaveNote(note);
 	return note.GetId();
 }
@@ -292,7 +293,8 @@ void CApplication::OpenNote( CNote const& note )
 	if (pWnd)
 	{
 		pWnd->SetId(note.GetId());
-		pWnd->SetText(note.GetText().c_str());
+		pWnd->SetText(note.GetText());
+		pWnd->SetCreated(note.GetCreated());
 	}
 }
 

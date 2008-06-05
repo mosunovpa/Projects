@@ -123,6 +123,8 @@ public:
 	void SetId(int id);
 	_tstring GetText() const;
 	void SetText(LPCTSTR text);
+	time_t GetCreated() const;
+	void SetCreated(time_t dt);
 
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
@@ -220,4 +222,5 @@ private:
 	BOOL m_bCaptured;
 	int m_nNoteId;
 	BOOL m_bSaveError;
+	time_t m_dtCreated;
 };

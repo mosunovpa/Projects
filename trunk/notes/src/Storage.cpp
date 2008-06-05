@@ -117,6 +117,25 @@ static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 		CHECK_HR(spElement->get_text(&bstr));
 		note.SetText((LPCTSTR)bstr);
 	}
+	if ((nMask & CApplication::GNM_CREATED) == CApplication::GNM_CREATED)
+	{
+		CHECK_HR(spElement->getAttribute(L"created", &val));
+		time_t t;
+		if (val.vt == VT_NULL) // attribute not found
+		{
+			t = 0;
+		}
+		else if (val.vt == VT_BSTR)
+		{
+			t =_ttoi(val.bstrVal);
+		}
+		else
+		{
+			ThrowError(_T("Attribute created not found"));
+		}
+		note.SetCreated(t);
+	}
+
 	return note;
 }
 
@@ -169,7 +188,8 @@ static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& not
 	CHECK_HR(spElement->setAttribute(L"top", CComVariant(pos.top)));
 	CHECK_HR(spElement->setAttribute(L"right", CComVariant(pos.right)));
 	CHECK_HR(spElement->setAttribute(L"bottom", CComVariant(pos.bottom)));
-	CHECK_HR(spElement->put_text(CComBSTR(note.GetText().c_str())));
+	CHECK_HR(spElement->put_text(CComBSTR(note.GetText())));
+	CHECK_HR(spElement->setAttribute(L"created", CComVariant(note.GetCreated())));
 }
 
 static void _NewNote(CNote& note)
