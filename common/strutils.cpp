@@ -12,11 +12,6 @@
 #include <boost/algorithm/string/find.hpp>
 
 /*!
-	This function is for those who tired to declare temporary CString 
-	only to get formatted string.
-
-	Instead of writing CString tmp; tmp.Format(. . .); use(tmp);
-	now you can write use(Format(. . .));
 */
 _tstring strutils::format(LPCTSTR fmt, ...)
 {
