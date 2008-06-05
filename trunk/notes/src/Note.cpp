@@ -14,7 +14,7 @@ int CNote::GetId() const
 	return m_id;
 }
 
-CString CNote::GetText() const
+_tstring CNote::GetText() const
 {
 	return m_text;
 }
@@ -29,7 +29,7 @@ void CNote::SetId( int id )
 	m_id = id;
 }
 
-void CNote::SetText( CString const& text )
+void CNote::SetText(LPCTSTR text)
 {
 	m_text = text;
 }

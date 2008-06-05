@@ -6,6 +6,7 @@
  */
 
 #include "stdafx.h"
+#include <boost/algorithm/string/trim.hpp>
 #include "NoteWnd.h"
 #include "resource.h"
 #include "atlwinmisc.h"
@@ -185,7 +186,7 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 
 	m_edit.Create(m_hWnd, NULL, NULL, 
 		WS_CHILD | WS_VISIBLE | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL, 
-		WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR /*| WS_EX_NOPARENTNOTIFY*/, 2);
+		WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR | WS_EX_NOPARENTNOTIFY, 20000);
 	m_edit.SetBackgroundColor(RGB(255, 255, 204));
 
 
@@ -208,7 +209,8 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	//m_edit.SetParaFormat(pf);
 
 	m_edit.SetOleCallback(&m_edit.m_OleCallback);
-
+	m_edit.SetEventMask(ENM_LINK);
+	m_edit.SetAutoURLDetect();
 	m_edit.SetFocus();
 
 	return 0;
@@ -219,7 +221,7 @@ WM_DESTROY
 */
 void CNoteWnd::OnDestroy()
 {
-	if (GetText().IsEmpty())
+	if (GetText().empty())
 	{
 		RemoveNote();
 	}
@@ -455,7 +457,7 @@ Store note if text is not empty
 */
 void CNoteWnd::StoreNote()
 {
-	if (!GetText().IsEmpty() && m_edit.GetModify())
+	if (!GetText().empty() && m_edit.GetModify())
 	{
 		m_nNoteId = CApplication::Get().SaveNote(this);
 		m_edit.SetModify(FALSE);
@@ -475,11 +477,18 @@ int CNoteWnd::GetId() const
 }
 
 /**/
-CString CNoteWnd::GetText() const
+_tstring CNoteWnd::GetText() const
 {
-	CString s;
-	m_edit.GetWindowText(s);
-	return s.Trim();
+	int len = m_edit.GetWindowTextLength() + 1;
+	_tstring s;
+	s.resize(len);
+	m_edit.GetWindowText(&s[0],len);
+	boost::trim(s);
+	if (s[0] == 0)
+	{
+		s.clear();
+	}
+	return s;
 }
 
 /**/
@@ -489,7 +498,7 @@ void CNoteWnd::SetId( int id )
 }
 
 /**/
-void CNoteWnd::SetText( CString const& text )
+void CNoteWnd::SetText(LPCTSTR text)
 {
 	m_edit.SetWindowText(text);
 }
@@ -516,7 +525,7 @@ void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 	CSimpleDialog<IDD_DELETENOTECONFIRM> dlg;
 	if (dlg.DoModal() == IDYES)
 	{
-		SetText(CString());
+		SetText(_T(""));
 		SendMessage(WM_CLOSE);
 	}
 }
@@ -534,6 +543,7 @@ void CNoteWnd::OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl)
 	CApplication::Get().CloseAllNotes(this); // close all but this
 }
 
+/**/
 void CNoteWnd::OnInitMenuPopup(CMenu menuPopup, UINT nIndex, BOOL bSysMenu)
 {
 	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_UNDO, m_edit.CanUndo());
@@ -543,4 +553,18 @@ void CNoteWnd::OnInitMenuPopup(CMenu menuPopup, UINT nIndex, BOOL bSysMenu)
 	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_PASTE, m_edit.CanPaste());
 	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_CLEAR, m_edit.CanClear());
 	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_SELECT_ALL, m_edit.CanSelectAll());
+}
+
+/**/
+LRESULT CNoteWnd::OnLink(LPNMHDR pnmh)
+{
+	ENLINK* pLinkInfo = (ENLINK*)pnmh;
+	if (pLinkInfo->msg == WM_LBUTTONUP)
+	{
+		_tstring txt;
+		txt.resize(pLinkInfo->chrg.cpMax - pLinkInfo->chrg.cpMin + 1);
+		m_edit.GetTextRange(pLinkInfo->chrg.cpMin, pLinkInfo->chrg.cpMax, &txt[0]);
+		ShellExecute(NULL, NULL, txt.c_str(), NULL, NULL, SW_SHOW);
+	}
+	return 0;
 }
