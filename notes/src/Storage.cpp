@@ -15,7 +15,7 @@ static CComPtr<IXMLDOMDocument> _GetDocument()
 {
 	CComPtr<IXMLDOMDocument> spDoc;
 	CHECK_HR_MSG(spDoc.CoCreateInstance(__uuidof(DOMDocument)), _T("Create document error"));
-	CString sFileName = CApplication::Get().GetDataFileName();
+	LPCTSTR sFileName = CApplication::Get().GetDataFileName();
 	VARIANT_BOOL bSuccess = false;
 	if (::PathFileExists(sFileName))
 	{
@@ -44,12 +44,11 @@ static CComPtr<IXMLDOMNode> _GetRootNode(CComPtr<IXMLDOMDocument>& spDoc)
 static CComPtr<IXMLDOMNode> _FindNote(CComPtr<IXMLDOMDocument>& spDoc, int nNoteId)
 {
 	CComPtr<IXMLDOMNode> spNode;
-	CString csPath;
-	csPath.Format(_T("notes/note[@id=%d]"), nNoteId);
-	CHECK_HR(spDoc->selectSingleNode(CComBSTR(csPath), &spNode));
+	_tstring sPath = strutils::format(_T("notes/note[@id=%d]"), nNoteId);
+	CHECK_HR(spDoc->selectSingleNode(CComBSTR(sPath.c_str()), &spNode));
 	if (!spNode)
 	{
-		ThrowError(CString(_T("Note <")) + csPath + CString("> not found"));
+		ThrowError(strutils::format(_T("Note <%s> not found"), sPath).c_str());
 	}
 	return spNode;
 }
@@ -170,7 +169,7 @@ static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& not
 	CHECK_HR(spElement->setAttribute(L"top", CComVariant(pos.top)));
 	CHECK_HR(spElement->setAttribute(L"right", CComVariant(pos.right)));
 	CHECK_HR(spElement->setAttribute(L"bottom", CComVariant(pos.bottom)));
-	CHECK_HR(spElement->put_text(CComBSTR(note.GetText())));
+	CHECK_HR(spElement->put_text(CComBSTR(note.GetText().c_str())));
 }
 
 static void _NewNote(CNote& note)

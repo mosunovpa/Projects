@@ -58,6 +58,6 @@ private:
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;
 	CStorage m_storage;
-	CString m_sDataFile;
+	_tstring m_sDataFile;
 	COptions m_options;
 };

@@ -5,6 +5,7 @@
 #include "NoteWnd.h"
 #include "atlwinmisc.h"
 #include "resutils.h"
+#include "dateutils.h"
 #include "fileutils.h"
 #include "winutils.h"
 #include <math.h>
@@ -134,6 +135,7 @@ void CApplication::CreateNote()
 	CNoteWnd* pWnd = CreateNoteWnd(CalcNewNoteRect());
 	if (pWnd)
 	{
+//		pWnd->SetCreated(dateutils::ToString(dateutils::GetCurrentDate()).c_str());
 		pWnd->SetFocus();
 	}
 }
@@ -212,7 +214,7 @@ int CApplication::SaveNote(CNoteWnd* pWnd)
 {
 	CNote note;
 	note.SetId(pWnd->GetId());
-	note.SetText(pWnd->GetText());
+	note.SetText(pWnd->GetText().c_str());
 	note.SetPos(CWindowRect(pWnd->m_hWnd));
 	m_storage.SaveNote(note);
 	return note.GetId();
@@ -256,9 +258,10 @@ void CApplication::DeleteNote( CNoteWnd* pWnd )
 /**/
 LPCTSTR CApplication::GetDataFileName()
 {
-	if (m_sDataFile.IsEmpty())
+	if (m_sDataFile.empty())
 	{
-		LPTSTR szFile = m_sDataFile.GetBufferSetLength(MAX_PATH);
+		m_sDataFile.resize(MAX_PATH);
+		LPTSTR szFile = &m_sDataFile[0];
 		::SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_DEFAULT, szFile);
 		::PathCombine(szFile, szFile, RESSTR(IDS_APP_NAME));
 		if (!::PathFileExists(szFile))
@@ -266,9 +269,8 @@ LPCTSTR CApplication::GetDataFileName()
 			fileutils::CreateDirectoryRecursive(szFile);
 		}
 		::PathCombine(szFile, szFile, _T("notes.dat"));
-		m_sDataFile.ReleaseBuffer();
 	}
-	return m_sDataFile;
+	return m_sDataFile.c_str();
 }
 
 CNoteWnd* CApplication::FindNote(int nNoteId) const
@@ -290,7 +292,7 @@ void CApplication::OpenNote( CNote const& note )
 	if (pWnd)
 	{
 		pWnd->SetId(note.GetId());
-		pWnd->SetText(note.GetText());
+		pWnd->SetText(note.GetText().c_str());
 	}
 }
 

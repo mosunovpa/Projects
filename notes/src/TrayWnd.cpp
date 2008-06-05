@@ -138,11 +138,12 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 	}
 	else
 	{
-		CString csMenu;
-		menuNotes.GetMenuString(ID_POPUP_SHOWALLNOTES, csMenu, MF_BYCOMMAND);
-		csMenu = (csMenu + _T(" (") + strutils::to_string(nHiddenNotes).c_str() + _T(")"));
+		_tstring sMenu;
+		sMenu.resize(menuNotes.GetMenuStringLen(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND));
+		menuNotes.GetMenuString(ID_POPUP_SHOWALLNOTES, &sMenu[0], sMenu.size(), MF_BYCOMMAND);
+		sMenu = strutils::format(_T("%s (%d)"), sMenu.c_str(), nHiddenNotes);
 		menuNotes.ModifyMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND | MF_STRING, 
-			(UINT_PTR)ID_POPUP_SHOWALLNOTES, (LPCTSTR)csMenu);
+			(UINT_PTR)ID_POPUP_SHOWALLNOTES, sMenu.c_str());
 	}
 
 	CNote::List notes;
@@ -162,9 +163,9 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 	// show all notes
 	for (int i = 0; i < notes.size(); ++i)
 	{
-		CString csNote = notes[i].GetText();
-		_tstring sCaption = strutils::trim_string(notes[i].GetText(), 64);
-		if (sCaption.size() > 0 && sCaption.size() < csNote.GetLength())
+		_tstring csNote = notes[i].GetText();
+		_tstring sCaption = strutils::trim_string(notes[i].GetText().c_str(), 64);
+		if (sCaption.size() > 0 && sCaption.size() < csNote.size())
 		{
 			sCaption += _T("...");
 		}

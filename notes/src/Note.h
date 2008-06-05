@@ -9,14 +9,14 @@ public:
 	~CNote(void);
 
 	int GetId() const;
-	CString GetText() const;
+	_tstring GetText() const;
 	CRect GetPos() const;
 
 	void SetId(int id);
-	void SetText(CString const& text);
+	void SetText(LPCTSTR text);
 	void SetPos(CRect const& pos);
 private:
 	int m_id;
-	CString m_text;
+	_tstring m_text;
 	CRect m_pos;
 };

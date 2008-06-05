@@ -121,8 +121,8 @@ public:
 
 	int GetId() const;
 	void SetId(int id);
-	CString GetText() const;
-	void SetText(CString const& text);
+	_tstring GetText() const;
+	void SetText(LPCTSTR text);
 
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
@@ -152,6 +152,7 @@ public:
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
 			COMMAND_ID_HANDLER_EX(ID_DELETE, OnNoteDelete)
+			NOTIFY_CODE_HANDLER_EX(EN_LINK, OnLink)
 			CHAIN_COMMANDS_MEMBER(m_edit)
 		} 
 		CATCH_ALL_ERRORS(m_hWnd)
@@ -183,6 +184,7 @@ public:
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
+	LRESULT OnLink(LPNMHDR pnmh);
 private:
 	enum DownRegion
 	{
