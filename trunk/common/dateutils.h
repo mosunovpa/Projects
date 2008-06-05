@@ -10,5 +10,6 @@ namespace dateutils
 {
 	time_t GetCurrentDate();
 	_tstring ToString(time_t t, BOOL bLocal = TRUE);
+	_tstring ToString(time_t t, LPCTSTR format, BOOL bLocal = TRUE);
 
 } // namespace dateutils
