@@ -114,6 +114,7 @@ END
 
 IDB_CLOSE               BITMAP                  "res\\close.bmp"
 IDB_CLOSE_PRESS         BITMAP                  "res\\close_press.bmp"
+IDB_CLOSE_BTNS         BITMAP                  "res\\close_btns.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
