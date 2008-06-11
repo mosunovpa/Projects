@@ -215,6 +215,7 @@ private:
 	CNoteEdit m_edit;
 	CEdit m_editCreated;
 	CStaticSysIcon m_icon;
+	CBitmapButton m_btnClose;
 		
 	BOOL m_bActive;
 	DownRegion m_drDownWas;

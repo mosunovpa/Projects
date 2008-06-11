@@ -25,7 +25,6 @@ CIcon CNoteWnd::m_hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKE
 CIcon CNoteWnd::m_hIconSm = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_NOTES_SM),
 								  IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 CPen CNoteWnd::m_hPen = ::CreatePen(PS_SOLID, 1, RGB(0,0,0));
-
 CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell Dlg"));
 
 /**
@@ -112,6 +111,8 @@ Draw close button
 */
 void CNoteWnd::DrawCloseButton(CDC& dc, BOOL bDown /*= FALSE*/)
 {
+	return;
+
 	CBitmap bmp;
 	if (bDown)
 	{
@@ -181,8 +182,17 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	m_tooltip.SetMaxTipWidth(300);
 
 
-	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
+	m_btnClose.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE, 0, ID_CLOSE);
+	m_btnClose.SetBitmapButtonExtendedStyle(BMPBTN_HOVER | BMPBTN_AUTOSIZE);
+	CImageList il;
+	CBitmap bmpClose;
+	bmpClose.LoadBitmap(IDB_CLOSE_BTNS);
+	il.Create(16, 16, ILC_COLOR24, 4, 0); //, RGB(0,0,0), IMAGE_BITMAP, 
+	il.Add(bmpClose, RGB(0,0,0));
+	m_btnClose.SetImageList(il); // il will be deleted in ~CBitmapButtonImpl()
+	m_btnClose.SetImages(0,1,2,3);
 
+	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
  	m_editCreated.SetFont(m_hStatusFont);
 
 	m_edit.Create(m_hWnd, NULL, NULL, 
@@ -373,6 +383,8 @@ void CNoteWnd::OnGetMinMaxInfo(LPMINMAXINFO lParam)
  */
 void CNoteWnd::OnSize(UINT wParam, CSize sz)
 {
+	m_btnClose.MoveWindow(&GetCloseButtonRect(), TRUE);
+
 	CRect rc;
 	::GetClientRect(m_hWnd, &rc);
 	CRect rcCreated(0, rc.bottom - s_nStatusBarSize + 1, 135, rc.bottom);
@@ -534,7 +546,7 @@ CMenuHandle CNoteWnd::AdjustSystemMenu()
 /* ID_CLOSE */
 void CNoteWnd::OnNoteClose( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
-	SendMessage(WM_CLOSE);
+	PostMessage(WM_CLOSE);
 }
 
 /* ID_DELETE */
