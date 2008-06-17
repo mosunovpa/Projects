@@ -138,9 +138,6 @@ public:
 			MSG_WM_PAINT(OnPaint)
 			MSG_WM_ACTIVATE(OnActivate)
 			MSG_WM_ERASEBKGND(OnErasebkgnd)
-			MSG_WM_LBUTTONDOWN(OnLButtonDown)
-			MSG_WM_LBUTTONUP(OnLButtonUp)
-			MSG_WM_MOUSEMOVE(OnMouseMove)
 			MSG_WM_GETMINMAXINFO(OnGetMinMaxInfo)
 			MSG_WM_SIZE(OnSize)
 			MSG_WM_KEYDOWN(OnKeyDown)
@@ -150,6 +147,7 @@ public:
 			MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
 			MSG_WM_CTLCOLOREDIT(OnCtlColorEdit)
 			MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
+			COMMAND_ID_HANDLER_EX(ID_SAVETOFILE, OnSaveToFile);
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALL, OnNoteCloseAll)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
@@ -170,9 +168,6 @@ public:
 	void OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther);
 	void OnNcPaint(HRGN wParam);
 	BOOL OnErasebkgnd(HDC hdc) { return TRUE; }
-	void OnLButtonDown(UINT nFlags, CPoint point);
-	void OnLButtonUp(UINT nFlags, CPoint point);
-	void OnMouseMove(UINT wParam, CPoint point);
 	void OnGetMinMaxInfo(LPMINMAXINFO lParam);
 	void OnSize(UINT wParam, CSize sz);
 	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
@@ -182,6 +177,7 @@ public:
 	HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
 	HBRUSH OnCtlColorEdit(CDCHandle dc, CEdit edit);
 	void OnInitMenuPopup(CMenu menuPopup, UINT nIndex, BOOL bSysMenu);
+	void OnSaveToFile(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -200,7 +196,6 @@ private:
 	CRect GetBottomRightRect();
 	CRect GetCloseButtonRect();
 	CRect GetClientRect();
-	void DrawCloseButton(CDC& dc, BOOL bDown = FALSE);
 	CMenuHandle AdjustSystemMenu();
 	void StoreNote();
 	void RemoveNote();
@@ -217,10 +212,6 @@ private:
 	CStaticSysIcon m_icon;
 	CBitmapButton m_btnClose;
 		
-	BOOL m_bActive;
-	DownRegion m_drDownWas;
-
-	BOOL m_bCaptured;
 	int m_nNoteId;
 	BOOL m_bSaveError;
 	time_t m_dtCreated;

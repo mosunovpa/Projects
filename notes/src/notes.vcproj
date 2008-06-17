@@ -281,6 +281,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\close_btns.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\close_hot.bmp"
 				>
 			</File>

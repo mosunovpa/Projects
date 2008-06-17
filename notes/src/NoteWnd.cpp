@@ -31,10 +31,7 @@ CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell D
  Constructor
  */
 CNoteWnd::CNoteWnd(int nNoteId /*= 0*/) 
-:	m_drDownWas(drNoWhere), 
-	m_bActive(FALSE), 
-	m_bCaptured(FALSE),
-	m_nNoteId(nNoteId),
+:	m_nNoteId(nNoteId),
 	m_bSaveError(FALSE),
 	m_dtCreated(0)
 {
@@ -104,25 +101,6 @@ CRect CNoteWnd::GetBottomRightRect()
 void CNoteWnd::OnFinalMessage(HWND hWnd)
 {
 	CApplication::Get().OnNoteClosed(this);
-}
-
-/**
-Draw close button
-*/
-void CNoteWnd::DrawCloseButton(CDC& dc, BOOL bDown /*= FALSE*/)
-{
-	return;
-
-	CBitmap bmp;
-	if (bDown)
-	{
-		bmp.LoadBitmap(IDB_CLOSE_PRESS);
-	}
-	else
-	{
-		bmp.LoadBitmap(IDB_CLOSE);
-	}
-	guiutils::DrawBitmap(dc, bmp, GetCloseButtonRect());
 }
 
 /* draw status bar */
@@ -212,12 +190,13 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 
 	// format changing lead to increase undo queue
 
-	//PARAFORMAT pf;
-	//ZeroMemory(&pf, sizeof(PARAFORMAT));
-	//pf.cbSize = sizeof(PARAFORMAT);
-	//pf.dwMask = PFM_OFFSETINDENT;
-	//pf.dxStartIndent = 100;
-	//m_edit.SetParaFormat(pf);
+	PARAFORMAT pf;
+	ZeroMemory(&pf, sizeof(PARAFORMAT));
+	pf.cbSize = sizeof(PARAFORMAT);
+	pf.dwMask = PFM_OFFSETINDENT;
+	pf.dxStartIndent = 100;
+	m_edit.SetParaFormat(pf);
+	m_edit.EmptyUndoBuffer();
 
 	m_edit.SetOleCallback(&m_edit.m_OleCallback);
 	m_edit.SetEventMask(ENM_LINK);
@@ -300,13 +279,6 @@ void CNoteWnd::OnPaint(HDC hdc)
 		CClientRect rcClient(m_hWnd);
 		CMemoryDC memDc(dc, rcClient);
 		memDc.FillRect(&rcClient, m_hBgBrush);
-
-		// Draw icon
-//		memDc.DrawIconEx(0, 0, GetIcon(FALSE), s_nCaptionSize, s_nCaptionSize);
-
-		// Draw close button
-		DrawCloseButton(memDc);
-
 		DrawStatusBar(memDc);
 	}
 }
@@ -316,58 +288,11 @@ void CNoteWnd::OnPaint(HDC hdc)
  */
 void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 {
- 	m_bActive = nState;
+	m_btnClose.SetImages(nState == 0 ? 3 : 0);
+	m_btnClose.Invalidate(FALSE);
+   	m_btnClose.UpdateWindow();
 	Invalidate(FALSE);
-   	UpdateWindow();
-}
-
-/**
- WM_LBUTTONDOWN
- */
-void CNoteWnd::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	CRect rc = GetCloseButtonRect();
-	if (rc.PtInRect(point))
-	{
-		m_drDownWas = drOnCloseButton;
-		CClientDC dc(m_hWnd);
-		DrawCloseButton(dc, TRUE);
-		SetCapture();
-		m_bCaptured = TRUE;
-	}
-}
-
-/**
-WM_LBUTTONUP
-*/
-void CNoteWnd::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	if (GetCloseButtonRect().PtInRect(point) && m_drDownWas == drOnCloseButton)
-	{
-		if (GetKeyState(VK_CONTROL) & 0x8000)
-		{
-			CApplication::Get().CloseAllNotes(this); // close all but this
-		}
-		SendMessage(WM_CLOSE); // close this
-	}
-	m_drDownWas = drNoWhere;
-	if (m_bCaptured)
-	{
-		ReleaseCapture();
-		m_bCaptured = FALSE;
-	}
-}
-
-/**
- WM_MOUSEMOVE
- */
-void CNoteWnd::OnMouseMove(UINT wParam, CPoint point)
-{
-	if (m_drDownWas == drOnCloseButton)
-	{
-		CClientDC dc(m_hWnd);
-		DrawCloseButton(dc, GetCloseButtonRect().PtInRect(point));
-	}
+	UpdateWindow();
 }
 
 /**
@@ -402,7 +327,7 @@ void CNoteWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (nChar == VK_ESCAPE)
 	{
-		SendMessage(WM_CLOSE);
+		PostMessage(WM_CLOSE);
 	}
 	else
 	{
@@ -543,9 +468,20 @@ CMenuHandle CNoteWnd::AdjustSystemMenu()
 	return menu;
 }
 
+/* ID_SAVETOFILE */
+void CNoteWnd::OnSaveToFile(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CFileDialog dlg(FALSE);
+	dlg.DoModal();
+}
+
 /* ID_CLOSE */
 void CNoteWnd::OnNoteClose( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
+	if (GetKeyState(VK_CONTROL) & 0x8000)
+	{
+		CApplication::Get().CloseAllNotes(this); // close all but this
+	}
 	PostMessage(WM_CLOSE);
 }
 
@@ -556,7 +492,7 @@ void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 	if (dlg.DoModal() == IDYES)
 	{
 		SetText(_T(""));
-		SendMessage(WM_CLOSE);
+		PostMessage(WM_CLOSE);
 	}
 }
 
@@ -564,7 +500,7 @@ void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 void CNoteWnd::OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CApplication::Get().CloseAllNotes(this); // close all but this
-	SendMessage(WM_CLOSE); // close this
+	PostMessage(WM_CLOSE); // close this
 }
 
 /* ID_CLOSEALLBUTTHIS */

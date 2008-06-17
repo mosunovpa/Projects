@@ -15,7 +15,7 @@
 #define IDR_ACCELERATOR1                109
 #define IDR_EDIT                        110
 #define IDD_DELETENOTECONFIRM           111
-#define IDB_CLOSE_BTNS					112
+#define IDB_CLOSE_BTNS                  112
 #define IDICON                          1001
 #define ID_POPUP_NEWNOTE                40001
 #define ID_POPUP_SHOWALLNOTES           40002
@@ -37,13 +37,17 @@
 #define ID_NOTEMENU_CLOSEALLBUTTHIS     40020
 #define ID_CLOSEALLBUTTHIS              40021
 #define ID_CLOSEALL                     40022
+#define ID_TRAYMENU_OPTIONS             40023
+#define ID_OPTIONS_FONT                 40024
+#define ID_NOTEMENU_SAVETOFILE          40025
+#define ID_SAVETOFILE                   40026
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        113
-#define _APS_NEXT_COMMAND_VALUE         40023
+#define _APS_NEXT_COMMAND_VALUE         40027
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

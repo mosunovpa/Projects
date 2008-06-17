@@ -38,6 +38,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_EXIT, OnPopupExit)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ALWAYS_ON_TOP, OnAlwaysOnTop);
+		COMMAND_ID_HANDLER_EX(ID_OPTIONS_FONT, OnOptionsFont);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_OFFSET, NOTE_CMD_OFFSET + 10000, OnCommandRangeHandlerEX)
 	}
 	CATCH_ALL_ERRORS(m_hWnd)
@@ -56,6 +57,7 @@ public:
 	void OnSysCommand(UINT nID, CPoint pt);
 	void OnCommandRangeHandlerEX(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnAlwaysOnTop(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl);
 private:
 	LRESULT DisplayShortcutMenu();
 };
