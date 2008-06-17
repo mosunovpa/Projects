@@ -281,6 +281,14 @@ void CTrayWnd::OnAlwaysOnTop( UINT uNotifyCode, int nID, CWindow wndCtl )
 	CApplication::Get().SaveOptions();
 }
 
+/* ID_OPTIONS_FONT */
+void CTrayWnd::OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CFontDialog dlg(NULL, CF_EFFECTS | CF_SCREENFONTS, NULL, m_hWnd);
+	dlg.DoModal();
+}
+
+/**/
 void CTrayWnd::OnCommandRangeHandlerEX(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	int nNotesId = nID - NOTE_CMD_OFFSET;
