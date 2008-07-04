@@ -11,23 +11,27 @@
 #define CHECK_HR_MSG(x, s) { HRESULT hr = x; if (FAILED(hr)) ThrowError(s); }
 #define CHECK_HR(x) CHECK_HR_MSG(x, _T("Xml operation error"))
 
+static CComPtr<IXMLDOMDocument> s_spDoc = NULL;
+
 static CComPtr<IXMLDOMDocument> _GetDocument()
 {
-	CComPtr<IXMLDOMDocument> spDoc;
-	CHECK_HR_MSG(spDoc.CoCreateInstance(__uuidof(DOMDocument)), _T("Create document error"));
-	LPCTSTR sFileName = CApplication::Get().GetDataFileName();
-	VARIANT_BOOL bSuccess = false;
-	if (::PathFileExists(sFileName))
+	if (s_spDoc == NULL)
 	{
-		CHECK_HR_MSG(spDoc->load(CComVariant(sFileName), &bSuccess), _T("Load file error"));
-	}
-	else
-	{
+		CHECK_HR_MSG(s_spDoc.CoCreateInstance(__uuidof(DOMDocument)), _T("Create document error"));
+		LPCTSTR sFileName = CApplication::Get().GetDataFileName();
+		VARIANT_BOOL bSuccess = false;
+		if (::PathFileExists(sFileName))
+		{
+			CHECK_HR_MSG(s_spDoc->load(CComVariant(sFileName), &bSuccess), _T("Load file error"));
+		}
+		else
+		{
 
-		CComBSTR sXml(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?><notes><options></options></notes>"));
-		CHECK_HR_MSG(spDoc->loadXML(sXml, &bSuccess), _T("Load xml error"));
+			CComBSTR sXml(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?><notes><options></options></notes>"));
+			CHECK_HR_MSG(s_spDoc->loadXML(sXml, &bSuccess), _T("Load xml error"));
+		}
 	}
-	return spDoc;
+	return s_spDoc;
 }
 
 static CComPtr<IXMLDOMNode> _GetRootNode(CComPtr<IXMLDOMDocument>& spDoc)
@@ -318,4 +322,9 @@ CNote CStorage::GetNote(int nNoteId) const
 {
 	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	return _GetNote(_FindNote(spDoc, nNoteId), CApplication::GNM_ALL);
+}
+
+void CStorage::Release()
+{
+	s_spDoc.Release();
 }
