@@ -40,7 +40,7 @@ public:
 	void OnNoteClosed(CNoteWnd* pWnd);
 	COptions& GetOptions();
 	void SaveOptions();
-
+	void ReleaseStorage();
 protected:
 	CApplication();
 	virtual ~CApplication();

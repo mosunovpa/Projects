@@ -60,6 +60,8 @@ LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 /* WM_DESTROY */
 LRESULT CTrayWnd::OnDestroy(void)
 {
+	CApplication::Get().ReleaseStorage();
+
 	// Delete the icon from the taskbar status area
 	if (!m_TrayIcon.RemoveIconFromTaskBar(m_hWnd, IDR_MAINFRAME))
 		ATLTRACE(_T("Icon was not removed from the taskbar!\n"));

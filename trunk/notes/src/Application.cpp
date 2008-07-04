@@ -336,3 +336,8 @@ void CApplication::ShowNote(int nNoteId)
 		OpenNote(m_storage.GetNote(nNoteId));
 	}
 }
+
+void CApplication::ReleaseStorage()
+{
+	m_storage.Release();
+}

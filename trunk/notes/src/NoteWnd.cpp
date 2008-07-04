@@ -169,6 +169,7 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	il.Add(bmpClose, RGB(0,0,0));
 	m_btnClose.SetImageList(il); // il will be deleted in ~CBitmapButtonImpl()
 	m_btnClose.SetImages(0,1,2,3);
+	m_btnClose.SetToolTipText(RESSTR(IDS_CLOSE));
 
 	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
  	m_editCreated.SetFont(m_hStatusFont);
