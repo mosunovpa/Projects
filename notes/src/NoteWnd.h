@@ -13,6 +13,8 @@
 
 #define NOTE_WND_CLASS_NAME _T("MyNoteWnd")
 
+const UINT WM_INITNOTE = WM_USER + 100;
+
 //////////////////////////////////////////////////////////////////////////
 //
 class CNoteEdit : public CWindowImpl<CNoteEdit, CRichEditCtrl>,
@@ -133,6 +135,7 @@ public:
 		{
 			MSG_WM_CREATE(OnCreate)
 			MSG_WM_DESTROY(OnDestroy)
+			MESSAGE_HANDLER_EX(WM_INITNOTE, OnInitNote)
 			MSG_WM_NCHITTEST(OnNcHittest)
  			MSG_WM_NCPAINT(OnNcPaint)
 			MSG_WM_PAINT(OnPaint)
@@ -163,6 +166,7 @@ public:
 
 	LRESULT OnCreate(LPCREATESTRUCT lParam);
 	void OnDestroy();
+	LRESULT OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcHittest(CPoint pt);
 	void OnPaint(HDC hdc);
 	void OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther);
@@ -214,5 +218,6 @@ private:
 		
 	int m_nNoteId;
 	BOOL m_bSaveError;
+	BOOL m_bPosChanged;
 	time_t m_dtCreated;
 };

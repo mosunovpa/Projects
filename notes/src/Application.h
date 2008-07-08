@@ -16,18 +16,18 @@ class CApplication : public CSimpleSinglton<CApplication>
 
 public:
 	// GetAllNotes mask
-	enum
+	enum NoteMask
 	{
-		GNM_ID = 0x01,
-		GNM_TEXT = 0x02,
-		GNM_POS = 0x4,
-		GNM_CREATED = 0x8,
-		GNM_ALL = GNM_ID | GNM_TEXT | GNM_POS | GNM_CREATED
+		NM_ID = 0x01,
+		NM_TEXT = 0x02,
+		NM_POS = 0x4,
+		NM_CREATED = 0x8,
+		NM_ALL = NM_ID | NM_TEXT | NM_POS | NM_CREATED
 	};
 
 	void CreateAppWindow();
 	void CreateNote();
-	int SaveNote(CNoteWnd* pWnd);
+	int SaveNote(CNoteWnd* pWnd, UINT nMask);
 	void DeleteNote(CNoteWnd* pWnd);
 	void ShowAllNotes();
 	void ShowNote(int nNoteId);

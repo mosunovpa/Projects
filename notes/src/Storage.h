@@ -10,7 +10,7 @@ public:
 	CStorage(void);
 	~CStorage(void);
 	void Release();
-	void SaveNote(CNote& note);
+	void SaveNote(CNote& note, UINT nMask);
 	void DeleteNote(int nNoteId);
 	void GetAllNotes(CNote::List& list, UINT nMask) const;
 	CNote GetNote(int nNoteId) const;
