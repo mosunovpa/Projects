@@ -149,7 +149,7 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 	}
 
 	CNote::List notes;
-	CApplication::Get().GetAllNotes(notes, CApplication::GNM_ID | CApplication::GNM_TEXT);
+	CApplication::Get().GetAllNotes(notes, CApplication::NM_ID | CApplication::NM_TEXT);
 
 	/* check separator */
 	int nState = menuNotes.GetMenuState(0, MF_BYPOSITION);

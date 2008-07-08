@@ -4,7 +4,6 @@
 #include "TrayIcon.h"
 #include "resource.h"
 
-const UINT WM_CREATENOTE = WM_USER + 111;
 const UINT NOTE_CMD_OFFSET = 50000;
 
 class CTrayWnd : public CWindowImpl<CTrayWnd> 

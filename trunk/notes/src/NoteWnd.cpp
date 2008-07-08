@@ -33,6 +33,7 @@ CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell D
 CNoteWnd::CNoteWnd(int nNoteId /*= 0*/) 
 :	m_nNoteId(nNoteId),
 	m_bSaveError(FALSE),
+	m_bPosChanged(FALSE),
 	m_dtCreated(0)
 {
 }
@@ -204,6 +205,8 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	m_edit.SetAutoURLDetect();
 	m_edit.SetFocus();
 
+	PostMessage(WM_INITNOTE);
+
 	return 0;
 }
 
@@ -222,6 +225,12 @@ void CNoteWnd::OnDestroy()
 	}
 }
 
+/* WM_INITNOTE */
+LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	m_bPosChanged = FALSE;
+	return 0;
+}
 /**
 WM_NCHITTEST
 */
@@ -318,7 +327,8 @@ void CNoteWnd::OnSize(UINT wParam, CSize sz)
 
 	m_tooltip.SetToolRect(m_hWnd, 1, &(GetCloseButtonRect()));
 	m_edit.MoveWindow(&(GetClientRect()), TRUE);
-	m_edit.SetModify(TRUE);
+
+	m_bPosChanged = TRUE;
 }
 
 /**
@@ -350,7 +360,7 @@ WM_MOVE
 */
 void CNoteWnd::OnMove(CPoint pt)
 {
-	m_edit.SetModify(TRUE);
+	m_bPosChanged = TRUE;
 }
 
 /*
@@ -396,10 +406,18 @@ Store note if text is not empty
 */
 void CNoteWnd::StoreNote()
 {
-	if (!GetText().empty() && m_edit.GetModify())
+	if (!GetText().empty())
 	{
-		m_nNoteId = CApplication::Get().SaveNote(this);
+		if (m_edit.GetModify()) // save all if note content has been changed
+		{
+			m_nNoteId = CApplication::Get().SaveNote(this, CApplication::NM_ALL);
+		}
+		else if (m_bPosChanged) // only position changed
+		{
+			CApplication::Get().SaveNote(this, CApplication::NM_POS);
+		}
 		m_edit.SetModify(FALSE);
+		m_bPosChanged = FALSE;
 	}
 }
 

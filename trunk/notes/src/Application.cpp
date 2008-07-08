@@ -33,7 +33,7 @@ void CApplication::CreateAppWindow()
 
 void CApplication::GetAllNotesPositions(CNote::List& notes)
 {
-	m_storage.GetAllNotes(notes, CApplication::GNM_POS);
+	m_storage.GetAllNotes(notes, CApplication::NM_POS);
 	for (std::list<CNoteWnd*>::iterator it = m_listNotes.begin(); it != m_listNotes.end(); ++it)
 	{
 		if ((*it)->GetId() == 0) // new not saved note
@@ -166,7 +166,7 @@ void CApplication::CloseAllNotes(CNoteWnd* pExceptWnd /*= NULL*/)
 void CApplication::ShowAllNotes()
 {
 	CNote::List list;
-	m_storage.GetAllNotes(list, CApplication::GNM_ALL);
+	m_storage.GetAllNotes(list, CApplication::NM_ALL);
 	for (int i = 0; i < list.size(); ++i)
 	{
 		CNoteWnd* pNoteWnd = FindNote(list[i].GetId());
@@ -210,14 +210,14 @@ void CApplication::ActivateTopNote()
 }
 
 /**/
-int CApplication::SaveNote(CNoteWnd* pWnd)
+int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 {
 	CNote note;
 	note.SetId(pWnd->GetId());
 	note.SetText(pWnd->GetText().c_str());
 	note.SetPos(CWindowRect(pWnd->m_hWnd));
 	note.SetCreated(pWnd->GetCreated());
-	m_storage.SaveNote(note);
+	m_storage.SaveNote(note, nMask);
 	return note.GetId();
 }
 
@@ -238,7 +238,7 @@ int CApplication::GetAllNotes(CNote::List& notes, UINT nMask) const
 int CApplication::GetHiddenNotesCount() const
 {
 	CNote::List notes;
-	m_storage.GetAllNotes(notes, CApplication::GNM_ID);
+	m_storage.GetAllNotes(notes, CApplication::NM_ID);
 	int nCount = 0;
 	for (int i = 0; i < notes.size(); ++i)
 	{
