@@ -16,6 +16,7 @@
 #define IDR_EDIT                        110
 #define IDD_DELETENOTECONFIRM           111
 #define IDB_CLOSE_BTNS                  112
+#define IDR_TRAY_NOTE_MENU              114
 #define IDICON                          1001
 #define ID_POPUP_NEWNOTE                40001
 #define ID_POPUP_SHOWALLNOTES           40002
@@ -41,13 +42,18 @@
 #define ID_NOTEMENU_SAVETOFILE          40025
 #define ID_SAVETOFILE                   40026
 #define ID_CLIPBRD_COPY                 40027
+#define ID_TRAYNOTEMENU_COPYALLTOCLIPBOARD 40033
+#define ID_TRAYNOTEMENU_                40034
+#define ID_TRAYNOTEMENU_DELETE          40035
+#define ID_TNM_DELETE                   40036
+#define ID_TNM_COPYALLTOCLIPBOARD       40037
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        113
-#define _APS_NEXT_COMMAND_VALUE         40028
+#define _APS_NEXT_RESOURCE_VALUE        115
+#define _APS_NEXT_COMMAND_VALUE         40038
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

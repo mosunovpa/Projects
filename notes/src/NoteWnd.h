@@ -180,7 +180,7 @@ public:
 	void OnMove(CPoint pt);
 	HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
 	HBRUSH OnCtlColorEdit(CDCHandle dc, CEdit edit);
-	void OnInitMenuPopup(CMenu menuPopup, UINT nIndex, BOOL bSysMenu);
+	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
 	void OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);

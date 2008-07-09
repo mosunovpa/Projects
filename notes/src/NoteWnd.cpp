@@ -424,7 +424,7 @@ void CNoteWnd::StoreNote()
 /**/
 void CNoteWnd::RemoveNote()
 {
-	CApplication::Get().DeleteNote(this);
+	CApplication::Get().DeleteNote(GetId());
 };
 
 /**/
@@ -497,6 +497,16 @@ void CNoteWnd::OnNoteClose( UINT uNotifyCode, int nID, CWindow wndCtl )
 	PostMessage(WM_CLOSE);
 }
 
+/* ID_CLIPBRD_COPY */
+void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	long nStart, nEnd;
+	m_edit.GetSel(nStart, nEnd);
+	m_edit.SetSel(0, -1);
+	m_edit.Copy();
+	m_edit.SetSel(nStart, nEnd);
+}
+
 /* ID_DELETE */
 void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
@@ -508,11 +518,6 @@ void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 	}
 }
 
-/* ID_CLIPBRD_COPY */
-void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	m_edit.Copy();
-}
 
 /* ID_CLOSEALL */
 void CNoteWnd::OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl)
@@ -528,7 +533,7 @@ void CNoteWnd::OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl)
 }
 
 /**/
-void CNoteWnd::OnInitMenuPopup(CMenu menuPopup, UINT nIndex, BOOL bSysMenu)
+void CNoteWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu)
 {
 	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_UNDO, m_edit.CanUndo());
 	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_REDO, m_edit.CanRedo());
