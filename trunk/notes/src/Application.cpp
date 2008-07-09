@@ -10,15 +10,18 @@
 #include "winutils.h"
 #include <math.h>
 
+/**/
 CApplication::CApplication()
 {
 	m_storage.ReadOptions(m_options);
 }
 
+/**/
 CApplication::~CApplication()
 {
 }
 
+/**/
 void CApplication::CreateAppWindow()
 {
 	if (!::IsWindow(m_TrayWnd.m_hWnd))
@@ -31,6 +34,7 @@ void CApplication::CreateAppWindow()
 	}
 }
 
+/**/
 void CApplication::GetAllNotesPositions(CNote::List& notes)
 {
 	m_storage.GetAllNotes(notes, CApplication::NM_POS);
@@ -45,6 +49,7 @@ void CApplication::GetAllNotesPositions(CNote::List& notes)
 	}
 }
 
+/**/
 void CApplication::GetSomePossiblePositions(CRect const& center, std::vector<CRect>& poss)
 {
 	const int nRadius = 150;
@@ -62,6 +67,7 @@ void CApplication::GetSomePossiblePositions(CRect const& center, std::vector<CRe
 	}
 }
 
+/**/
 CRect CApplication::GetOptimumPosition(std::vector<CRect> const& vPossiblePositions, 
 									   CNote::List const& notes)
 {
@@ -98,6 +104,7 @@ CRect CApplication::GetOptimumPosition(std::vector<CRect> const& vPossiblePositi
 	return rc;
 }
 
+/**/
 CRect CApplication::CalcNewNoteRect()
 {
 	const int nNewNoteWidth = 200;
@@ -130,6 +137,7 @@ CRect CApplication::CalcNewNoteRect()
 	return CRect(center.x, center.y, center.x + nNewNoteWidth, center.y + nNewNoteHeight);
 }
 
+/**/
 void CApplication::CreateNote()
 {
 	CNoteWnd* pWnd = CreateNoteWnd(CalcNewNoteRect());
@@ -140,6 +148,7 @@ void CApplication::CreateNote()
 	}
 }
 
+/**/
 void CApplication::CloseAllNotes(CNoteWnd* pExceptWnd /*= NULL*/)
 {
 	std::vector<HWND> listNotes;
@@ -163,6 +172,7 @@ void CApplication::CloseAllNotes(CNoteWnd* pExceptWnd /*= NULL*/)
 		(pExceptWnd != NULL && m_listNotes.size() == 1));
 }
 
+/**/
 void CApplication::ShowAllNotes()
 {
 	CNote::List list;
@@ -181,6 +191,7 @@ void CApplication::ShowAllNotes()
 	}
 }
 
+/**/
 void CApplication::OnNoteClosed(CNoteWnd* pWnd)
 {
 	std::list<CNoteWnd*>::iterator it = std::find(m_listNotes.begin(), m_listNotes.end(), pWnd);
@@ -203,10 +214,10 @@ void CApplication::OnNoteClosed(CNoteWnd* pWnd)
 	}
 }
 
+/**/
 void CApplication::ActivateTopNote()
 {
 	::SetFocus(winutils::GetTopWnd(NOTE_WND_CLASS_NAME));
-
 }
 
 /**/
@@ -251,9 +262,9 @@ int CApplication::GetHiddenNotesCount() const
 }
 
 /**/
-void CApplication::DeleteNote( CNoteWnd* pWnd )
+void CApplication::DeleteNote(int nNoteId)
 {
-	m_storage.DeleteNote(pWnd->GetId());
+	m_storage.DeleteNote(nNoteId);
 }
 
 /**/
@@ -287,7 +298,7 @@ CNoteWnd* CApplication::FindNote(int nNoteId) const
 	return NULL;
 }
 
-void CApplication::OpenNote( CNote const& note )
+CNoteWnd* CApplication::OpenNote( CNote const& note )
 {
 	CNoteWnd* pWnd = CreateNoteWnd(note.GetPos());
 	if (pWnd)
@@ -296,6 +307,7 @@ void CApplication::OpenNote( CNote const& note )
 		pWnd->SetText(note.GetText());
 		pWnd->SetCreated(note.GetCreated());
 	}
+	return pWnd;
 }
 
 CNoteWnd* CApplication::CreateNoteWnd(CRect& rc)
@@ -334,6 +346,21 @@ void CApplication::ShowNote(int nNoteId)
 	else
 	{
 		OpenNote(m_storage.GetNote(nNoteId));
+	}
+}
+
+void CApplication::NoteTextToClipboard(int nNoteId)
+{
+	CNoteWnd* pNoteWnd = FindNote(nNoteId);
+	if (!pNoteWnd)
+	{
+		pNoteWnd = OpenNote(m_storage.GetNote(nNoteId));
+		pNoteWnd->PostMessage(WM_COMMAND, ID_CLIPBRD_COPY);
+		pNoteWnd->PostMessage(WM_CLOSE);
+	}
+	else
+	{
+		pNoteWnd->PostMessage(WM_COMMAND, ID_CLIPBRD_COPY);
 	}
 }
 

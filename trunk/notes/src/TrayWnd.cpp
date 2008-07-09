@@ -6,7 +6,7 @@
 
 
 /* constructor*/
-CTrayWnd::CTrayWnd()
+CTrayWnd::CTrayWnd() : m_nSelectedNoteId(0)
 {
 
 }
@@ -163,6 +163,15 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 		{
 			sCaption += _T("...");
 		}
+// 		MENUITEMINFO mii;
+// 		mii.cbSize = sizeof(MENUITEMINFO);
+// 		mii.fMask = MIIM_TYPE | MIIM_ID | MIIM_DATA;
+// 		mii.fType = MFT_STRING;
+// 		mii.wID = NOTE_CMD_OFFSET + notes[i].GetId();
+// 		mii.dwItemData = notes[i].GetId();
+// 		mii.dwTypeData = &sCaption[0];
+// 		mii.cch = sCaption.size();
+// 		menuNotes.InsertMenuItem(0, TRUE, &mii);
 		menuNotes.InsertMenu(0, MF_BYPOSITION, NOTE_CMD_OFFSET + notes[i].GetId(), sCaption.c_str());
 	}
 }
@@ -200,12 +209,7 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	}
 
 	// set menu item states
-	MENUITEMINFO mif;
-	ZeroMemory(&mif, sizeof(MENUITEMINFO));
-	mif.cbSize = sizeof(MENUITEMINFO);
-	mif.fMask = MIIM_STATE;
-	mif.fState = MFS_DEFAULT;
-	::SetMenuItemInfo(menuTrackPopup, ID_POPUP_NEWNOTE, FALSE, &mif);
+	menuTrackPopup.SetMenuDefaultItem(ID_POPUP_NEWNOTE);
 
 	BOOL bAlwaisOnTop = CApplication::Get().GetOptions().GetAlwaysOnTop();
 	menuTrackPopup.CheckMenuItem(ID_POPUP_ALWAYS_ON_TOP, MF_BYCOMMAND | (bAlwaisOnTop ? MF_CHECKED : MF_UNCHECKED));
@@ -214,7 +218,7 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 
 	// Display the shortcut menu. Track the right mouse button
 
-	if (!menuTrackPopup.TrackPopupMenu(TPM_RIGHTALIGN|TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd, NULL))
+	if (!menuTrackPopup.TrackPopupMenu(TPM_RIGHTALIGN, pt.x, pt.y, m_hWnd, NULL))
 	{
 		ATLTRACE(_T("Shortcut menu was not displayed!\n"));
 		m_menuPopup.DestroyMenu();
@@ -280,4 +284,29 @@ void CTrayWnd::OnCommandRangeHandlerEX(UINT uNotifyCode, int nID, CWindow wndCtl
 {
 	int nNotesId = nID - NOTE_CMD_OFFSET;
 	CApplication::Get().ShowNote(nNotesId);
+}
+
+/* WM_MENURBUTTONUP */
+void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
+{
+	int nItemId = menu.GetMenuItemID(wParam);
+	if (nItemId > NOTE_CMD_OFFSET)
+	{
+		m_nSelectedNoteId = nItemId - NOTE_CMD_OFFSET;
+		POINT pt;
+		::GetCursorPos(&pt);
+		CMenu menuNoteContext;
+		menuNoteContext.LoadMenu(IDR_TRAY_NOTE_MENU);
+		menuNoteContext.GetSubMenu(0).TrackPopupMenu(TPM_LEFTALIGN | TPM_RECURSE, pt.x, pt.y, m_hWnd, NULL);
+	}
+}
+
+/*ID_TNM_COPYALLTOCLIPBOARD*/
+void CTrayWnd::OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (m_nSelectedNoteId > 0)
+	{
+		CApplication::Get().NoteTextToClipboard(m_nSelectedNoteId);
+		m_nSelectedNoteId = 0;
+	}
 }

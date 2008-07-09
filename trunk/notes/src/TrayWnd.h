@@ -30,6 +30,7 @@ public:
 		MSG_WM_QUERYENDSESSION(OnQueryEndSession)
 		MSG_WM_SETFOCUS(OnFocus)
 		MSG_WM_SYSCOMMAND(OnSysCommand)
+		MSG_WM_MENURBUTTONUP(OnMenuRButtonUp)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_SHOWALLNOTES, OnPopupShowAllnotes)
@@ -37,6 +38,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_POPUP_EXIT, OnPopupExit)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ALWAYS_ON_TOP, OnAlwaysOnTop);
 		COMMAND_ID_HANDLER_EX(ID_OPTIONS_FONT, OnOptionsFont);
+		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_OFFSET, NOTE_CMD_OFFSET + 10000, OnCommandRangeHandlerEX)
 	}
 	CATCH_ALL_ERRORS(m_hWnd)
@@ -46,6 +48,7 @@ public:
 	LRESULT OnDestroy(void);
 	LRESULT	OnQueryEndSession(UINT wParam, UINT lParam);
 	void OnFocus(HWND hWnd);
+	void OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnPopupNewnote(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnPopupShowAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl);
@@ -54,7 +57,10 @@ public:
 	void OnSysCommand(UINT nID, CPoint pt);
 	void OnCommandRangeHandlerEX(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnAlwaysOnTop(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl);
 private:
 	LRESULT DisplayShortcutMenu();
+
+	int m_nSelectedNoteId;
 };
