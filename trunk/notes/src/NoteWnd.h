@@ -150,7 +150,7 @@ public:
 			MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
 			MSG_WM_CTLCOLOREDIT(OnCtlColorEdit)
 			MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
-			COMMAND_ID_HANDLER_EX(ID_SAVETOFILE, OnSaveToFile);
+			COMMAND_ID_HANDLER_EX(ID_CLIPBRD_COPY, OnCopyToClipboard);
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALL, OnNoteCloseAll)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
@@ -181,7 +181,7 @@ public:
 	HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
 	HBRUSH OnCtlColorEdit(CDCHandle dc, CEdit edit);
 	void OnInitMenuPopup(CMenu menuPopup, UINT nIndex, BOOL bSysMenu);
-	void OnSaveToFile(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);

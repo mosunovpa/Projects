@@ -487,13 +487,6 @@ CMenuHandle CNoteWnd::AdjustSystemMenu()
 	return menu;
 }
 
-/* ID_SAVETOFILE */
-void CNoteWnd::OnSaveToFile(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	CFileDialog dlg(FALSE);
-	dlg.DoModal();
-}
-
 /* ID_CLOSE */
 void CNoteWnd::OnNoteClose( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
@@ -513,6 +506,12 @@ void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 		SetText(_T(""));
 		PostMessage(WM_CLOSE);
 	}
+}
+
+/* ID_CLIPBRD_COPY */
+void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	m_edit.Copy();
 }
 
 /* ID_CLOSEALL */

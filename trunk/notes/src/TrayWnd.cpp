@@ -2,6 +2,7 @@
 #include "TrayWnd.h"
 #include "resutils.h"
 #include "Application.h"
+#include "menuutils.h"
 
 
 /* constructor*/
@@ -129,24 +130,15 @@ void CTrayWnd::OnSysCommand(UINT nID, CPoint pt)
 /**/
 void ModifyNotesMenu(CMenuHandle menuNotes)
 {
-	if (CApplication::Get().GetOpenedNotesCount() == 0)
-	{
-		menuNotes.DeleteMenu(ID_POPUP_HIDEALLNOTES, MF_BYCOMMAND);
-	}
 	int nHiddenNotes = CApplication::Get().GetHiddenNotesCount();
-	if (nHiddenNotes == 0)
-	{
-		menuNotes.DeleteMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND);
-	}
-	else
-	{
-		_tstring sMenu;
-		sMenu.resize(menuNotes.GetMenuStringLen(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND));
-		menuNotes.GetMenuString(ID_POPUP_SHOWALLNOTES, &sMenu[0], sMenu.size(), MF_BYCOMMAND);
-		sMenu = strutils::format(_T("%s (%d)"), sMenu.c_str(), nHiddenNotes);
-		menuNotes.ModifyMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND | MF_STRING, 
+
+	_tstring sMenu;
+	sMenu.resize(menuNotes.GetMenuStringLen(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND) + 1);
+	menuNotes.GetMenuString(ID_POPUP_SHOWALLNOTES, &sMenu[0], sMenu.size(), MF_BYCOMMAND);
+	sMenu = strutils::format(_T("%s (%d)"), sMenu.c_str(), nHiddenNotes);
+	menuNotes.ModifyMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND | MF_STRING, 
 			(UINT_PTR)ID_POPUP_SHOWALLNOTES, sMenu.c_str());
-	}
+	menuutils::SetMenuItemEnable(menuNotes, ID_POPUP_SHOWALLNOTES, nHiddenNotes > 0);
 
 	CNote::List notes;
 	CApplication::Get().GetAllNotes(notes, CApplication::NM_ID | CApplication::NM_TEXT);
@@ -250,13 +242,6 @@ LRESULT CTrayWnd::OnPopupNewnote(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 LRESULT CTrayWnd::OnPopupShowAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
 	CApplication::Get().ShowAllNotes();
-	return 0;
-}
-
-/* ID_POPUP_HIDEALLNOTES */
-LRESULT CTrayWnd::OnPopupHideAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl)
-{
-	CApplication::Get().CloseAllNotes();
 	return 0;
 }
 
