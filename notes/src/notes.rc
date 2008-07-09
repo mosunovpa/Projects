@@ -66,9 +66,7 @@ IDR_TRAYMENU MENU
 BEGIN
     POPUP "TrayMenu"
     BEGIN
-        MENUITEM "&Show All Hidden Notes",      ID_POPUP_SHOWALLNOTES
-        MENUITEM "&Hide All Notes",             ID_POPUP_HIDEALLNOTES
-        MENUITEM SEPARATOR
+        MENUITEM "&Show Hidden Notes",      ID_POPUP_SHOWALLNOTES
         MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
         MENUITEM SEPARATOR
         POPUP "&Options"
@@ -86,7 +84,7 @@ IDR_NOTEMENU MENU
 BEGIN
     POPUP "NoteMenu"
     BEGIN
-        MENUITEM "&Save To File...",            ID_SAVETOFILE
+        MENUITEM "C&opy To Clipboard",          ID_CLIPBRD_COPY
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_DELETE
         MENUITEM SEPARATOR

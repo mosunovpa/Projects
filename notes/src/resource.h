@@ -21,7 +21,6 @@
 #define ID_POPUP_SHOWALLNOTES           40002
 #define ID_POPUP_ABOUT                  40003
 #define ID_POPUP_EXIT                   40004
-#define ID_POPUP_HIDEALLNOTES           40005
 #define ID_Menu                         40006
 #define ID_POPUP_NOTES                  40007
 #define ID_NOTES_NEW                    40008
@@ -41,13 +40,14 @@
 #define ID_OPTIONS_FONT                 40024
 #define ID_NOTEMENU_SAVETOFILE          40025
 #define ID_SAVETOFILE                   40026
+#define ID_CLIPBRD_COPY                 40027
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        113
-#define _APS_NEXT_COMMAND_VALUE         40027
+#define _APS_NEXT_COMMAND_VALUE         40028
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

@@ -3,6 +3,7 @@
 #include "resource.h"
 #include "atlwinmisc.h"
 #include "Application.h"
+#include "menuutils.h"
 
 CStaticSysIcon::CStaticSysIcon(void)
 {
@@ -41,8 +42,10 @@ void CStaticSysIcon::OnLButtonDown( UINT nFlags, CPoint point )
 
 	if (CApplication::Get().GetOpenedNotesCount() == 1)
 	{
-		m_menuNotes.DeleteMenu(ID_CLOSEALL, MF_BYCOMMAND);
-		m_menuNotes.DeleteMenu(ID_CLOSEALLBUTTHIS, MF_BYCOMMAND);
+//		m_menuNotes.DeleteMenu(ID_CLOSEALL, MF_BYCOMMAND);
+//		m_menuNotes.DeleteMenu(ID_CLOSEALLBUTTHIS, MF_BYCOMMAND);
+		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALL, CApplication::Get().GetOpenedNotesCount() > 1);
+		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALLBUTTHIS, CApplication::Get().GetOpenedNotesCount() > 1);
 	}
 	if (!menuPopup.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
 		rc.left, rc.bottom, GetParent()))
@@ -58,3 +61,4 @@ void CStaticSysIcon::OnLButtonDblClk( UINT nFlags, CPoint point )
 {
 	::PostMessage(GetParent(), WM_CLOSE, 0, 0);
 }
+
