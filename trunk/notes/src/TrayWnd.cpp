@@ -301,12 +301,23 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 	}
 }
 
-/*ID_TNM_COPYALLTOCLIPBOARD*/
+/* ID_TNM_COPYALLTOCLIPBOARD */
 void CTrayWnd::OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (m_nSelectedNoteId > 0)
 	{
 		CApplication::Get().NoteTextToClipboard(m_nSelectedNoteId);
+		m_nSelectedNoteId = 0;
+		EndMenu();
+	}
+}
+
+/* ID_TNM_DELETE */
+void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (m_nSelectedNoteId > 0)
+	{
+		CApplication::Get().Command(ID_DELETE, m_nSelectedNoteId);
 		m_nSelectedNoteId = 0;
 	}
 }

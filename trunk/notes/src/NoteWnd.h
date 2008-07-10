@@ -202,7 +202,6 @@ private:
 	CRect GetClientRect();
 	CMenuHandle AdjustSystemMenu();
 	void StoreNote();
-	void RemoveNote();
 	void DrawStatusBar(CDC& dc);
 	static CBrush m_hBgBrush;
 	static CIcon m_hIcon;

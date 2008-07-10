@@ -29,6 +29,7 @@ public:
 	void CreateNote();
 	int SaveNote(CNoteWnd* pWnd, UINT nMask);
 	void DeleteNote(int nNoteId);
+	void Command(int nCmd, int nNoteId);
 	void ShowAllNotes();
 	void ShowNote(int nNoteId);
 	void CloseAllNotes(CNoteWnd* pExceptWnd = NULL);
@@ -51,6 +52,7 @@ private:
 	CNoteWnd* FindNote(int nNoteId) const;
 	CNoteWnd* OpenNote(CNote const& note);
 	CNoteWnd* CreateNoteWnd(CRect& rc);
+	void DeleteNoteWnd(CNoteWnd* pNoteWnd);
 	CRect CalcNewNoteRect();
 	void GetAllNotesPositions(CNote::List& notes);
 	void GetSomePossiblePositions(CRect const& center, std::vector<CRect>& poss);

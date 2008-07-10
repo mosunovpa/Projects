@@ -19,6 +19,11 @@ LPCTSTR CNote::GetText() const
 	return m_text.c_str();
 }
 
+int CNote::GetTextLen() const
+{
+	return m_text.size();
+}
+
 CRect CNote::GetPos() const
 {
 	return m_pos;

@@ -14,6 +14,7 @@
 #include "Application.h"
 #include "guiutils.h"
 #include "dateutils.h"
+#include "Clipboard.h"
 
 const INT s_nCaptionSize = 16;
 const INT s_nCornerSize = 14;
@@ -217,7 +218,7 @@ void CNoteWnd::OnDestroy()
 {
 	if (GetText().empty())
 	{
-		RemoveNote();
+		CApplication::Get().DeleteNote(GetId());
 	}
 	else
 	{
@@ -422,12 +423,6 @@ void CNoteWnd::StoreNote()
 }
 
 /**/
-void CNoteWnd::RemoveNote()
-{
-	CApplication::Get().DeleteNote(GetId());
-};
-
-/**/
 int CNoteWnd::GetId() const
 {
 	return m_nNoteId;
@@ -500,11 +495,11 @@ void CNoteWnd::OnNoteClose( UINT uNotifyCode, int nID, CWindow wndCtl )
 /* ID_CLIPBRD_COPY */
 void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	long nStart, nEnd;
-	m_edit.GetSel(nStart, nEnd);
-	m_edit.SetSel(0, -1);
-	m_edit.Copy();
-	m_edit.SetSel(nStart, nEnd);
+ 	long nStart, nEnd;
+ 	m_edit.GetSel(nStart, nEnd);
+ 	m_edit.SetSel(0, -1);
+ 	m_edit.Copy();
+ 	m_edit.SetSel(nStart, nEnd);
 }
 
 /* ID_DELETE */

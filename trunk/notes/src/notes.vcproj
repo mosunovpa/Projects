@@ -317,6 +317,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\common\Clipboard.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\Clipboard.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\common\dateutils.cpp"
 				>
 			</File>
