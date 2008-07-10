@@ -10,6 +10,7 @@ public:
 
 	int GetId() const;
 	LPCTSTR GetText() const;
+	int GetTextLen() const;
 	CRect GetPos() const;
 	time_t GetCreated() const;
 

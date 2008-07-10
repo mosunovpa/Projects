@@ -9,6 +9,7 @@
 #include "fileutils.h"
 #include "winutils.h"
 #include <math.h>
+#include "Clipboard.h"
 
 /**/
 CApplication::CApplication()
@@ -194,12 +195,8 @@ void CApplication::ShowAllNotes()
 /**/
 void CApplication::OnNoteClosed(CNoteWnd* pWnd)
 {
-	std::list<CNoteWnd*>::iterator it = std::find(m_listNotes.begin(), m_listNotes.end(), pWnd);
-	if (it != m_listNotes.end())
-	{
-		delete *it;
-		m_listNotes.erase(it);
-	}
+	DeleteNoteWnd(pWnd);
+
 	if (m_listNotes.empty())
 	{
 		if (::IsWindow(m_TrayWnd.m_hWnd))
@@ -326,16 +323,30 @@ CNoteWnd* CApplication::CreateNoteWnd(CRect& rc)
 	return pWnd;
 }
 
+/**/
+void CApplication::DeleteNoteWnd(CNoteWnd* pNoteWnd)
+{
+	std::list<CNoteWnd*>::iterator it = std::find(m_listNotes.begin(), m_listNotes.end(), pNoteWnd);
+	if (it != m_listNotes.end())
+	{
+		delete *it;
+		m_listNotes.erase(it);
+	}
+}
+
+/**/
 COptions& CApplication::GetOptions()
 {
 	return m_options;
 }
 
+/**/
 void CApplication::SaveOptions()
 {
 	m_storage.WriteOptions(m_options);
 }
 
+/**/
 void CApplication::ShowNote(int nNoteId)
 {
 	CNoteWnd* pNoteWnd = FindNote(nNoteId);
@@ -349,22 +360,34 @@ void CApplication::ShowNote(int nNoteId)
 	}
 }
 
+/**/
 void CApplication::NoteTextToClipboard(int nNoteId)
+{
+	CNoteWnd* pNoteWnd = FindNote(nNoteId);
+	if (pNoteWnd)
+	{
+		pNoteWnd->PostMessage(WM_COMMAND, ID_CLIPBRD_COPY);
+	}
+	else
+	{
+		CNote note = m_storage.GetNote(nNoteId);
+		CClipboard::SetText(note.GetText(), m_TrayWnd);
+	}
+}
+
+/**/
+void CApplication::ReleaseStorage()
+{
+	m_storage.Release();
+}
+
+/**/
+void CApplication::Command(int nCmd, int nNoteId)
 {
 	CNoteWnd* pNoteWnd = FindNote(nNoteId);
 	if (!pNoteWnd)
 	{
 		pNoteWnd = OpenNote(m_storage.GetNote(nNoteId));
-		pNoteWnd->PostMessage(WM_COMMAND, ID_CLIPBRD_COPY);
-		pNoteWnd->PostMessage(WM_CLOSE);
 	}
-	else
-	{
-		pNoteWnd->PostMessage(WM_COMMAND, ID_CLIPBRD_COPY);
-	}
-}
-
-void CApplication::ReleaseStorage()
-{
-	m_storage.Release();
+	pNoteWnd->PostMessage(WM_COMMAND, nCmd);
 }
