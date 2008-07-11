@@ -284,7 +284,7 @@ void CTrayWnd::OnCommandRangeHandlerEX(UINT uNotifyCode, int nID, CWindow wndCtl
 /* WM_MENURBUTTONUP */
 void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 {
-	int m_nSelectedMenuItemId = menu.GetMenuItemID(wParam);
+	m_nSelectedMenuItemId = menu.GetMenuItemID(wParam);
 	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
 	{
 		POINT pt;
