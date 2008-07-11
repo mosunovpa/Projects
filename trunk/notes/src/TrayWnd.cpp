@@ -6,7 +6,7 @@
 
 
 /* constructor*/
-CTrayWnd::CTrayWnd() : m_nSelectedNoteId(0)
+CTrayWnd::CTrayWnd() : m_nSelectedMenuItemId(0)
 {
 
 }
@@ -133,11 +133,11 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 	int nHiddenNotes = CApplication::Get().GetHiddenNotesCount();
 
 	_tstring sMenu;
-	sMenu.resize(menuNotes.GetMenuStringLen(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND) + 1);
-	menuNotes.GetMenuString(ID_POPUP_SHOWALLNOTES, &sMenu[0], sMenu.size(), MF_BYCOMMAND);
-	sMenu = strutils::format(_T("%s (%d)"), sMenu.c_str(), nHiddenNotes);
-	menuNotes.ModifyMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND | MF_STRING, 
-			(UINT_PTR)ID_POPUP_SHOWALLNOTES, sMenu.c_str());
+	//sMenu.resize(menuNotes.GetMenuStringLen(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND) + 1);
+	//menuNotes.GetMenuString(ID_POPUP_SHOWALLNOTES, &sMenu[0], sMenu.size(), MF_BYCOMMAND);
+	//sMenu = strutils::format(_T("%s (%d)"), sMenu.c_str(), nHiddenNotes);
+	//menuNotes.ModifyMenu(ID_POPUP_SHOWALLNOTES, MF_BYCOMMAND | MF_STRING, 
+	//		(UINT_PTR)ID_POPUP_SHOWALLNOTES, sMenu.c_str());
 	menuutils::SetMenuItemEnable(menuNotes, ID_POPUP_SHOWALLNOTES, nHiddenNotes > 0);
 
 	CNote::List notes;
@@ -172,7 +172,7 @@ void ModifyNotesMenu(CMenuHandle menuNotes)
 // 		mii.dwTypeData = &sCaption[0];
 // 		mii.cch = sCaption.size();
 // 		menuNotes.InsertMenuItem(0, TRUE, &mii);
-		menuNotes.InsertMenu(0, MF_BYPOSITION, NOTE_CMD_OFFSET + notes[i].GetId(), sCaption.c_str());
+		menuNotes.InsertMenu(0, MF_BYPOSITION, CREATE_NOTE_CMD(notes[i].GetId()), sCaption.c_str());
 	}
 }
 
@@ -236,30 +236,26 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 }
 
 /* ID_POPUP_NEWNOTE */
-LRESULT CTrayWnd::OnPopupNewnote(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+void CTrayWnd::OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CApplication::Get().CreateNote();
-	return 0;
 }
 
 /* ID_POPUP_SHOWALLNOTES */
-LRESULT CTrayWnd::OnPopupShowAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+void CTrayWnd::OnPopupShowAllnotes(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CApplication::Get().ShowAllNotes();
-	return 0;
 }
 
 /* ID_POPUP_ABOUT */
-LRESULT CTrayWnd::OnPopupAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+void CTrayWnd::OnPopupAbout(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	return 0;
 }
 
 /* ID_POPUP_EXIT */
-LRESULT CTrayWnd::OnPopupExit(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+void CTrayWnd::OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	PostMessage(WM_CLOSE);
-	return 0;
 }
 
 /* ID_POPUP_ALWAYS_ON_TOP */
@@ -282,17 +278,15 @@ void CTrayWnd::OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl)
 /**/
 void CTrayWnd::OnCommandRangeHandlerEX(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	int nNotesId = nID - NOTE_CMD_OFFSET;
-	CApplication::Get().ShowNote(nNotesId);
+	CApplication::Get().ShowNote(GET_NOTE_ID_FROM_CMD(nID));
 }
 
 /* WM_MENURBUTTONUP */
 void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 {
-	int nItemId = menu.GetMenuItemID(wParam);
-	if (nItemId > NOTE_CMD_OFFSET)
+	int m_nSelectedMenuItemId = menu.GetMenuItemID(wParam);
+	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
 	{
-		m_nSelectedNoteId = nItemId - NOTE_CMD_OFFSET;
 		POINT pt;
 		::GetCursorPos(&pt);
 		CMenu menuNoteContext;
@@ -304,10 +298,10 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 /* ID_TNM_COPYALLTOCLIPBOARD */
 void CTrayWnd::OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	if (m_nSelectedNoteId > 0)
+	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
 	{
-		CApplication::Get().NoteTextToClipboard(m_nSelectedNoteId);
-		m_nSelectedNoteId = 0;
+		CApplication::Get().NoteTextToClipboard(GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId));
+		m_nSelectedMenuItemId = 0;
 		EndMenu();
 	}
 }
@@ -315,9 +309,15 @@ void CTrayWnd::OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_TNM_DELETE */
 void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	if (m_nSelectedNoteId > 0)
+	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
 	{
-		CApplication::Get().Command(ID_DELETE, m_nSelectedNoteId);
-		m_nSelectedNoteId = 0;
+		CApplication::Get().Command(ID_DELETE, GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId));
+		m_nSelectedMenuItemId = 0;
 	}
+}
+
+/* ID_POPUP_NEWANDPASTE */
+void CTrayWnd::OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CApplication::Get().Command(ID_PASTE, CApplication::Get().CreateNote());
 }

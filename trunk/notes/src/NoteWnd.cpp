@@ -527,6 +527,12 @@ void CNoteWnd::OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl)
 	CApplication::Get().CloseAllNotes(this); // close all but this
 }
 
+/* ID_PASTE */
+void CNoteWnd::OnPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	m_edit.Paste();
+}
+
 /**/
 void CNoteWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu)
 {

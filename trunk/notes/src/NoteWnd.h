@@ -151,6 +151,7 @@ public:
 			MSG_WM_CTLCOLOREDIT(OnCtlColorEdit)
 			MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 			COMMAND_ID_HANDLER_EX(ID_CLIPBRD_COPY, OnCopyToClipboard);
+			COMMAND_ID_HANDLER_EX(ID_PASTE, OnPaste);
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALL, OnNoteCloseAll)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
@@ -182,6 +183,7 @@ public:
 	HBRUSH OnCtlColorEdit(CDCHandle dc, CEdit edit);
 	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
 	void OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);

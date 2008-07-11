@@ -139,7 +139,7 @@ CRect CApplication::CalcNewNoteRect()
 }
 
 /**/
-void CApplication::CreateNote()
+HWND CApplication::CreateNote()
 {
 	CNoteWnd* pWnd = CreateNoteWnd(CalcNewNoteRect());
 	if (pWnd)
@@ -147,6 +147,7 @@ void CApplication::CreateNote()
 		pWnd->SetCreated(dateutils::GetCurrentDate());
 		pWnd->SetFocus();
 	}
+	return pWnd != NULL ? pWnd->m_hWnd : NULL;
 }
 
 /**/
@@ -261,7 +262,22 @@ int CApplication::GetHiddenNotesCount() const
 /**/
 void CApplication::DeleteNote(int nNoteId)
 {
-	m_storage.DeleteNote(nNoteId);
+	if (nNoteId > 0)
+	{
+		CNote note = m_storage.GetNote(nNoteId);
+		m_storage.DeleteNote(nNoteId);
+		AddToUndeleteList(note);
+	}
+}
+
+/**/
+void CApplication::AddToUndeleteList(const CNote& note)
+{
+	m_listDeleted.push_front(note);
+	if (m_listDeleted.size() > 20)
+	{
+		m_listDeleted.pop_back();
+	}
 }
 
 /**/
@@ -390,4 +406,10 @@ void CApplication::Command(int nCmd, int nNoteId)
 		pNoteWnd = OpenNote(m_storage.GetNote(nNoteId));
 	}
 	pNoteWnd->PostMessage(WM_COMMAND, nCmd);
+}
+
+/**/
+void CApplication::Command(int nCmd, HWND hWnd)
+{
+	::PostMessage(hWnd, WM_COMMAND, nCmd, 0);
 }
