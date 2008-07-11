@@ -47,14 +47,22 @@
 #define ID_TRAYNOTEMENU_DELETE          40035
 #define ID_TNM_DELETE                   40036
 #define ID_TNM_COPYALLTOCLIPBOARD       40037
+#define ID_TRAYMENU_NEWANDPASTE         40038
+#define ID_NEWANDPASTE                  40039
+#define ID_POPUP_NEWANDPASTE            40040
+#define ID_PASTE                        40041
+#define ID_TRAYMENU_UNDELETE            40042
+#define ID_TRAYMENU_MORE                40045
+#define ID_TRAYNOTEMENU_ID_CANCEL       40046
+#define ID_UNDELETE                     40047
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        115
-#define _APS_NEXT_COMMAND_VALUE         40038
+#define _APS_NEXT_COMMAND_VALUE         40048
 #define _APS_NEXT_CONTROL_VALUE         1002
-#define _APS_NEXT_SYMED_VALUE           101
+#define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

@@ -4,7 +4,17 @@
 #include "TrayIcon.h"
 #include "resource.h"
 
-const UINT NOTE_CMD_OFFSET = 50000;
+#define NOTE_CMD_FIRST 50000
+#define NOTE_CMD_RANGE 10000
+#define NOTE_CMD_LAST (NOTE_CMD_FIRST + NOTE_CMD_RANGE)
+#define CREATE_NOTE_CMD(id) ((id) + NOTE_CMD_FIRST)
+#define GET_NOTE_ID_FROM_CMD(cmd) ((cmd) - NOTE_CMD_FIRST)
+#define IS_NOTE_CMD(cmd) (cmd > NOTE_CMD_FIRST && cmd <= NOTE_CMD_LAST)
+
+#define DELETED_CMD_FIRST NOTE_CMD_LAST
+#define DELETED_CMD_LAST (DELETED_CMD_FIRST + NOTE_CMD_RANGE)
+#define CREATE_DELETED_CMD(id) ((id) + DELETED_CMD_FIRST)
+#define GET_DELETED_ID_FROM_CMD(cmd) ((cmd) - DELETED_CMD_FIRST)
 
 class CTrayWnd : public CWindowImpl<CTrayWnd> 
 {
@@ -33,6 +43,7 @@ public:
 		MSG_WM_MENURBUTTONUP(OnMenuRButtonUp)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
+		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWANDPASTE, OnNewAndPaste)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_SHOWALLNOTES, OnPopupShowAllnotes)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_EXIT, OnPopupExit)
@@ -40,7 +51,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_OPTIONS_FONT, OnOptionsFont);
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
-		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_OFFSET + 1, NOTE_CMD_OFFSET + 10000, OnCommandRangeHandlerEX)
+		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnCommandRangeHandlerEX)
 	}
 	CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()
@@ -51,10 +62,11 @@ public:
 	void OnFocus(HWND hWnd);
 	void OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	LRESULT OnPopupNewnote(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-	LRESULT OnPopupShowAllnotes(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-	LRESULT OnPopupAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-	LRESULT OnPopupExit(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+	void OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnPopupShowAllnotes(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnPopupAbout(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSysCommand(UINT nID, CPoint pt);
 	void OnCommandRangeHandlerEX(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnAlwaysOnTop(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -64,5 +76,5 @@ public:
 private:
 	LRESULT DisplayShortcutMenu();
 
-	int m_nSelectedNoteId;
+	int m_nSelectedMenuItemId;
 };
