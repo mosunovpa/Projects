@@ -55,13 +55,18 @@
 #define ID_TRAYMENU_MORE                40045
 #define ID_TRAYNOTEMENU_ID_CANCEL       40046
 #define ID_UNDELETE                     40047
+#define ID_MORE_HELP                    40048
+#define ID_FONTSIZE_8                   40049
+#define ID_FONTSIZE_10                  40050
+#define ID_FONTSIZE_12                  40051
+#define ID_UNDELETE_EMPTY               40052
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        115
-#define _APS_NEXT_COMMAND_VALUE         40048
+#define _APS_NEXT_COMMAND_VALUE         40053
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           102
 #endif

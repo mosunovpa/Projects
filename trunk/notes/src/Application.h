@@ -28,11 +28,13 @@ public:
 	void CreateAppWindow();
 	HWND CreateNote();
 	int SaveNote(CNoteWnd* pWnd, UINT nMask);
+	void DeleteFromStorage(int nNoteId);
 	void DeleteNote(int nNoteId);
 	void Command(int nCmd, int nNoteId);
 	void Command(int nCmd, HWND hWnd);
 	void ShowAllNotes();
 	void ShowNote(int nNoteId);
+	void UndeleteNote(int nNoteId);
 	void CloseAllNotes(CNoteWnd* pExceptWnd = NULL);
 	int GetOpenedNotesCount() const;
 	int GetAllNotes(CNote::List& notes, UINT nMask) const;

@@ -218,7 +218,7 @@ void CNoteWnd::OnDestroy()
 {
 	if (GetText().empty())
 	{
-		CApplication::Get().DeleteNote(GetId());
+		CApplication::Get().DeleteFromStorage(GetId());
 	}
 	else
 	{
@@ -473,6 +473,12 @@ void CNoteWnd::SetCreated(time_t dt)
 }
 
 /**/
+void CNoteWnd::SetModified(BOOL bVal)
+{
+	m_edit.SetModify(bVal);
+}
+
+/**/
 CMenuHandle CNoteWnd::AdjustSystemMenu()
 {
 	CMenuHandle menu = GetSystemMenu(FALSE);
@@ -505,12 +511,12 @@ void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_DELETE */
 void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
-	CSimpleDialog<IDD_DELETENOTECONFIRM> dlg;
-	if (dlg.DoModal() == IDYES)
-	{
+//	CSimpleDialog<IDD_DELETENOTECONFIRM> dlg;
+//	if (dlg.DoModal() == IDYES)
+//	{
 		SetText(_T(""));
 		PostMessage(WM_CLOSE);
-	}
+//	}
 }
 
 

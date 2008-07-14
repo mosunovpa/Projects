@@ -127,6 +127,7 @@ public:
 	void SetText(LPCTSTR text);
 	time_t GetCreated() const;
 	void SetCreated(time_t dt);
+	void SetModified(BOOL bVal);
 
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 

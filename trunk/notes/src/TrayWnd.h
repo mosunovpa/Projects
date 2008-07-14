@@ -51,7 +51,8 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_OPTIONS_FONT, OnOptionsFont);
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
-		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnCommandRangeHandlerEX)
+		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
+		COMMAND_RANGE_HANDLER_EX(DELETED_CMD_FIRST + 1, DELETED_CMD_LAST, OnDeletedNoteSelected)
 	}
 	CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()
@@ -68,7 +69,8 @@ public:
 	void OnPopupAbout(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSysCommand(UINT nID, CPoint pt);
-	void OnCommandRangeHandlerEX(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnDeletedNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnAlwaysOnTop(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
