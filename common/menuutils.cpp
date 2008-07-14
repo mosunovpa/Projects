@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "menuutils.h"
 
+/**/
 BOOL menuutils::SetMenuItemEnable(HMENU hMenu, WORD wId, BOOL bEnable)
 {
 	MENUITEMINFO mif;
@@ -12,4 +13,13 @@ BOOL menuutils::SetMenuItemEnable(HMENU hMenu, WORD wId, BOOL bEnable)
 	mif.wID = wId;
 	mif.fState = bEnable ? MFS_ENABLED : MFS_DISABLED;
 	return ::SetMenuItemInfo(hMenu, wId, FALSE, &mif);
+}
+
+/**/
+_tstring menuutils::GetMenuString( HMENU hMenu, UINT nIDItem, UINT nFlags )
+{
+	int len = ::GetMenuString(hMenu, nIDItem, 0, 0, nFlags);
+	_tstring s(len + 1, 0);
+	::GetMenuString(hMenu, nIDItem, &s[0], s.size(), nFlags);
+	return s;
 }
