@@ -68,24 +68,24 @@ BEGIN
     BEGIN
         MENUITEM "&Show Hidden Notes",          ID_POPUP_SHOWALLNOTES
         MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
-        MENUITEM "New And &Paste",              ID_POPUP_NEWANDPASTE
         MENUITEM SEPARATOR
-        POPUP "&More"
+        POPUP "&Undelete"
         BEGIN
-            POPUP "&Undelete"
-            BEGIN
-                MENUITEM "(Empty)",                     ID_UNDELETE
-            END
-            MENUITEM SEPARATOR
-            POPUP "&Options"
-            BEGIN
-                MENUITEM "&Always On Top",              ID_POPUP_ALWAYS_ON_TOP
-                MENUITEM "&Font...",                    ID_OPTIONS_FONT
-            END
-            MENUITEM "&About...",                   ID_POPUP_ABOUT
-            MENUITEM SEPARATOR
-            MENUITEM "&Exit",                       ID_POPUP_EXIT
+            MENUITEM "(Empty)",                     ID_UNDELETE_EMPTY
         END
+        POPUP "&Options"
+        BEGIN
+            MENUITEM "&Always On Top",              ID_POPUP_ALWAYS_ON_TOP
+            POPUP "&Font Size"
+            BEGIN
+                MENUITEM "8",                           ID_FONTSIZE_8
+                MENUITEM "10",                          ID_FONTSIZE_10
+                MENUITEM "12",                          ID_FONTSIZE_12
+            END
+        END
+        MENUITEM "&Help",                       ID_MORE_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit",                       ID_POPUP_EXIT
     END
 END
 
@@ -126,8 +126,6 @@ BEGIN
         MENUITEM "C&opy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
-        MENUITEM SEPARATOR
-        MENUITEM "Cancel",                      ID_TRAYNOTEMENU_ID_CANCEL
     END
 END
 

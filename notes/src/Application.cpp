@@ -260,7 +260,7 @@ int CApplication::GetHiddenNotesCount() const
 }
 
 /**/
-void CApplication::DeleteNote(int nNoteId)
+void CApplication::DeleteFromStorage(int nNoteId)
 {
 	if (nNoteId > 0)
 	{
@@ -392,6 +392,20 @@ void CApplication::NoteTextToClipboard(int nNoteId)
 }
 
 /**/
+void CApplication::DeleteNote(int nNoteId)
+{
+	CNoteWnd* pNoteWnd = FindNote(nNoteId);
+	if (pNoteWnd)
+	{
+		pNoteWnd->PostMessage(WM_COMMAND, ID_DELETE);
+	}
+	else
+	{
+		DeleteFromStorage(nNoteId);
+	}
+}
+
+/**/
 void CApplication::ReleaseStorage()
 {
 	m_storage.Release();
@@ -412,4 +426,22 @@ void CApplication::Command(int nCmd, int nNoteId)
 void CApplication::Command(int nCmd, HWND hWnd)
 {
 	::PostMessage(hWnd, WM_COMMAND, nCmd, 0);
+}
+
+/**/
+void CApplication::UndeleteNote( int nNoteId )
+{
+	for(std::list<CNote>::iterator it = m_listDeleted.begin(); it != m_listDeleted.end(); ++it)
+	{
+		if (it->GetId() == nNoteId)
+		{
+			CNote& note = *it;
+			note.SetId(0); // Clear id for restored note. New id will be generated.
+			CNoteWnd* pWnd = OpenNote(note);
+			pWnd->SetModified(TRUE);
+
+			m_listDeleted.erase(it);
+			return;
+		}
+	}
 }
