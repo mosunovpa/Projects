@@ -144,7 +144,8 @@ HWND CApplication::CreateNote()
 	CNoteWnd* pWnd = CreateNoteWnd(CalcNewNoteRect());
 	if (pWnd)
 	{
-		pWnd->SetCreated(dateutils::GetCurrentDate());
+		pWnd->SetCreatedDate(dateutils::GetCurrentDate());
+		pWnd->SetModifiedDate(dateutils::GetCurrentDate());
 		pWnd->SetFocus();
 	}
 	return pWnd != NULL ? pWnd->m_hWnd : NULL;
@@ -225,7 +226,8 @@ int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 	note.SetId(pWnd->GetId());
 	note.SetText(pWnd->GetText().c_str());
 	note.SetPos(CWindowRect(pWnd->m_hWnd));
-	note.SetCreated(pWnd->GetCreated());
+	note.SetCreatedDate(pWnd->GetCreatedDate());
+	note.SetModifiedDate(pWnd->GetModifiedDate());
 	m_storage.SaveNote(note, nMask);
 	return note.GetId();
 }
@@ -318,7 +320,8 @@ CNoteWnd* CApplication::OpenNote( CNote const& note )
 	{
 		pWnd->SetId(note.GetId());
 		pWnd->SetText(note.GetText());
-		pWnd->SetCreated(note.GetCreated());
+		pWnd->SetCreatedDate(note.GetCreatedDate());
+		pWnd->SetModifiedDate(note.GetModifiedDate());
 	}
 	return pWnd;
 }
@@ -438,7 +441,7 @@ void CApplication::UndeleteNote( int nNoteId )
 			CNote& note = *it;
 			note.SetId(0); // Clear id for restored note. New id will be generated.
 			CNoteWnd* pWnd = OpenNote(note);
-			pWnd->SetModified(TRUE);
+			pWnd->SetModify(TRUE);
 
 			m_listDeleted.erase(it);
 			return;

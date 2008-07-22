@@ -78,9 +78,9 @@ BEGIN
             MENUITEM "&Always On Top",              ID_POPUP_ALWAYS_ON_TOP
             POPUP "&Font Size"
             BEGIN
-                MENUITEM "8",                           ID_FONTSIZE_8
-                MENUITEM "10",                          ID_FONTSIZE_10
-                MENUITEM "12",                          ID_FONTSIZE_12
+                MENUITEM "&Small",                      ID_FONTSIZE_SMALL
+                MENUITEM "&Medium",                     ID_FONTSIZE_MEDIUM
+                MENUITEM "&Large",                      ID_FONTSIZE_LARGE
             END
         END
         MENUITEM "&Help",                       ID_MORE_HELP

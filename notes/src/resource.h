@@ -60,13 +60,16 @@
 #define ID_FONTSIZE_10                  40050
 #define ID_FONTSIZE_12                  40051
 #define ID_UNDELETE_EMPTY               40052
+#define ID_FONTSIZE_SMALL               40053
+#define ID_FONTSIZE_MEDIUM              40054
+#define ID_FONTSIZE_LARGE               40055
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        115
-#define _APS_NEXT_COMMAND_VALUE         40053
+#define _APS_NEXT_COMMAND_VALUE         40056
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           102
 #endif

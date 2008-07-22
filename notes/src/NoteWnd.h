@@ -125,9 +125,12 @@ public:
 	void SetId(int id);
 	_tstring GetText() const;
 	void SetText(LPCTSTR text);
-	time_t GetCreated() const;
-	void SetCreated(time_t dt);
-	void SetModified(BOOL bVal);
+	time_t GetCreatedDate() const;
+	void SetCreatedDate(time_t dt);
+	time_t GetModifiedDate() const;
+	void SetModifiedDate(time_t dt);
+
+	void SetModify(BOOL bVal);
 
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
@@ -222,4 +225,5 @@ private:
 	BOOL m_bSaveError;
 	BOOL m_bPosChanged;
 	time_t m_dtCreated;
+	time_t m_dtModified;
 };

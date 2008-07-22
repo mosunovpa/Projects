@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Options.h"
 
-COptions::COptions(void) : m_bAlwaysOnTop(FALSE)
+COptions::COptions(void) : m_bAlwaysOnTop(FALSE), m_fs(FS_SMALL)
 {
 }
 
@@ -17,4 +17,14 @@ BOOL COptions::GetAlwaysOnTop() const
 void COptions::SetAlwaysOnTop( BOOL bVal )
 {
 	m_bAlwaysOnTop = bVal;
+}
+
+COptions::FontSize COptions::GetFontSize() const
+{
+	return m_fs;
+}
+
+void COptions::SetFontSize( FontSize fs )
+{
+	m_fs = fs;
 }

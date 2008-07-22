@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Note.h"
 
-CNote::CNote(void) : m_id(0), m_dtCreated(0)
+CNote::CNote(void) : m_id(0), m_dtCreated(0), m_dtModified(0)
 {
 }
 
@@ -44,12 +44,23 @@ void CNote::SetPos( CRect const& pos )
 	m_pos = pos;
 }
 
-time_t CNote::GetCreated() const
+time_t CNote::GetCreatedDate() const
 {
 	return m_dtCreated;
 }
 
-void CNote::SetCreated(time_t dt)
+void CNote::SetCreatedDate(time_t dt)
 {
 	m_dtCreated = dt;
 }
+
+time_t CNote::GetModifiedDate() const
+{
+	return m_dtModified;
+}
+
+void CNote::SetModifiedDate(time_t dt)
+{
+	m_dtModified = dt;
+}
+
