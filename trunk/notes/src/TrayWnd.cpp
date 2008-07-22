@@ -33,12 +33,19 @@ CMenuHandle GetUndeleteMenu(CMenuHandle menuNotes)
 
 
 /**/
+bool compare_by_modify_date(CNote const& left, CNote const& right)
+{
+	return left.GetModifiedDate() < right.GetModifiedDate();
+}
+
+/**/
 void ModifyNotesMenu(CMenuHandle menuNotes)
 {
 	int nHiddenNotes = CApplication::Get().GetHiddenNotesCount();
 	menuutils::SetMenuItemEnable(menuNotes, ID_POPUP_SHOWALLNOTES, nHiddenNotes > 0);
 	CNote::List notes;
-	CApplication::Get().GetAllNotes(notes, CApplication::NM_ID | CApplication::NM_TEXT);
+	CApplication::Get().GetAllNotes(notes, CApplication::NM_ID | CApplication::NM_TEXT | CApplication::NM_MODIFIED);
+	std::sort(notes.begin(), notes.end(), compare_by_modify_date);
 
 	/* check separator */
 	int nState = menuNotes.GetMenuState(0, MF_BYPOSITION);
@@ -236,6 +243,11 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	BOOL bAlwaisOnTop = CApplication::Get().GetOptions().GetAlwaysOnTop();
 	menuTrackPopup.CheckMenuItem(ID_POPUP_ALWAYS_ON_TOP, MF_BYCOMMAND | (bAlwaisOnTop ? MF_CHECKED : MF_UNCHECKED));
 
+	COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
+	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_SMALL, MF_BYCOMMAND | (fs == COptions::FS_SMALL ? MF_CHECKED : MF_UNCHECKED));
+	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_MEDIUM, MF_BYCOMMAND | (fs == COptions::FS_MEDIUM ? MF_CHECKED : MF_UNCHECKED));
+	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_LARGE, MF_BYCOMMAND | (fs == COptions::FS_LARGE ? MF_CHECKED : MF_UNCHECKED));
+
 	ModifyNotesMenu(menuTrackPopup);
 
 	// Display the shortcut menu. Track the right mouse button
@@ -287,6 +299,27 @@ void CTrayWnd::OnAlwaysOnTop( UINT uNotifyCode, int nID, CWindow wndCtl )
 	bAlwaisOnTop = !bAlwaisOnTop;
 	SetWindowPos(bAlwaisOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, CRect(0,0,0,0), SWP_NOSIZE | SWP_NOMOVE);
 	CApplication::Get().GetOptions().SetAlwaysOnTop(bAlwaisOnTop);
+	CApplication::Get().SaveOptions();
+}
+
+/**/
+void CTrayWnd::OnFontSizeSmall(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CApplication::Get().GetOptions().SetFontSize(COptions::FS_SMALL);
+	CApplication::Get().SaveOptions();
+}
+
+/**/
+void CTrayWnd::OnFontSizeMedium(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CApplication::Get().GetOptions().SetFontSize(COptions::FS_MEDIUM);
+	CApplication::Get().SaveOptions();
+}
+
+/**/
+void CTrayWnd::OnFontSizeLarge(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CApplication::Get().GetOptions().SetFontSize(COptions::FS_LARGE);
 	CApplication::Get().SaveOptions();
 }
 

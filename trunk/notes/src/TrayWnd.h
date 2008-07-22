@@ -48,6 +48,9 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_EXIT, OnPopupExit)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ALWAYS_ON_TOP, OnAlwaysOnTop);
+		COMMAND_ID_HANDLER_EX(ID_FONTSIZE_SMALL, OnFontSizeSmall)
+		COMMAND_ID_HANDLER_EX(ID_FONTSIZE_MEDIUM, OnFontSizeMedium)
+		COMMAND_ID_HANDLER_EX(ID_FONTSIZE_LARGE, OnFontSizeLarge)
 		COMMAND_ID_HANDLER_EX(ID_OPTIONS_FONT, OnOptionsFont);
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
@@ -72,6 +75,9 @@ public:
 	void OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnDeletedNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnAlwaysOnTop(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnFontSizeSmall(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnFontSizeMedium(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnFontSizeLarge(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl);

@@ -35,7 +35,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 :	m_nNoteId(nNoteId),
 	m_bSaveError(FALSE),
 	m_bPosChanged(FALSE),
-	m_dtCreated(0)
+	m_dtCreated(0),
+	m_dtModified(0)
 {
 }
 
@@ -182,11 +183,13 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	m_edit.SetBackgroundColor(RGB(255, 255, 204));
 
 
+	COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
 	CHARFORMAT cf;
 	ZeroMemory(&cf, sizeof(CHARFORMAT));
 	cf.cbSize = sizeof(CHARFORMAT);
 	cf.dwMask = CFM_SIZE | CFM_BOLD | CFM_FACE;
 	m_edit.GetDefaultCharFormat(cf);
+	cf.yHeight = (fs == COptions::FS_SMALL ? 160 : (fs == COptions::FS_MEDIUM ? 200 : 240));
 	cf.dwEffects = 0;
 	lstrcpy(cf.szFaceName, _T("MS Shell Dlg"));
 	m_edit.SetDefaultCharFormat(cf);
@@ -411,6 +414,7 @@ void CNoteWnd::StoreNote()
 	{
 		if (m_edit.GetModify()) // save all if note content has been changed
 		{
+			m_dtModified = dateutils::GetCurrentDate();
 			m_nNoteId = CApplication::Get().SaveNote(this, CApplication::NM_ALL);
 		}
 		else if (m_bPosChanged) // only position changed
@@ -456,13 +460,13 @@ void CNoteWnd::SetText(LPCTSTR text)
 }
 
 /**/
-time_t CNoteWnd::GetCreated() const
+time_t CNoteWnd::GetCreatedDate() const
 {
 	return m_dtCreated;
 }
 
 /**/
-void CNoteWnd::SetCreated(time_t dt)
+void CNoteWnd::SetCreatedDate(time_t dt)
 {
 	m_dtCreated = dt;
 	if (dt != 0)
@@ -473,7 +477,20 @@ void CNoteWnd::SetCreated(time_t dt)
 }
 
 /**/
-void CNoteWnd::SetModified(BOOL bVal)
+time_t CNoteWnd::GetModifiedDate() const
+{
+	return m_dtModified;
+}
+
+/**/
+void CNoteWnd::SetModifiedDate(time_t dt)
+{
+	m_dtModified = dt;
+}
+
+
+/**/
+void CNoteWnd::SetModify(BOOL bVal)
 {
 	m_edit.SetModify(bVal);
 }

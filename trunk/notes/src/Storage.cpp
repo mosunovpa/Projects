@@ -137,9 +137,26 @@ static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 		{
 			ThrowError(_T("Attribute created not found"));
 		}
-		note.SetCreated(t);
+		note.SetCreatedDate(t);
 	}
-
+	if ((nMask & CApplication::NM_MODIFIED) == CApplication::NM_MODIFIED)
+	{
+		CHECK_HR(spElement->getAttribute(L"modified", &val));
+		time_t t;
+		if (val.vt == VT_NULL) // attribute not found
+		{
+			t = 0;
+		}
+		else if (val.vt == VT_BSTR)
+		{
+			t =_ttoi(val.bstrVal);
+		}
+		else
+		{
+			ThrowError(_T("Attribute modified not found"));
+		}
+		note.SetModifiedDate(t);
+	}
 	return note;
 }
 
@@ -204,7 +221,11 @@ static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& not
 	}
 	if ((nMask & CApplication::NM_CREATED) == CApplication::NM_CREATED)
 	{
-		CHECK_HR(spElement->setAttribute(L"created", CComVariant(note.GetCreated())));
+		CHECK_HR(spElement->setAttribute(L"created", CComVariant(note.GetCreatedDate())));
+	}
+	if ((nMask & CApplication::NM_MODIFIED) == CApplication::NM_MODIFIED)
+	{
+		CHECK_HR(spElement->setAttribute(L"modified", CComVariant(note.GetModifiedDate())));
 	}
 }
 
@@ -311,6 +332,14 @@ void CStorage::ReadOptions( COptions& opt ) const
 		spNode->get_text(&s);
 		opt.SetAlwaysOnTop(_ttoi(s));
 	}
+	CComPtr<IXMLDOMNode> spFontNode;
+	CHECK_HR(spOptions->selectSingleNode(CComBSTR(_T("font-size")),&spFontNode));
+	if (spFontNode)
+	{
+		CComBSTR s;
+		spFontNode->get_text(&s);
+		opt.SetFontSize((COptions::FontSize)_ttoi(s));
+	}
 }
 
 void CStorage::WriteOptions( COptions const& opt ) const
@@ -327,6 +356,18 @@ void CStorage::WriteOptions( COptions const& opt ) const
 		CHECK_HR(spOptions->appendChild(spElem, &spNode));
 	}
 	spNode->put_text(CComBSTR(strutils::to_string(opt.GetAlwaysOnTop()).c_str()));
+
+	CComPtr<IXMLDOMNode> spFontNode;
+
+	CHECK_HR(spOptions->selectSingleNode(CComBSTR(_T("font-size")), &spFontNode));
+	if (!spNode)
+	{
+		CComPtr<IXMLDOMElement> spElem;
+		CHECK_HR(spDoc->createElement(L"font-size", &spElem));
+		CHECK_HR(spOptions->appendChild(spElem, &spFontNode));
+	}
+	spFontNode->put_text(CComBSTR(strutils::to_string(opt.GetFontSize()).c_str()));
+
 	CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
 }
 
