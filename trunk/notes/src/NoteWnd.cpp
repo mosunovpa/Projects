@@ -202,7 +202,6 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	pf.dwMask = PFM_OFFSETINDENT;
 	pf.dxStartIndent = 100;
 	m_edit.SetParaFormat(pf);
-	m_edit.EmptyUndoBuffer();
 
 	m_edit.SetOleCallback(&m_edit.m_OleCallback);
 	m_edit.SetEventMask(ENM_LINK);
@@ -233,6 +232,8 @@ void CNoteWnd::OnDestroy()
 LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	m_bPosChanged = FALSE;
+	m_edit.SetModify(FALSE);
+	m_edit.EmptyUndoBuffer();
 	return 0;
 }
 /**
