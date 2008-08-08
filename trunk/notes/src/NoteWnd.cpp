@@ -489,11 +489,9 @@ void CNoteWnd::SetModifiedDate(time_t dt)
 	m_dtModified = dt;
 }
 
-
-/**/
-void CNoteWnd::SetModify(BOOL bVal)
+CNoteEdit& CNoteWnd::GetEditor()
 {
-	m_edit.SetModify(bVal);
+	return m_edit;
 }
 
 /**/

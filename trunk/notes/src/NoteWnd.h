@@ -129,9 +129,7 @@ public:
 	void SetCreatedDate(time_t dt);
 	time_t GetModifiedDate() const;
 	void SetModifiedDate(time_t dt);
-
-	void SetModify(BOOL bVal);
-
+	CNoteEdit& GetEditor();
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
 	BEGIN_MSG_MAP_EX(CNoteWnd)
