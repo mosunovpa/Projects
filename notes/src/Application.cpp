@@ -441,7 +441,7 @@ void CApplication::UndeleteNote( int nNoteId )
 			CNote& note = *it;
 			note.SetId(0); // Clear id for restored note. New id will be generated.
 			CNoteWnd* pWnd = OpenNote(note);
-			pWnd->SetModify(TRUE);
+			pWnd->GetEditor().PostMessage(EM_SETMODIFY, TRUE);
 
 			m_listDeleted.erase(it);
 			return;
