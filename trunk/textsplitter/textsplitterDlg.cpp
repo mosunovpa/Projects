@@ -53,6 +53,8 @@ UINT __cdecl Split_Thread( LPVOID pParam )
 	CStdioFile filePart;
 	int nReaded = 0;
 	int nProgress = 0;
+	int nProgressPartSize = nFileSize / 50;
+	int nProgressPart = 0;
 
 	pSplitParam->pParentWnd->PostMessage(WMS_START, (WPARAM)nFileSize);
 
@@ -69,6 +71,30 @@ UINT __cdecl Split_Thread( LPVOID pParam )
 		}
 	}
 	
+
+// 	int rd = 0;
+// 	const int buff_size = 128;
+// 	byte buf[buff_size];
+// 	while (rd = fileSplit.Read(buf, buff_size))
+// 	{
+// 		nProgress += rd;
+// 		nProgressPart += rd;
+// 		if (nProgressPart > nProgressPartSize)
+// 		{
+// 			nProgressPart = 0;
+// 			pSplitParam->pParentWnd->PostMessage(WMS_PROGRESS, (WPARAM)nProgress, (LPARAM)nFileSize);
+// 		}
+// 		if (*(pSplitParam->pbRunning) == FALSE)
+// 		{
+// 			break;
+// 		}
+// 	}
+// 	pSplitParam->pParentWnd->PostMessage(WMS_FINISH);
+// 	return 0;
+
+
+
+
 	filePart.Open(GetPartFileName(pSplitParam->csFileName, nCurrPart), CFile::modeWrite | CFile::modeCreate);
 	if (!sHeader.IsEmpty())
 	{
@@ -81,11 +107,18 @@ UINT __cdecl Split_Thread( LPVOID pParam )
 		{
 			break;
 		}
-		filePart.WriteString(sLine + _T("\n"));
-		nReaded += sLine.GetLength() + 1;
-		nProgress += sLine.GetLength() + 1;
+		filePart.WriteString(sLine);
+		filePart.WriteString(_T("\n"));\
+		int nLen = sLine.GetLength() + 1;
+		nReaded += nLen;
+		nProgress += nLen;
+		nProgressPart += nLen;
 
-		pSplitParam->pParentWnd->PostMessage(WMS_PROGRESS, (WPARAM)nProgress, (LPARAM)nFileSize);
+		if (nProgressPart > nProgressPartSize)
+		{
+			nProgressPart = 0;
+			pSplitParam->pParentWnd->PostMessage(WMS_PROGRESS, (WPARAM)nProgress, (LPARAM)nFileSize);
+		}
 
 		if (nReaded >= nPartSize)
 		{
@@ -310,7 +343,7 @@ BOOL CtextsplitterDlg::StopThread()
 	m_bRunning = FALSE;
 	if (m_pThread != NULL)
 	{
-		if (WAIT_OBJECT_0 != WaitForSingleObject(m_pThread->m_hThread, 60000))
+		if (WAIT_OBJECT_0 != WaitForSingleObject(m_pThread->m_hThread, 10000))
 		{
 			AfxMessageBox(_T("Error thread stopping"));
 			return FALSE;
@@ -358,7 +391,7 @@ LRESULT CtextsplitterDlg::OnProgress( WPARAM wParam, LPARAM lParam )
 
 LRESULT CtextsplitterDlg::OnFinish( WPARAM wParam, LPARAM lParam )
 {
-	StopThread();
+	m_bRunning = FALSE;
 	m_ctrlProgress.SetPos(0);
 	m_btnSplit.SetWindowText(_T("Split"));
 	return 0;
