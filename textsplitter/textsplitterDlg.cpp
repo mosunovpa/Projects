@@ -2,10 +2,10 @@
 //
 
 #include "stdafx.h"
+#include <math.h>
 #include "textsplitter.h"
 #include "textsplitterDlg.h"
 #include "shlwapi.h"
-#include <math.h>
 
 
 #ifdef _DEBUG
@@ -24,6 +24,30 @@ CString GetPartFileName(CString csSplitFileName, int nCurrPart)
 	CString csFilePart;
 	csFilePart.Format(_T("%s_%d%s"), csFile, nCurrPart, szExt);
 	return csFilePart;
+}
+
+/**/
+BOOL FindEOL(std::vector<byte>buf, int nStart, int nEnd, std::vector<byte> vEOLMarker, int& nEOLPos, int& nCurMarkSymb)
+{
+	// найти строку
+	for (nEOLPos = nStart; nEOLPos < nEnd; ++nEOLPos)
+	{
+		if (buf[nEOLPos] == vEOLMarker[nCurMarkSymb])
+		{
+			++nCurMarkSymb;
+			if (nCurMarkSymb == vEOLMarker.size()) // found
+			{
+				nCurMarkSymb = 0;
+				++nEOLPos; // set next position
+				return TRUE;
+			}
+		}
+		else
+		{
+			nCurMarkSymb = 0;
+		}
+	}
+	return FALSE;
 }
 
 UINT __cdecl Split_Thread( LPVOID pParam )
@@ -46,95 +70,93 @@ UINT __cdecl Split_Thread( LPVOID pParam )
 	}
 	
 	int nCurrPart = 1;
-	CStdioFile fileSplit(pSplitParam->csFileName, CFile::typeText | CFile::modeRead);
-	double nFileSize =  (double)fileSplit.GetLength();
-	long nPartSize = (long)floor(nFileSize / pSplitParam->nParts + 0.5);
-	CString sLine;
-	CStdioFile filePart;
+	CFile fileSplit(pSplitParam->csFileName, CFile::modeRead);
+
+	std::vector<byte> buf(128);
+
+	int nHeadLinesLeft = pSplitParam->nHeaderLines;
+	int nCurMarkSymb = 0; // current character in line marker 
+	int nEOLPos;	// end line position
+	std::vector<byte> vHeader;
+	std::back_insert_iterator< std::vector<byte> > itHeader(vHeader);
 	int nReaded = 0;
+
+	// read header
+	while (nHeadLinesLeft && (nReaded = fileSplit.Read(&buf[0], (int)buf.size())))
+	{
+		int nStart = 0;
+		while (nHeadLinesLeft && FindEOL(buf, nStart, nReaded, pSplitParam->vEOLMarker, nEOLPos, nCurMarkSymb))
+		{
+			std::copy(buf.begin() + nStart, buf.begin() + nEOLPos, itHeader);
+			nStart = nEOLPos;
+			--nHeadLinesLeft;
+		}
+		if (nHeadLinesLeft)
+		{
+			std::copy(buf.begin(), buf.end(), itHeader);
+		}
+	}
+	fileSplit.Seek(vHeader.size(), CFile::begin);
+
+	ULONGLONG nFileSize = fileSplit.GetLength() - vHeader.size();
+	int nPartSize = (int)(nFileSize / pSplitParam->nParts);
+	CFile filePart;
+	int nReadedInPart = 0;
 	int nProgress = 0;
-	int nProgressPartSize = nFileSize / 50;
+	int nProgressPartSize = (int)(nFileSize / 50);
 	int nProgressPart = 0;
 
 	pSplitParam->pParentWnd->PostMessage(WMS_START, (WPARAM)nFileSize);
-
-
-	CString sHeader;
-	if (pSplitParam->nHeaderLines > 0)
+	
+	filePart.Open(GetPartFileName(pSplitParam->csFileName, nCurrPart), CFile::modeWrite | CFile::modeCreate);
+	if (!vHeader.empty())
 	{
-		int n = pSplitParam->nHeaderLines;
-		CString sHeaderLine;
-		while (n && fileSplit.ReadString(sHeaderLine))
-		{
-			sHeader += sHeaderLine + _T("\n");
-			--n;
-		}
+		filePart.Write(&vHeader[0], (int)vHeader.size());
 	}
 	
-
-// 	int rd = 0;
-// 	const int buff_size = 128;
-// 	byte buf[buff_size];
-// 	while (rd = fileSplit.Read(buf, buff_size))
-// 	{
-// 		nProgress += rd;
-// 		nProgressPart += rd;
-// 		if (nProgressPart > nProgressPartSize)
-// 		{
-// 			nProgressPart = 0;
-// 			pSplitParam->pParentWnd->PostMessage(WMS_PROGRESS, (WPARAM)nProgress, (LPARAM)nFileSize);
-// 		}
-// 		if (*(pSplitParam->pbRunning) == FALSE)
-// 		{
-// 			break;
-// 		}
-// 	}
-// 	pSplitParam->pParentWnd->PostMessage(WMS_FINISH);
-// 	return 0;
-
-
-
-
-	filePart.Open(GetPartFileName(pSplitParam->csFileName, nCurrPart), CFile::modeWrite | CFile::modeCreate);
-	if (!sHeader.IsEmpty())
+	int nBufSize = min(nPartSize, (int)buf.size());
+	while (nReaded = fileSplit.Read(&buf[0], nBufSize))
 	{
-		filePart.WriteString(sHeader);
-	}
-
-	while (fileSplit.ReadString(sLine))
-	{
-		if (*(pSplitParam->pbRunning) == FALSE)
+		if (*(pSplitParam->pbCanceled) == TRUE)
 		{
 			break;
-		}
-		filePart.WriteString(sLine);
-		filePart.WriteString(_T("\n"));\
-		int nLen = sLine.GetLength() + 1;
-		nReaded += nLen;
-		nProgress += nLen;
-		nProgressPart += nLen;
+		}	
+		if (nReadedInPart >= nPartSize &&
+			FindEOL(buf, 0, nReaded, pSplitParam->vEOLMarker, nEOLPos, nCurMarkSymb)
+			) 
+		{
+			// write line and start next part
+			nReadedInPart = 0;
+			nProgress += nEOLPos;
+			fileSplit.Seek(vHeader.size() + nProgress, CFile::begin);
 
+			filePart.Write(&buf[0], nEOLPos);
+			filePart.Close();
+			filePart.Open(GetPartFileName(pSplitParam->csFileName, ++nCurrPart), CFile::modeWrite | CFile::modeCreate);
+			if (!vHeader.empty())
+			{
+				filePart.Write(&vHeader[0], (int)vHeader.size());
+			}
+		}
+		else
+		{
+			filePart.Write(&buf[0], nReaded);
+			nReadedInPart += nReaded;
+			nProgress += nReaded;
+		}
+
+		// update progress bar
+		nProgressPart += nReaded;
 		if (nProgressPart > nProgressPartSize)
 		{
 			nProgressPart = 0;
 			pSplitParam->pParentWnd->PostMessage(WMS_PROGRESS, (WPARAM)nProgress, (LPARAM)nFileSize);
 		}
-
-		if (nReaded >= nPartSize)
-		{
-			nReaded = (nReaded % nPartSize);
-			filePart.Close();
-			filePart.Open(GetPartFileName(pSplitParam->csFileName, ++nCurrPart), CFile::modeWrite | CFile::modeCreate);
-			if (!sHeader.IsEmpty())
-			{
-				filePart.WriteString(sHeader);
-			}
-		}
 	}
+	pSplitParam->pParentWnd->PostMessage(WMS_FINISH);
+
 	filePart.Close();
 	fileSplit.Close();
-
-	pSplitParam->pParentWnd->PostMessage(WMS_FINISH);
 
 	return 0;
 }
@@ -179,7 +201,7 @@ END_MESSAGE_MAP()
 CtextsplitterDlg::CtextsplitterDlg(CWnd* pParent /*=NULL*/)
 	:	CDialog(CtextsplitterDlg::IDD, pParent), 
 		m_pThread(NULL),
-		m_bRunning(FALSE)
+		m_bCanceled(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -314,9 +336,9 @@ void CtextsplitterDlg::OnClose()
 /**/
 void CtextsplitterDlg::OnBnClickedSplit()
 {
-	if (m_bRunning)
+	if (IsRunning())
 	{
-		StopThread();
+		::InterlockedExchange((LONG*)&m_bCanceled, TRUE);
 	}
 	else
 	{
@@ -326,21 +348,20 @@ void CtextsplitterDlg::OnBnClickedSplit()
 		m_SplitParams.nParts = m_spinParts.GetPos();
 		m_SplitParams.nHeaderLines = m_spinHeaderLines.GetPos();
 		m_SplitParams.pParentWnd = this;
-		m_SplitParams.pbRunning = &m_bRunning;
-		if (StopThread())
-		{
-			m_bRunning = TRUE;
-			m_pThread = AfxBeginThread(Split_Thread, &m_SplitParams, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
-			m_pThread->m_bAutoDelete = FALSE;
-			m_pThread->ResumeThread();
-		}
+		m_SplitParams.pbCanceled = &m_bCanceled;
+
+		m_bCanceled = FALSE;
+		delete m_pThread;
+		m_pThread = AfxBeginThread(Split_Thread, &m_SplitParams, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
+		m_pThread->m_bAutoDelete = FALSE;
+		m_pThread->ResumeThread();
 	}
 }
 
 /**/
 BOOL CtextsplitterDlg::StopThread()
 {
-	m_bRunning = FALSE;
+	::InterlockedExchange((LONG*)&m_bCanceled, TRUE);
 	if (m_pThread != NULL)
 	{
 		if (WAIT_OBJECT_0 != WaitForSingleObject(m_pThread->m_hThread, 10000))
@@ -391,8 +412,22 @@ LRESULT CtextsplitterDlg::OnProgress( WPARAM wParam, LPARAM lParam )
 
 LRESULT CtextsplitterDlg::OnFinish( WPARAM wParam, LPARAM lParam )
 {
-	m_bRunning = FALSE;
+	m_bCanceled = FALSE;
 	m_ctrlProgress.SetPos(0);
 	m_btnSplit.SetWindowText(_T("Split"));
 	return 0;
+}
+
+BOOL CtextsplitterDlg::IsRunning()
+{
+	if (m_pThread != NULL)
+	{
+		DWORD nExitCode;
+		if (GetExitCodeThread(m_pThread->m_hThread, &nExitCode)
+			&& nExitCode == STILL_ACTIVE)
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
 }
