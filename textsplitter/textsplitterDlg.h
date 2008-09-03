@@ -67,6 +67,7 @@ private:
 	BOOL IsRunning();
 
 	CEdit m_editFile;
+	CStatic m_txtProgressCaption;
 	CProgressCtrl m_ctrlProgress;
 	CSpinButtonCtrl m_spinParts;
 	CSpinButtonCtrl m_spinHeaderLines;
