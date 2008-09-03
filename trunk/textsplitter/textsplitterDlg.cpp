@@ -214,6 +214,7 @@ void CtextsplitterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_FILE, m_editFile);
 	DDX_Control(pDX, IDC_PROGRESS, m_ctrlProgress);
 	DDX_Control(pDX, IDSPLIT, m_btnSplit);
+	DDX_Control(pDX, IDC_STATIC_PROGRESS, m_txtProgressCaption);
 }
 
 BEGIN_MESSAGE_MAP(CtextsplitterDlg, CDialog)
@@ -265,6 +266,9 @@ BOOL CtextsplitterDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 	m_spinParts.SetRange(0, 100);
 	m_spinHeaderLines.SetRange(0, 100);
+	m_txtProgressCaption.ShowWindow(SW_HIDE);
+	m_ctrlProgress.ShowWindow(SW_HIDE);
+
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -401,6 +405,9 @@ LRESULT CtextsplitterDlg::OnStart( WPARAM wParam, LPARAM lParam )
 	m_ctrlProgress.SetRange32(0, (int)wParam);
 	m_ctrlProgress.SetPos(0);
 	m_btnSplit.SetWindowText(_T("Cancel"));
+	m_txtProgressCaption.ShowWindow(SW_SHOW);
+	m_ctrlProgress.ShowWindow(SW_SHOW);
+
 	return 0;
 }
 
@@ -415,6 +422,10 @@ LRESULT CtextsplitterDlg::OnFinish( WPARAM wParam, LPARAM lParam )
 	m_bCanceled = FALSE;
 	m_ctrlProgress.SetPos(0);
 	m_btnSplit.SetWindowText(_T("Split"));
+	m_txtProgressCaption.ShowWindow(SW_HIDE);
+	m_ctrlProgress.ShowWindow(SW_HIDE);
+	AfxMessageBox(_T("File has been splitted successfully"));
+
 	return 0;
 }
 
