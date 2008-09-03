@@ -4,17 +4,25 @@
 #pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
+#include <vector>
 
 /**/
 struct SplitParams
 {
-	SplitParams() : nParts(0), nHeaderLines(0), pParentWnd(NULL), pbRunning(NULL) {}
+	SplitParams() : 
+		nParts(0), nHeaderLines(0), 
+		pParentWnd(NULL), pbCanceled(NULL)
+	{
+		vEOLMarker.push_back('\r');
+		vEOLMarker.push_back('\n');
+	}
 
 	CString csFileName;
 	int nParts;
 	int nHeaderLines;
 	CWnd* pParentWnd;
-	LPBOOL pbRunning;
+	LPBOOL pbCanceled;
+	std::vector<byte> vEOLMarker;
 };
 
 // CtextsplitterDlg dialog
@@ -56,13 +64,14 @@ protected:
 private:
 
 	BOOL StopThread();
+	BOOL IsRunning();
 
 	CEdit m_editFile;
 	CProgressCtrl m_ctrlProgress;
 	CSpinButtonCtrl m_spinParts;
 	CSpinButtonCtrl m_spinHeaderLines;
 	CWinThread* m_pThread;
-	BOOL m_bRunning;
+	BOOL m_bCanceled;
 	CButton m_btnSplit;
 	SplitParams m_SplitParams;
 
