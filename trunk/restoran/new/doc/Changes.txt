@@ -1,0 +1,2 @@
+- New link: SoldDishComponents.SoldDishId->DishesSelling.Id
+- New link: SoldDishComponents.MealId->Meal.Id
