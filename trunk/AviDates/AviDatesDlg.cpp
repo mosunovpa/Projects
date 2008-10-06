@@ -16,7 +16,8 @@
 std::vector<CString> GetFiles()
 {
 	std::vector<CString> files;
-	CFileDialog dlgFiles(TRUE, _T("dvdt"), NULL, OFN_ENABLESIZING | OFN_ALLOWMULTISELECT | OFN_EXPLORER , 
+	CFileDialog dlgFiles(TRUE, _T("dvdt"), NULL, 
+		OFN_ENABLESIZING | OFN_ALLOWMULTISELECT | OFN_EXPLORER | OFN_FILEMUSTEXIST, 
 		_T("DVSubMaker files (*.dvdt)|*.dvdt|All Files (*.*)|*.*||"));
 	CString fileName;
 	dlgFiles.GetOFN().lpstrFile = fileName.GetBuffer(1000 * (_MAX_PATH + 1) + 1);
@@ -246,12 +247,49 @@ void CAviDatesDlg::OnBnClickedDown()
 
 void CAviDatesDlg::OnBnClickedCalculate()
 {
-	// TODO: Add your control notification handler code here
+	int nTotalFrames = 0;
+	CTime dtCurrent = 0;
+	for (int i = 0; i < m_ctrlFiles.GetItemCount(); ++i)
+	{
+		CString sFileName = m_ctrlFiles.GetItemText(i, 0) + CString(_T("\\")) + m_ctrlFiles.GetItemText(i, 1);
+		CStdioFile file;
+		if (!file.Open(sFileName, CFile::modeRead))
+		{
+			AfxMessageBox(_T("File open error"));
+			return;
+		}
+		CString s;
+		int nFrames = 0;
+		while (file.ReadString(s))
+		{
+			int len = s.GetLength();
+			if (len != 8 && len != 26)
+			{
+				AfxMessageBox(_T("Not valid string"));
+				return;
+			}
+			nFrames = _ttoi(s.Left(8));
+			if (len == 26)
+			{
+				int year = s.Mid(10, 2);
+				int month = s.Mid(13, 2);
+				int day = s.Mid(16, 2);
+				CTime dt(year, month, day, 0, 0, 0);
+				if (dt != dtCurrent)
+				{
+					dtCurrent = dt;
+					//...
+				}
+			}
+			nTotalFrames += nFrames;
+		}
+		file.Close();
+		
+	}
 }
 
 void CAviDatesDlg::OnBnClickedCancel()
 {
-	// TODO: Add your control notification handler code here
 	OnCancel();
 }
 
