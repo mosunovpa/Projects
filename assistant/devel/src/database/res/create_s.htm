@@ -1,0 +1,31 @@
+create table adx_params (
+    name varchar(256), 
+    value varchar(256)
+    );
+    
+create table adx_modules (
+    id integer primary key,
+    type char(36) unique, 
+    name varchar(256),
+    version char(10)
+    );
+
+create table adx_folders (
+    id integer primary key, 
+    created timestamp,
+    name varchar(256),
+    module integer,
+    parent integer default 0
+    );
+create index adx_idx_folders_parent on adx_folders (parent);
+insert into adx_folders (created, name) values (date('now'), 'My folders');
+
+create table adx_documents (
+    id integer primary key, 
+    created timestamp,
+    content text, 
+    folder integer, 
+    module integer
+    );
+create index adx_idx_documents_folder on adx_documents (folder);
+create index adx_idx_documents_module on adx_documents (module);

@@ -1,0 +1,49 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tasks", "modules\tasks\tasks.vcproj", "{4130B91A-F56F-48DB-B7C5-4B349D42E70E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Notes", "modules\notes\notes.vcproj", "{03515056-EACB-4F0B-83A4-9A37D6BCD971}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules", "modules", "{BDB88BF8-E945-4C78-952F-F389CCC35CB8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{577AF581-9567-4804-9FAF-392159343D1D}"
+	ProjectSection(SolutionItems) = preProject
+		assist.vsmdi = assist.vsmdi
+		localtestrun.testrunconfig = localtestrun.testrunconfig
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assist", "assist\assist.vcproj", "{64B2634F-AA6C-4571-98FA-823DB9F3707A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "database", "database\Database.vcproj", "{29A9DB9F-9D94-4B61-BBD2-B633BCB6C1F6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4130B91A-F56F-48DB-B7C5-4B349D42E70E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4130B91A-F56F-48DB-B7C5-4B349D42E70E}.Debug|Win32.Build.0 = Debug|Win32
+		{4130B91A-F56F-48DB-B7C5-4B349D42E70E}.Release|Win32.ActiveCfg = Release|Win32
+		{4130B91A-F56F-48DB-B7C5-4B349D42E70E}.Release|Win32.Build.0 = Release|Win32
+		{03515056-EACB-4F0B-83A4-9A37D6BCD971}.Debug|Win32.ActiveCfg = Debug|Win32
+		{03515056-EACB-4F0B-83A4-9A37D6BCD971}.Debug|Win32.Build.0 = Debug|Win32
+		{03515056-EACB-4F0B-83A4-9A37D6BCD971}.Release|Win32.ActiveCfg = Release|Win32
+		{03515056-EACB-4F0B-83A4-9A37D6BCD971}.Release|Win32.Build.0 = Release|Win32
+		{64B2634F-AA6C-4571-98FA-823DB9F3707A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{64B2634F-AA6C-4571-98FA-823DB9F3707A}.Debug|Win32.Build.0 = Debug|Win32
+		{64B2634F-AA6C-4571-98FA-823DB9F3707A}.Release|Win32.ActiveCfg = Release|Win32
+		{64B2634F-AA6C-4571-98FA-823DB9F3707A}.Release|Win32.Build.0 = Release|Win32
+		{29A9DB9F-9D94-4B61-BBD2-B633BCB6C1F6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{29A9DB9F-9D94-4B61-BBD2-B633BCB6C1F6}.Debug|Win32.Build.0 = Debug|Win32
+		{29A9DB9F-9D94-4B61-BBD2-B633BCB6C1F6}.Release|Win32.ActiveCfg = Release|Win32
+		{29A9DB9F-9D94-4B61-BBD2-B633BCB6C1F6}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{03515056-EACB-4F0B-83A4-9A37D6BCD971} = {BDB88BF8-E945-4C78-952F-F389CCC35CB8}
+		{4130B91A-F56F-48DB-B7C5-4B349D42E70E} = {BDB88BF8-E945-4C78-952F-F389CCC35CB8}
+	EndGlobalSection
+EndGlobal

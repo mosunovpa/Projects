@@ -1,0 +1,412 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "atlres.h"
+#include "..\..\inc\assistres.h"
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(1251)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""atlres.h""\r\n"
+    "#include ""..\\..\\inc\\assistres.h""\r\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_VIEW_BACK
+    BUTTON      ID_VIEW_FORWARD
+    BUTTON      ID_VIEW_FOLDER_UP
+    BUTTON      ID_NEW_FOLDER
+    SEPARATOR
+    BUTTON      ID_VIEW_FOLDER_PANE
+    BUTTON      ID_VIEW_DETAILS
+    SEPARATOR
+    BUTTON      ID_NEW
+    BUTTON      ID_FILE_PROPERTIES
+    SEPARATOR
+    BUTTON      ID_DELETE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+IDB_TRASH               BITMAP                  "res\\trash.bmp"
+IDB_TRASH_SM            BITMAP                  "res\\trash_sm.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        POPUP "&New"
+        BEGIN
+            MENUITEM "&Folder\tF7",                 ID_NEW_FOLDER
+            MENUITEM SEPARATOR
+        END
+        POPUP "Open"
+        BEGIN
+            MENUITEM "Selected &Documents",         ID_OPEN_SELECTEDDOCUMENTS
+            MENUITEM "Data &File...",               ID_NEW_DATAFILE
+        END
+        MENUITEM "&Close All Documents",        ID_FILE_CLOSEALLDOCUMENTS
+        MENUITEM SEPARATOR
+        POPUP "Recent &Files"
+        BEGIN
+            MENUITEM "(empty)",                     ID_FILE_MRU_FILE1
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit",                       ID_CLOSE
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Undo",                       ID_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "&Cut",                        ID_EDIT_CUT
+        MENUITEM "&Copy",                       ID_EDIT_COPY
+        MENUITEM "&Paste",                      ID_EDIT_PASTE
+        MENUITEM SEPARATOR
+        MENUITEM "Select &All",                 ID_EDIT_SELECT_ALL
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Folders",                    ID_VIEW_FOLDER_PANE
+        MENUITEM "&Details",                    ID_VIEW_DETAILS
+        MENUITEM "&Refresh",                    ID_VIEW_REFRESH
+        MENUITEM SEPARATOR
+        POPUP "&Toolbars"
+        BEGIN
+            MENUITEM "&Main",                       ID_VIEW_TOOLBAR
+            MENUITEM "&Document types",             ID_VIEW_VIEW_SELECTOR
+            MENUITEM "&Address Bar",                ID_VIEW_ADDRESS
+        END
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+        MENUITEM SEPARATOR
+        POPUP "G&o To"
+        BEGIN
+            MENUITEM "&Back",                       ID_VIEW_BACK
+            MENUITEM "&Forward",                    ID_VIEW_FORWARD
+            MENUITEM "&Up One Level",               ID_VIEW_FOLDER_UP
+        END
+        MENUITEM SEPARATOR
+    END
+    POPUP "&Document"
+    BEGIN
+        MENUITEM "&New",                        ID_NEW
+        MENUITEM "&Open",                       ID_FILE_OPEN
+        MENUITEM "&Delete\tDel",                ID_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "&Properties",                 ID_FILE_PROPERTIES
+    END
+    POPUP "&Tools"
+    BEGIN
+        MENUITEM "&Notepad",                    ID_TOOLS_NOTEPAD
+        MENUITEM SEPARATOR
+        MENUITEM "&Options...",                 ID_TOOLS_OPTIONS
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About assist...",            ID_APP_ABOUT
+    END
+END
+
+IDR_TRAYMENU MENU 
+BEGIN
+    POPUP "Popup"
+    BEGIN
+        MENUITEM "Explore...",                  ID_EXPLORE
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\assist.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 187, 102
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,130,81,50,14
+    CTEXT           "assist Application v1.0\n\n(c) Copyright 2004",IDC_STATIC,25,57,78,32
+    ICON            IDR_MAINFRAME,IDC_STATIC,55,26,20,20
+    GROUPBOX        "",IDC_STATIC,7,7,115,88
+END
+
+IDD_DATAFILEMAN DIALOGEX 0, 0, 301, 172
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Data Files"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    DEFPUSHBUTTON   "&Close",IDCANCEL,246,150,50,14
+    LTEXT           "Data &files:",IDC_DATAFILEDLG_CAPT,6,6,44,8
+    CONTROL         "",IDC_DATAFILEDLG_LIST,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,6,18,234,126
+    PUSHBUTTON      "&Add...",IDC_DATAFILEDLG_ADD,246,42,50,14
+    PUSHBUTTON      "&Remove",IDC_DATAFILEDLG_REMOVE,246,60,50,14
+    PUSHBUTTON      "&Setting...",IDC_DATAFILEDLG_SETTING,246,78,50,14
+    PUSHBUTTON      "&Open",IDC_DATAFILEDLG_OPEN,246,18,50,14
+    LTEXT           "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla",IDC_DATAFILEDLG_COMMENTS,48,150,192,18
+    LTEXT           "Comments:",IDC_DATAFILEDLG_COMMENT_LBL,6,150,37,8
+END
+
+IDD_FOLDER_DLG DIALOGEX 0, 0, 186, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "New folder"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    EDITTEXT        IDC_FOLDER_NAME,7,21,172,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,75,41,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,41,50,14
+    LTEXT           "&New Folder:",IDC_STATIC,7,7,40,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 95
+    END
+
+    IDD_DATAFILEMAN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 294
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 165
+    END
+
+    IDD_FOLDER_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS 
+BEGIN
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_NEW,                 VIRTKEY, CONTROL, NOINVERT
+    VK_F7,          ID_NEW_FOLDER,          VIRTKEY, NOINVERT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "assist Module"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "assist"
+            VALUE "LegalCopyright", "Copyright 2004"
+            VALUE "OriginalFilename", "assist.exe"
+            VALUE "ProductName", "assist Module"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// HTML
+//
+
+IDR_CREATE_SQL          HTML                    "res\\create_sql_0.sql"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDR_MAINFRAME           "Developer Assistant"
+    IDS_TASKS_MENU          "&Tasks"
+    IDS_JOURNAL_MENU        "&Journal"
+    IDS_DATA_FILE_FILTER    "Data Files (*.adx)|*.adx|All files(*.*)|*.*||"
+    IDS_ENTRIES             "Entries"
+    IDS_ADDRESS             "Address"
+    IDS_ACTIVATE_MODULE     "Activate %s"
+    IDS_MAIN_VIEW_CREATION_ERROR "Main view creation error"
+    IDS_NO_MODULES_FOUND    "No modules found"
+    IDS_FILE_NOT_FOUND      "File '%s' is not exist"
+    IDS_NEW_FOLDER          "New folder"
+    IDS_TRASH               "Trash"
+    IDS_CAN_NOT_DELETE_ROOT_FOLDER "You can't delete root folder"
+    IDS_PATH                "Path"
+    IDS_CREATE_NEW_MODULE_ITEM "Create New %s"
+    IDS_DATE_DELETED        "Date Deleted"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
+    ID_VIEW_REFRESH         "Refreshes the contents of the current page\nRefresh"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_NEW                  "New\nNew"
+    ID_DELETE               "Deletes the selected items\nDelete"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_OPEN            "Opens the selected items"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_VIEW_SELECTOR   "Show or hide entries pane"
+    ID_NEW_DATAFILE         "Creates or opens datafile"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_BACK            "Goes previous folder\nBack"
+    ID_VIEW_FORWARD         "Goes next folder\nForward"
+    ID_VIEW_FOLDER_UP       "Up One Level\nUp"
+    ID_OPEN_SELECTEDDOCUMENTS "Open selected documents"
+    ID_FILE_CLOSEALLDOCUMENTS "Close all documents"
+    ID_TOOLS_NOTEPAD        "Show notepad\nNotepad"
+    ID_TOOLS_OPTIONS        "Enables you to change settings\nOptions"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_NEW_FOLDER           "Creates new folder\nNew Folder"
+    ID_VIEW_FOLDER_PANE     "Shows or hides the folder pane\nFolders"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_PROPERTIES      "Displays the properties of the selected items\nProperties"
+    ID_VIEW_DETAILS         "Shows detail pane\nDetails"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_INVALID_DB_VERSION  "Invalid datafile version (0x%.4x)"
+    IDS_NAME                "Name"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_CAN_NOT_ADD_TO_TRASH "Can not add to trash"
+    IDS_DELETION_CONFIRM    "Do you really want to delete selected item(s)?"
+END
+
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
