@@ -204,6 +204,37 @@ public class loader {
 
     }
 
+    private static int ProcessDateInStingParam(String param, int i, Calendar now) {
+        int len = param.length();
+        if (i + 1 < len) {
+            ++i;
+            if (param.charAt(i) == '[') {
+                if (i + 1 < len) {
+                    ++i;
+                    StringBuffer sDelta = new StringBuffer();
+                    ;
+                    for (; i < len; ++i) {
+                        if (param.charAt(i) == 'y') {
+                            Integer y = new Integer(sDelta.toString());
+                            now.set(Calendar.YEAR, now.get(Calendar.YEAR) - y);
+                        } else if (param.charAt(i) == 'm') {
+                            Integer m = new Integer(sDelta.toString());
+                            now.set(Calendar.MONTH, now.get(Calendar.MONTH) - m);
+                        } else if (param.charAt(i) == 'd') {
+                            Integer d = new Integer(sDelta.toString());
+                            now.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH) - d);
+                        } else if (param.charAt(i) == ']') {
+                            break;
+                        } else {
+                            sDelta.append(param.charAt(i));
+                        }
+                    }
+                }
+            }
+        }
+        return i;
+    }
+
     private static String ParseStringParam(String param) {
         Calendar now = Calendar.getInstance();
         StringBuffer sb = new StringBuffer();
@@ -211,69 +242,10 @@ public class loader {
         for (int i = 0; i < len; ++i) {
             boolean bProcessed = false;
             if (param.charAt(i) == '%') {
-                int j = i;
-                if (j + 1 < len) {
-                    ++j;
-                    if (param.charAt(j) == 'd') {
-                        if (j + 1 < len) {
-                            ++j;
-                            if (param.charAt(j) == '[') {
-                                if (j + 1 < len) {
-                                    ++j;
-                                    StringBuffer sDelta = new StringBuffer();;
-                                    for (; j < len; ++j) {
-                                        if (param.charAt(j) == 'y') {
-                                            Integer y = new Integer(sDelta.toString());
-                                            now.set(Calendar.YEAR, now.get(Calendar.YEAR) - y);
-                                        } else if (param.charAt(j) == 'm') {
-                                            Integer m = new Integer(sDelta.toString());
-                                            now.set(Calendar.MONTH, now.get(Calendar.MONTH) - m);
-                                        } else if (param.charAt(j) == 'd') {
-                                            Integer d = new Integer(sDelta.toString());
-                                            now.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH) - d);
-                                        } else if (param.charAt(j) == ']') {
-                                            break;
-                                        }
-                                        else {
-                                            sDelta.append(param.charAt(j));
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                if (i + 1 < len) {
+                    if (param.charAt(i + 1) == 'd') {
+                        i = ProcessDateInStingParam(param, i + 1, now);
                         sb.append(new SimpleDateFormat("yyyy-MM-dd").format(now.getTime()));
-                        i = j;
-                        bProcessed = true;
-                    }
-                    else if (param.charAt(j) == 'd') {
-                        if (j + 1 < len) {
-                            ++j;
-                            if (param.charAt(j) == '[') {
-                                if (j + 1 < len) {
-                                    ++j;
-                                    StringBuffer sDelta = new StringBuffer();;
-                                    for (; j < len; ++j) {
-                                        if (param.charAt(j) == 'y') {
-                                            Integer y = new Integer(sDelta.toString());
-                                            now.set(Calendar.YEAR, now.get(Calendar.YEAR) - y);
-                                        } else if (param.charAt(j) == 'm') {
-                                            Integer m = new Integer(sDelta.toString());
-                                            now.set(Calendar.MONTH, now.get(Calendar.MONTH) - m);
-                                        } else if (param.charAt(j) == 'd') {
-                                            Integer d = new Integer(sDelta.toString());
-                                            now.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH) - d);
-                                        } else if (param.charAt(j) == ']') {
-                                            break;
-                                        }
-                                        else {
-                                            sDelta.append(param.charAt(j));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        sb.append(new SimpleDateFormat("yyyy-MM-dd").format(now.getTime()));
-                        i = j;
                         bProcessed = true;
                     }
                 }
