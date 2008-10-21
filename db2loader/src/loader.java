@@ -9,9 +9,7 @@
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
-import java.io.PrintStream;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;            // JDBC classes
 
 /**
@@ -20,7 +18,7 @@ import java.text.SimpleDateFormat;            // JDBC classes
 public class loader {
     private static String m_procName;
 
-
+    /** */
     public static void main(String argv[]) {
         Connection con = null;
         PrintStream out = null;
@@ -35,27 +33,26 @@ public class loader {
             db.connect();
             con = db.con;
 
-            String out_file_name = GetArg(argv, "-o");
+            String out_file_name = ParceFileName(GetArg(argv, "-o"));
             if (!out_file_name.isEmpty()) {
                 out = new PrintStream(
                         new BufferedOutputStream(
-                                new FileOutputStream(ParceFileName(out_file_name))
+                                new FileOutputStream(out_file_name)
                         )
                 );
                 System.setOut(out);
             }
-            String log_file_name = GetArg(argv, "-l");
+            String log_file_name = ParceFileName(GetArg(argv, "-l"));
             if (!log_file_name.isEmpty()) {
                 log = new PrintStream(
                         new BufferedOutputStream(
-                                new FileOutputStream(ParceFileName(log_file_name))
+                                new FileOutputStream(log_file_name)
                         )
                 );
                 System.setErr(log);
             }
 
-            Calendar now = Calendar.getInstance();
-            System.err.println(String.format("Start date: %s", now.getTime().toString()));
+            System.err.println(String.format("Start date: %s", Calendar.getInstance().getTime().toString()));
 
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < argv.length; ++i) {
@@ -71,7 +68,38 @@ public class loader {
 
             String[] proc_params;
             proc_params = (String[]) Arrays.copyOfRange(argv, posProcedure, argv.length);
-            CallProcedure(con, proc_params);
+
+            System.err.println("Start loading...");
+
+            String in_file_name = ParceFileName(GetArg(argv, "-w"));
+            String res_table_name = GetArg(argv, "-t");
+            if (in_file_name.length() > 0) {
+                BufferedReader in;
+                in = new BufferedReader(new FileReader(in_file_name));
+
+                String argSkip = GetArg(argv, "-h");
+                int skip = argSkip.length() == 0 ? 0 : Integer.parseInt(argSkip);
+                while (in.ready() && skip > 0) {
+                    String s = in.readLine();
+                    skip--;
+                }
+                while (in.ready()) {
+                    String s = in.readLine();
+                    CallProcedure(con, s, proc_params);
+                    if (res_table_name.length() > 0) {
+                        GetResultsFromTable(con, res_table_name);
+                    }
+                }
+                in.close();
+            } else {
+                CallProcedure(con, "", proc_params);
+                if (res_table_name.length() > 0) {
+                    GetResultsFromTable(con, res_table_name);
+                }
+            }
+
+            System.err.println(String.format("Loaded %d records sucessfully.", new Integer(m_loader_cnt)));
+            System.err.println(String.format("Finish date: %s", Calendar.getInstance().getTime().toString()));
 
             if (out != null) {
                 out.close();
@@ -94,16 +122,18 @@ public class loader {
         }
     }
 
+    /** */
     private static String ParceFileName(String filename) {
         return filename.replace("%d", new SimpleDateFormat("yyyyMMdd").format(new Date()));
     }
 
+    /** */
     private static String GetArg(String[] argv, String sParam) {
         int pos = 0;
         for (int i = 0; i < argv.length; i++) {
             String aArgv = argv[i];
             if (aArgv.startsWith(sParam)) {
-                return aArgv.substring(2);
+                return aArgv.substring(sParam.length());
             } else {
                 ++pos;
             }
@@ -111,6 +141,7 @@ public class loader {
         return "";
     }
 
+    /** */
     private static int GetParamsPos(String[] argv) {
         int pos = 0;
         for (int i = 0; i < argv.length; i++) {
@@ -124,16 +155,24 @@ public class loader {
         return pos;
     }
 
+    /** */
     private static boolean SkippedParam(String param) {
         return
                 param.startsWith("-o") ||
+                        param.startsWith("-w") ||
+                        param.startsWith("-h") ||
+                        param.startsWith("-t") ||
                         param.startsWith("-l") ||
                         param.startsWith("-p");
     }
 
-    private static void CallProcedure(Connection con, String params[]) throws SQLException {
+    /** */
+    private static void CallProcedure(Connection con, String s, String params[]) throws Exception {
 
-        StringBuffer sb = new StringBuffer().append("CALL ").append(m_procName).append("(");
+        StringBuffer sb = new StringBuffer();
+        sb.append("CALL ");
+        sb.append(m_procName);
+        sb.append("(");
 
         for (int i = 0; i < params.length; ++i) {
             if (SkippedParam(params[i])) {
@@ -157,7 +196,7 @@ public class loader {
                 }
 
                 if (params[i].startsWith("-i")) {
-                    int nval = Integer.parseInt(params[i].substring(2));
+                    int nval = ParseIntParam(s, params[i].substring(2));
                     callStmt.setInt(param_num, nval);
                 } else if (params[i].startsWith("-s")) {
                     String sval = ParseStringParam(params[i].substring(2));
@@ -176,7 +215,17 @@ public class loader {
 
             callStmt.execute();
 
-            GetResultSet(callStmt);
+            ResultSet rs = callStmt.getResultSet();
+            if (rs != null) {
+                try {
+                    GetResultSet(rs);
+                    rs.close();
+                }
+                catch (Exception e) {
+                    rs.close();
+                    throw e;
+                }
+            }
 
             Iterator it = outParams.entrySet().iterator();
             if (it.hasNext()) {
@@ -196,15 +245,33 @@ public class loader {
         }
         catch (Exception x) {
             callStmt.close();
-            x.printStackTrace();
+            throw x;
         }
     }
 
-    enum ParseState {
-
+    /** */
+    private static int ParseIntParam(String s, String param) {
+        if (param.startsWith("%p")) {
+            int pos = Integer.parseInt(param.substring(2));
+            int sep_cnt = 0;
+            int len = s.length();
+            int prev_sep_pos = 0;
+            for (int i = 0; i < len; ++i) {
+                if (s.charAt(i) == ';') {
+                    ++sep_cnt;
+                    if (sep_cnt == pos) {
+                        return Integer.parseInt(s.substring(prev_sep_pos, i));
+                    } else {
+                        prev_sep_pos = i + 1;
+                    }
+                }
+            }
+        }
+        return Integer.parseInt(param);
     }
 
-    private static int ProcessDateInStingParam(String param, int i, Calendar now) {
+    /** */
+    private static int ProcessDateInStringParam(String param, int i, Calendar now) {
         int len = param.length();
         if (i + 1 < len) {
             ++i;
@@ -212,7 +279,6 @@ public class loader {
                 if (i + 1 < len) {
                     ++i;
                     StringBuffer sDelta = new StringBuffer();
-                    ;
                     for (; i < len; ++i) {
                         if (param.charAt(i) == 'y') {
                             Integer y = new Integer(sDelta.toString());
@@ -235,6 +301,7 @@ public class loader {
         return i;
     }
 
+    /** */
     private static String ParseStringParam(String param) {
         Calendar now = Calendar.getInstance();
         StringBuffer sb = new StringBuffer();
@@ -244,8 +311,12 @@ public class loader {
             if (param.charAt(i) == '%') {
                 if (i + 1 < len) {
                     if (param.charAt(i + 1) == 'd') {
-                        i = ProcessDateInStingParam(param, i + 1, now);
+                        i = ProcessDateInStringParam(param, i + 1, now);
                         sb.append(new SimpleDateFormat("yyyy-MM-dd").format(now.getTime()));
+                        bProcessed = true;
+                    } else if (param.charAt(i + 1) == 'y') {
+                        ++i;
+                        sb.append(new SimpleDateFormat("yyyy").format(now.getTime()));
                         bProcessed = true;
                     }
                 }
@@ -257,20 +328,44 @@ public class loader {
         return sb.toString();
     }
 
-    private static void GetResultSet(CallableStatement callStmt) throws SQLException {
-        ResultSet rs = callStmt.getResultSet();
-        if (rs == null) {
-            return;
-        }
-
+    /** */
+    private static void GetResultsFromTable(Connection con, String res_table_name) throws Exception {
+        Statement stmt = con.createStatement();
         try {
-            System.err.println("Start loading...");
+            ResultSet rs = stmt.executeQuery("select * from " + res_table_name);
+            if (rs != null) {
+                try {
+                    GetResultSet(rs);
+                    rs.close();
+                }
+                catch (Exception e) {
+                    rs.close();
+                    throw e;
+                }
+            }
+            stmt.close();
+        }
+        catch (Exception e) {
+            stmt.close();
+            throw e;
+        }
+    }
 
-            ResultSetMetaData stmtInfo = rs.getMetaData();
+    /** */
+    private static boolean m_header_printed = false;
 
-            int numOfColumns = stmtInfo.getColumnCount();
+    /** */
+    private static int m_loader_cnt = 0;
 
-            // print columns labels
+    /** */
+    private static void GetResultSet(ResultSet rs) throws SQLException {
+
+        ResultSetMetaData stmtInfo = rs.getMetaData();
+
+        int numOfColumns = stmtInfo.getColumnCount();
+
+        // print columns labels
+        if (!m_header_printed) {
             for (int i = 1; i <= numOfColumns; i++) {
                 System.out.print(stmtInfo.getColumnLabel(i));
                 if (i == numOfColumns) {
@@ -279,30 +374,23 @@ public class loader {
                     System.out.print(";");
                 }
             }
+            m_header_printed = true;
+        }
 
-            // print data rows
-            int r = 0;
-            while (rs.next()) {
-                r++;
-                for (int i = 1; i <= numOfColumns; i++) {
-                    System.out.print(rs.getString(i));
-                    if (i == numOfColumns) {
-                        System.out.println("");
-                    } else {
-                        System.out.print(";");
-                    }
-                }
-                if (r % 10000 == 0) {
-                    System.err.println(String.format("Loaded %d records...", new Integer(r)));
+        // print data rows
+        while (rs.next()) {
+            m_loader_cnt++;
+            for (int i = 1; i <= numOfColumns; i++) {
+                System.out.print(rs.getString(i));
+                if (i == numOfColumns) {
+                    System.out.println("");
+                } else {
+                    System.out.print(";");
                 }
             }
-
-            System.err.println(String.format("Loaded %d records sucessfully.", new Integer(r)));
-            rs.close();
-        }
-        catch (Exception e) {
-            rs.close();
-            e.printStackTrace();
+            if (m_loader_cnt % 10000 == 0) {
+                System.err.println(String.format("Loaded %d records...", new Integer(m_loader_cnt)));
+            }
         }
     }
 
