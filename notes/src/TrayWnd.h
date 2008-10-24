@@ -28,6 +28,7 @@ private:
 	CIcon m_IconSm;
 	HICON m_hIconNotes;
 	CMenu m_menuPopup;
+	CBitmap m_bmpDeleted;
 
 public:
 	DECLARE_WND_CLASS(_T("TrayWnd"))
@@ -83,6 +84,8 @@ public:
 	void OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl);
 private:
 	LRESULT DisplayShortcutMenu();
+	void CreateBitmaps();
+	void ModifyNotesMenu(CMenuHandle menuNotes);
 
 	int m_nSelectedMenuItemId;
 };
