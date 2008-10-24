@@ -11,6 +11,7 @@
 _tstring GetCaption(_tstring const& text)
 {
 	_tstring sCaption = strutils::trim_string(text.c_str(), 64);
+	std::replace(sCaption.begin(), sCaption.end(), _T('\t'), _T(' '));
 	if (sCaption.size() > 0 && sCaption.size() < text.size())
 	{
 		sCaption += _T("...");
@@ -28,56 +29,7 @@ CMenuHandle GetMenuNotes(CMenuHandle menuPopup)
 CMenuHandle GetUndeleteMenu(CMenuHandle menuNotes)
 {
 	int nCount = menuNotes.GetMenuItemCount();
-	return menuNotes.GetSubMenu(nCount - 5);
-}
-
-
-/**/
-bool compare_by_modify_date(CNote const& left, CNote const& right)
-{
-	return left.GetModifiedDate() < right.GetModifiedDate();
-}
-
-/**/
-void ModifyNotesMenu(CMenuHandle menuNotes)
-{
-	int nHiddenNotes = CApplication::Get().GetHiddenNotesCount();
-	menuutils::SetMenuItemEnable(menuNotes, ID_POPUP_SHOWALLNOTES, nHiddenNotes > 0);
-	CNote::List notes;
-	CApplication::Get().GetAllNotes(notes, CApplication::NM_ID | CApplication::NM_TEXT | CApplication::NM_MODIFIED);
-	std::sort(notes.begin(), notes.end(), compare_by_modify_date);
-
-	/* check separator */
-	int nState = menuNotes.GetMenuState(0, MF_BYPOSITION);
-	if (notes.empty() && (nState & MF_SEPARATOR) == MF_SEPARATOR)
-	{
-		menuNotes.DeleteMenu(0, MF_BYPOSITION);
-	}
-	if (!notes.empty() && (nState & MF_SEPARATOR) != MF_SEPARATOR)
-	{
-		menuNotes.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR);
-	}
-
-	// show all notes
-	for (int i = 0; i < notes.size(); ++i)
-	{
-		_tstring sCaption = GetCaption(notes[i].GetText());
-		menuNotes.InsertMenu(0, MF_BYPOSITION, CREATE_NOTE_CMD(notes[i].GetId()), sCaption.c_str());
-	}
-
-	// show deleted notes
-	CMenuHandle menuDeleted = GetUndeleteMenu(menuNotes);
-	std::list<CNote> const& listDeleted = CApplication::Get().GetUndeleteList();
-	if (!listDeleted.empty())
-	{
-		menuDeleted.DeleteMenu(ID_UNDELETE_EMPTY, MF_BYCOMMAND);
-	}
-	for(std::list<CNote>::const_iterator it = listDeleted.begin(); it != listDeleted.end(); ++it)
-	{
-		CNote const& note = *it;
-		_tstring sCaption = GetCaption(note.GetText());
-		menuDeleted.AppendMenu(MF_STRING, CREATE_DELETED_CMD(note.GetId()), sCaption.c_str());
-	}
+	return menuNotes.GetSubMenu(nCount - 8);
 }
 
 ///////////////////////////////////////////////////////////
@@ -132,6 +84,8 @@ LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	BOOL bAlwaisOnTop = CApplication::Get().GetOptions().GetAlwaysOnTop();
 	SetWindowPos(bAlwaisOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, CRect(0,0,0,0), SWP_NOSIZE | SWP_NOMOVE);
+
+	CreateBitmaps();
 
 	return 0;
 }
@@ -375,7 +329,12 @@ void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 		// delete note
 		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId);
 		CApplication::Get().DeleteNote(nNoteId);
-		EndMenu();
+
+		CMenuHandle menuTrackPopup = GetMenuNotes(m_menuPopup.m_hMenu);
+		menuTrackPopup.CheckMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_CHECKED);
+//		menuutils::SetMenuItemEnable(menuTrackPopup, m_nSelectedMenuItemId, FALSE);
+
+//		EndMenu();
 		m_nSelectedMenuItemId = 0;
 	}
 }
@@ -384,4 +343,96 @@ void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 void CTrayWnd::OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CApplication::Get().Command(ID_PASTE, CApplication::Get().CreateNote());
+}
+
+/* Create bitmaps for menu*/
+void CTrayWnd::CreateBitmaps()
+{
+	HWND hwndDesktop = GetDesktopWindow(); 
+	HDC hdcDesktop = ::GetDC(hwndDesktop); 
+	HDC hdcMem = CreateCompatibleDC(hdcDesktop); 
+
+	// Determine the required bitmap size. 
+
+	SIZE size = { GetSystemMetrics(SM_CXMENUCHECK), 
+		GetSystemMetrics(SM_CYMENUCHECK) }; 
+
+	// Create a monochrome bitmap and select it. 
+
+	m_bmpDeleted.CreateBitmap(size.cx, size.cy, 1, 1, NULL); 
+	HBITMAP hbmOld = (HBITMAP)SelectObject(hdcMem, m_bmpDeleted); 
+
+	// Erase the background and call the drawing function. 
+
+	PatBlt(hdcMem, 0, 0, size.cx, size.cy, WHITENESS); 
+
+
+	HBRUSH hbrOld; 
+	hbrOld = (HBRUSH)SelectObject(hdcMem, GetStockObject(NULL_BRUSH)); 
+	MoveToEx(hdcMem, 2, 5, NULL); 
+	LineTo(hdcMem, size.cx - 4, 5); 
+	MoveToEx(hdcMem, 2, 6, NULL); 
+	LineTo(hdcMem, size.cx - 4, 6); 
+	MoveToEx(hdcMem, 2, 7, NULL); 
+	LineTo(hdcMem, size.cx - 4, 7); 
+	SelectObject(hdcMem, hbrOld); 
+
+	// Clean up. 
+
+	SelectObject(hdcMem, hbmOld); 
+	DeleteDC(hdcMem); 
+	::ReleaseDC(hwndDesktop, hdcDesktop); 
+
+}
+
+
+/**/
+bool compare_by_modify_date(CNote const& left, CNote const& right)
+{
+	return left.GetModifiedDate() < right.GetModifiedDate();
+}
+
+/**/
+void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
+{
+	int nHiddenNotes = CApplication::Get().GetHiddenNotesCount();
+	menuutils::SetMenuItemEnable(menuNotes, ID_POPUP_SHOWALLNOTES, nHiddenNotes > 0);
+	CNote::List notes;
+	CApplication::Get().GetAllNotes(notes, CApplication::NM_ID | CApplication::NM_TEXT | CApplication::NM_MODIFIED);
+	std::sort(notes.begin(), notes.end(), compare_by_modify_date);
+
+	/* check separator */
+	int nState = menuNotes.GetMenuState(0, MF_BYPOSITION);
+	if (notes.empty() && (nState & MF_SEPARATOR) == MF_SEPARATOR)
+	{
+		menuNotes.DeleteMenu(0, MF_BYPOSITION);
+	}
+	if (!notes.empty() && (nState & MF_SEPARATOR) != MF_SEPARATOR)
+	{
+		menuNotes.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR);
+	}
+
+	// show all notes
+	for (int i = 0; i < notes.size(); ++i)
+	{
+		_tstring sCaption = GetCaption(notes[i].GetText());
+		int nId = CREATE_NOTE_CMD(notes[i].GetId());
+		menuNotes.InsertMenu(0, MF_BYPOSITION, nId, sCaption.c_str());
+		menuNotes.SetMenuItemBitmaps(nId, MF_BYCOMMAND, 
+			NULL, m_bmpDeleted); 
+	}
+
+	// show deleted notes
+	CMenuHandle menuDeleted = GetUndeleteMenu(menuNotes);
+	std::list<CNote> const& listDeleted = CApplication::Get().GetUndeleteList();
+	if (!listDeleted.empty())
+	{
+		menuDeleted.DeleteMenu(ID_UNDELETE_EMPTY, MF_BYCOMMAND);
+	}
+	for(std::list<CNote>::const_iterator it = listDeleted.begin(); it != listDeleted.end(); ++it)
+	{
+		CNote const& note = *it;
+		_tstring sCaption = GetCaption(note.GetText());
+		menuDeleted.AppendMenu(MF_STRING, CREATE_DELETED_CMD(note.GetId()), sCaption.c_str());
+	}
 }
