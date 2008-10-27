@@ -369,12 +369,29 @@ void CTrayWnd::CreateBitmaps()
 
 	HBRUSH hbrOld; 
 	hbrOld = (HBRUSH)SelectObject(hdcMem, GetStockObject(NULL_BRUSH)); 
+
+/*
 	MoveToEx(hdcMem, 2, 5, NULL); 
 	LineTo(hdcMem, size.cx - 4, 5); 
 	MoveToEx(hdcMem, 2, 6, NULL); 
 	LineTo(hdcMem, size.cx - 4, 6); 
 	MoveToEx(hdcMem, 2, 7, NULL); 
 	LineTo(hdcMem, size.cx - 4, 7); 
+*/
+	MoveToEx(hdcMem, 3, 3, NULL); 
+	LineTo(hdcMem, 10, 10); 
+	MoveToEx(hdcMem, 4, 3, NULL); 
+	LineTo(hdcMem, 10, 9); 
+	MoveToEx(hdcMem, 3, 4, NULL); 
+	LineTo(hdcMem, 9, 10); 
+
+	MoveToEx(hdcMem, 3, 8, NULL); 
+	LineTo(hdcMem, 9, 2); 
+	MoveToEx(hdcMem, 3, 9, NULL); 
+	LineTo(hdcMem, 10, 2); 
+	MoveToEx(hdcMem, 4, 9, NULL); 
+	LineTo(hdcMem, 10, 3); 
+
 	SelectObject(hdcMem, hbrOld); 
 
 	// Clean up. 
