@@ -271,9 +271,9 @@ void CAviDatesDlg::OnBnClickedCalculate()
 			nFrames = _ttoi(s.Left(8));
 			if (len == 26)
 			{
-				int year = s.Mid(10, 2);
-				int month = s.Mid(13, 2);
-				int day = s.Mid(16, 2);
+				int year = _ttoi(s.Mid(10, 2));
+				int month = _ttoi(s.Mid(13, 2));
+				int day = _ttoi(s.Mid(16, 2));
 				CTime dt(year, month, day, 0, 0, 0);
 				if (dt != dtCurrent)
 				{
