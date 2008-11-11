@@ -13,10 +13,14 @@
 //////////////////////////////////////////////////////////////////////////
 // helpers
 
+const UINT WMS_START = WM_USER + 101;
+const UINT WMS_PROGRESS = WM_USER + 102;
+const UINT WMS_FINISH = WM_USER + 103;
+
 std::vector<CString> GetFiles()
 {
 	std::vector<CString> files;
-	CFileDialog dlgFiles(TRUE, _T("dvdt"), NULL, 
+	CFileDialog dlgFiles(TRUE, _T("csv"), NULL, 
 		OFN_ENABLESIZING | OFN_ALLOWMULTISELECT | OFN_EXPLORER | OFN_FILEMUSTEXIST, 
 		_T("CSV files (*.csv)|*.csv|All Files (*.*)|*.*||"));
 	CString fileName;
@@ -35,6 +39,50 @@ std::vector<CString> GetFiles()
 	}
 	fileName.ReleaseBuffer();
 	return files;
+}
+
+ULONGLONG GetFilesSizes(CStringList const& slFiles)
+{
+	ULONGLONG result = 0;
+	POSITION pos = slFiles.GetHeadPosition();
+	while (pos)
+	{
+		CString const& csFileInput = slFiles.GetNext(pos);
+		CFile fileInput(csFileInput, CFile::modeRead);
+		result += fileInput.GetLength();
+		fileInput.Close();
+	}
+	return result;
+}
+
+UINT __cdecl Merge_Thread( LPVOID pParam )
+{
+	MergeParams* pMergeParam = (MergeParams*)pParam;
+	if (pMergeParam->csFileName.Trim().GetLength() == 0)
+	{
+		AfxMessageBox(_T("Specify file name."));
+		return 0;
+	}
+
+
+	ULONGLONG nFileSize = GetFilesSizes(pMergeParam->slFiles);
+	pMergeParam->pParentWnd->PostMessage(WMS_START, (WPARAM)nFileSize);
+
+	CFile fileOutput(pMergeParam->csFileName, CFile::modeCreate | CFile::modeWrite);
+	POSITION pos = pMergeParam->slFiles.GetHeadPosition();
+	while (pos)
+	{
+		CString& csFileInput = pMergeParam->slFiles.GetNext(pos);
+		CFile fileInput(csFileInput, CFile::modeRead);
+
+
+		fileInput.Close();
+	}
+	fileOutput.Close();
+
+	pMergeParam->pParentWnd->PostMessage(WMS_FINISH);
+
+	return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -78,6 +126,8 @@ END_MESSAGE_MAP()
 CTextMergerDlg::CTextMergerDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CTextMergerDlg::IDD, pParent)
 	, m_bSortOrder(FALSE)
+	, m_pThread(NULL)
+	, m_bCanceled(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -86,13 +136,18 @@ void CTextMergerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_FILES, m_ctrlFiles);
+	DDX_Control(pDX, IDC_SPIN_HEADER, m_ctrlHeaderLines);
+	DDX_Control(pDX, IDC_EDIT_OUTPUT_FILE, m_ctrlOutputFile);
+	DDX_Control(pDX, IDC_PROGRESS, m_ctrlProgress);
+	DDX_Control(pDX, IDC_MERGE, m_btnMerge);
+	DDX_Control(pDX, IDC_STATIC_PROGRESS, m_txtProgressCaption);
 }
 
 BEGIN_MESSAGE_MAP(CTextMergerDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
+	ON_WM_CLOSE()
 	ON_WM_QUERYDRAGICON()
-	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_ADD, &CTextMergerDlg::OnBnClickedAdd)
 	ON_BN_CLICKED(IDC_REMOVE, &CTextMergerDlg::OnBnClickedRemove)
@@ -100,6 +155,7 @@ BEGIN_MESSAGE_MAP(CTextMergerDlg, CDialog)
 	ON_BN_CLICKED(IDC_DOWN, &CTextMergerDlg::OnBnClickedDown)
 	ON_BN_CLICKED(IDCANCEL, &CTextMergerDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_MERGE, &CTextMergerDlg::OnBnClickedMerge)
+	ON_BN_CLICKED(IDC_BTN_BROWSE_OUTPUT, &CTextMergerDlg::OnBnClickedBrowse)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, &CTextMergerDlg::OnLvnColumnclickFiles)
 END_MESSAGE_MAP()
 
@@ -136,6 +192,8 @@ BOOL CTextMergerDlg::OnInitDialog()
 //	m_ctrlFiles.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 	m_ctrlFiles.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 150);
 	m_ctrlFiles.InsertColumn(1, _T("Path"), LVCFMT_LEFT, 230);
+
+	m_ctrlHeaderLines.SetRange(0, 100);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -206,8 +264,19 @@ void CTextMergerDlg::OnBnClickedAdd()
 		}
 	}
 }
-void CTextMergerDlg::OnDestroy()
+void CTextMergerDlg::OnClose()
 {
+	::InterlockedExchange((LONG*)&m_bCanceled, TRUE);
+	if (m_pThread != NULL)
+	{
+		if (WAIT_OBJECT_0 != WaitForSingleObject(m_pThread->m_hThread, 10000))
+		{
+			AfxMessageBox(_T("Error thread stopping"));
+			return;
+		}
+	}
+	delete m_pThread;
+
 	int cnt = m_ctrlFiles.GetItemCount();
 	if (cnt > 0)
 	{
@@ -216,6 +285,8 @@ void CTextMergerDlg::OnDestroy()
 			DeleteFile(i);
 		}
 	}
+
+	EndDialog(IDCANCEL);
 }
 
 void CTextMergerDlg::OnBnClickedRemove()
@@ -253,8 +324,6 @@ void CTextMergerDlg::OnBnClickedDown()
 		}
 	}
 }
-
-
 
 void CTextMergerDlg::OnBnClickedCancel()
 {
@@ -305,9 +374,33 @@ void CTextMergerDlg::DeleteFile( int nIndex )
 
 void CTextMergerDlg::OnBnClickedMerge()
 {
-	for (int i = 0; i < m_ctrlFiles.GetItemCount(); ++i)
+	if (IsRunning())
 	{
+		::InterlockedExchange((LONG*)&m_bCanceled, TRUE);
 	}
+	else
+	{
+
+		m_MergeParams.slFiles.RemoveAll();
+		int cnt = m_ctrlFiles.GetItemCount();
+		for (int i = 0; i < cnt; ++i)
+		{
+			m_MergeParams.slFiles.AddTail(m_ctrlFiles.GetItemText(i, 0));
+		}
+
+		m_ctrlOutputFile.GetWindowText(m_MergeParams.csFileName);
+		m_MergeParams.nHeaderLines = m_ctrlHeaderLines.GetPos();
+		m_MergeParams.pParentWnd = this;
+		m_MergeParams.pbCanceled = &m_bCanceled;
+
+
+		m_bCanceled = FALSE;
+		delete m_pThread;
+		m_pThread = AfxBeginThread(Merge_Thread, &m_MergeParams, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
+		m_pThread->m_bAutoDelete = FALSE;
+		m_pThread->ResumeThread();
+	}
+
 }
 
 // Sort items by associated lParam
@@ -329,4 +422,62 @@ void CTextMergerDlg::OnLvnColumnclickFiles(NMHDR *pNMHDR, LRESULT *pResult)
 		m_bSortOrder = !m_bSortOrder;
 	}
 	*pResult = 0;
+}
+
+/**/
+void CTextMergerDlg::OnBnClickedBrowse()
+{
+	CFileDialog dlgFiles(FALSE, _T("csv"), NULL, 
+		OFN_ENABLESIZING | OFN_EXPLORER | OFN_OVERWRITEPROMPT, 
+		_T("CSV files (*.csv)|*.csv|All Files (*.*)|*.*||"));
+	if (dlgFiles.DoModal())
+	{
+		CString fileName = dlgFiles.GetPathName();
+		m_ctrlOutputFile.SetWindowText(fileName);
+
+	}
+}
+
+BOOL CTextMergerDlg::IsRunning()
+{
+	if (m_pThread != NULL)
+	{
+		DWORD nExitCode;
+		if (GetExitCodeThread(m_pThread->m_hThread, &nExitCode)
+			&& nExitCode == STILL_ACTIVE)
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+
+LRESULT CTextMergerDlg::OnStart( WPARAM wParam, LPARAM lParam )
+{
+	m_ctrlProgress.SetRange32(0, (int)wParam);
+	m_ctrlProgress.SetPos(0);
+	m_btnMerge.SetWindowText(_T("Cancel"));
+	m_txtProgressCaption.ShowWindow(SW_SHOW);
+	m_ctrlProgress.ShowWindow(SW_SHOW);
+
+	return 0;
+}
+
+LRESULT CTextMergerDlg::OnProgress( WPARAM wParam, LPARAM lParam )
+{
+	m_ctrlProgress.SetPos((int)wParam);
+	return 0;
+}
+
+LRESULT CTextMergerDlg::OnFinish( WPARAM wParam, LPARAM lParam )
+{
+	m_bCanceled = FALSE;
+	m_ctrlProgress.SetPos(0);
+	m_btnMerge.SetWindowText(_T("Merge"));
+	m_txtProgressCaption.ShowWindow(SW_HIDE);
+	m_ctrlProgress.ShowWindow(SW_HIDE);
+	AfxMessageBox(_T("Files have been splitted successfully"));
+
+	return 0;
 }
