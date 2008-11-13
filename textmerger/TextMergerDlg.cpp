@@ -24,9 +24,9 @@ std::vector<CString> GetFiles()
 		OFN_ENABLESIZING | OFN_ALLOWMULTISELECT | OFN_EXPLORER | OFN_FILEMUSTEXIST, 
 		_T("CSV files (*.csv)|*.csv|All Files (*.*)|*.*||"));
 	CString fileName;
-	dlgFiles.GetOFN().lpstrFile = fileName.GetBuffer(1000 * (_MAX_PATH + 1) + 1);
-	dlgFiles.GetOFN().nMaxFile = 1000;
-	if (dlgFiles.DoModal())
+	dlgFiles.GetOFN().lpstrFile = fileName.GetBufferSetLength(1000 * (_MAX_PATH + 1) + 1);
+	dlgFiles.GetOFN().nMaxFile = fileName.GetLength();
+	if (dlgFiles.DoModal() == IDOK)
 	{
 		LPCTSTR p = (LPCTSTR)fileName;
 		int len = lstrlen(p);
@@ -55,6 +55,30 @@ ULONGLONG GetFilesSizes(CStringList const& slFiles)
 	return result;
 }
 
+/**/
+BOOL FindEOL(std::vector<byte>buf, int nStart, int nEnd, std::vector<byte> vEOLMarker, int& nEOLPos, int& nCurMarkSymb)
+{
+	// найти строку
+	for (nEOLPos = nStart; nEOLPos < nEnd; ++nEOLPos)
+	{
+		if (buf[nEOLPos] == vEOLMarker[nCurMarkSymb])
+		{
+			++nCurMarkSymb;
+			if (nCurMarkSymb == vEOLMarker.size()) // found
+			{
+				nCurMarkSymb = 0;
+				++nEOLPos; // set next position
+				return TRUE;
+			}
+		}
+		else
+		{
+			nCurMarkSymb = 0;
+		}
+	}
+	return FALSE;
+}
+
 UINT __cdecl Merge_Thread( LPVOID pParam )
 {
 	MergeParams* pMergeParam = (MergeParams*)pParam;
@@ -63,19 +87,82 @@ UINT __cdecl Merge_Thread( LPVOID pParam )
 		AfxMessageBox(_T("Specify file name."));
 		return 0;
 	}
-
+	if (pMergeParam->slFiles.GetCount() == 0)
+	{
+		AfxMessageBox(_T("Specify input files."));
+		return 0;
+	}
 
 	ULONGLONG nFileSize = GetFilesSizes(pMergeParam->slFiles);
 	pMergeParam->pParentWnd->PostMessage(WMS_START, (WPARAM)nFileSize);
 
+	std::vector<byte> buf(128);
+
+	int nHeadLinesLeft = pMergeParam->nHeaderLines;
+	int nCurMarkSymb = 0; // current character in line marker 
+	int nEOLPos;	// end line position
+	std::vector<byte> vHeader;
+	std::back_insert_iterator< std::vector<byte> > itHeader(vHeader);
+	int nReaded = 0;
+
 	CFile fileOutput(pMergeParam->csFileName, CFile::modeCreate | CFile::modeWrite);
+
+	// merge files
+	int nProgress = 0;
+	int nProgressPart = 0;
+	int nProgressPartSize = (int)(nFileSize / 50);
+
 	POSITION pos = pMergeParam->slFiles.GetHeadPosition();
 	while (pos)
 	{
 		CString& csFileInput = pMergeParam->slFiles.GetNext(pos);
 		CFile fileInput(csFileInput, CFile::modeRead);
 
+		// read header from first input file
+		if (nHeadLinesLeft)
+		{
+			// read header
+			while (nHeadLinesLeft && (nReaded = fileInput.Read(&buf[0], (int)buf.size())))
+			{
+				int nStart = 0;
+				while (nHeadLinesLeft && FindEOL(buf, nStart, nReaded, pMergeParam->vEOLMarker, nEOLPos, nCurMarkSymb))
+				{
+					std::copy(buf.begin() + nStart, buf.begin() + nEOLPos, itHeader);
+					nStart = nEOLPos;
+					--nHeadLinesLeft;
+				}
+				if (nHeadLinesLeft)
+				{
+					std::copy(buf.begin(), buf.end(), itHeader);
+				}
+			}
+			if (!vHeader.empty())
+			{
+				fileOutput.Write(&vHeader[0], (int)vHeader.size());
+			}
+		}
 
+		if (!vHeader.empty())
+		{
+			fileInput.Seek(vHeader.size(), CFile::begin);
+		}
+
+		while (nReaded = fileInput.Read(&buf[0], (int)buf.size()))
+		{
+			if (*(pMergeParam->pbCanceled) == TRUE)
+			{
+				break;
+			}	
+			fileOutput.Write(&buf[0], nReaded);
+
+			nProgress += nReaded;
+			nProgressPart += nReaded;
+			if (nProgressPart > nProgressPartSize)
+			{
+				nProgressPart = 0;
+				pMergeParam->pParentWnd->PostMessage(WMS_PROGRESS, (WPARAM)nProgress, (LPARAM)nFileSize);
+			}
+		}
 		fileInput.Close();
 	}
 	fileOutput.Close();
@@ -157,6 +244,11 @@ BEGIN_MESSAGE_MAP(CTextMergerDlg, CDialog)
 	ON_BN_CLICKED(IDC_MERGE, &CTextMergerDlg::OnBnClickedMerge)
 	ON_BN_CLICKED(IDC_BTN_BROWSE_OUTPUT, &CTextMergerDlg::OnBnClickedBrowse)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, &CTextMergerDlg::OnLvnColumnclickFiles)
+
+	ON_MESSAGE(WMS_START, OnStart)
+	ON_MESSAGE(WMS_PROGRESS, OnProgress)
+	ON_MESSAGE(WMS_FINISH, OnFinish)
+
 END_MESSAGE_MAP()
 
 
@@ -409,8 +501,8 @@ static int CALLBACK FilesCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lPar
 	CString* ps1 = (CString*)lParam1;
 	CString* ps2 = (CString*)lParam2;
 
-	return lParamSort ? lstrcmp(ps1->GetString(), ps2->GetString()) :
-		lstrcmp(ps2->GetString(), ps1->GetString());
+	return lParamSort ? lstrcmp(ps2->GetString(), ps1->GetString()) :
+		lstrcmp(ps1->GetString(), ps2->GetString());
 }
 
 void CTextMergerDlg::OnLvnColumnclickFiles(NMHDR *pNMHDR, LRESULT *pResult)
@@ -430,11 +522,10 @@ void CTextMergerDlg::OnBnClickedBrowse()
 	CFileDialog dlgFiles(FALSE, _T("csv"), NULL, 
 		OFN_ENABLESIZING | OFN_EXPLORER | OFN_OVERWRITEPROMPT, 
 		_T("CSV files (*.csv)|*.csv|All Files (*.*)|*.*||"));
-	if (dlgFiles.DoModal())
+	if (dlgFiles.DoModal() == IDOK)
 	{
 		CString fileName = dlgFiles.GetPathName();
 		m_ctrlOutputFile.SetWindowText(fileName);
-
 	}
 }
 
