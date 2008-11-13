@@ -81,7 +81,7 @@
   </component>
   <component name="DebuggerManager">
     <line_breakpoints>
-      <breakpoint url="file://$PROJECT_DIR$/src/loader.java" line="75" class="loader" package="">
+      <breakpoint url="file://$PROJECT_DIR$/src/loader.java" line="87" class="loader" package="">
         <option name="ENABLED" value="true" />
         <option name="SUSPEND_POLICY" value="SuspendAll" />
         <option name="LOG_ENABLED" value="false" />
@@ -154,7 +154,7 @@
       <file leaf-file-name="loader.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/loader.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="140" column="16" selection-start="4574" selection-end="4574" vertical-scroll-proportion="0.4049479">
+            <state line="129" column="0" selection-start="4181" selection-end="4181" vertical-scroll-proportion="0.332696">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -162,19 +162,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Thread.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/lang/Thread.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="638" column="0" selection-start="23985" selection-end="23985" vertical-scroll-proportion="0.20817369">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="ig.class" pinned="false" current="false" current-in-tab="false">
         <entry file="jar://C:/Program Files/IBM/SQLLIB/java/db2jcc.jar!/com/ibm/db2/jcc/c/ig.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="188" column="0" selection-start="7512" selection-end="7512" vertical-scroll-proportion="0.20572917">
+            <state line="188" column="0" selection-start="7512" selection-end="7512" vertical-scroll-proportion="0.03250478">
               <folding />
             </state>
           </provider>
@@ -183,7 +174,7 @@
       <file leaf-file-name="Object.java" pinned="false" current="false" current-in-tab="false">
         <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/lang/Object.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="33" selection-start="1558" selection-end="1558" vertical-scroll-proportion="0.021711366">
+            <state line="47" column="33" selection-start="1558" selection-end="1558" vertical-scroll-proportion="0.031598512">
               <folding />
             </state>
           </provider>
@@ -192,7 +183,7 @@
       <file leaf-file-name="Integer.java" pinned="false" current="false" current-in-tab="false">
         <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/lang/Integer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="21" selection-start="1126" selection-end="1126" vertical-scroll-proportion="0.022135416">
+            <state line="34" column="21" selection-start="1126" selection-end="1126" vertical-scroll-proportion="0.03250478">
               <folding />
             </state>
           </provider>
@@ -201,7 +192,7 @@
       <file leaf-file-name="Calendar.java" pinned="false" current="false" current-in-tab="false">
         <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/util/Calendar.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="496" column="28" selection-start="22370" selection-end="22381" vertical-scroll-proportion="0.021711366">
+            <state line="496" column="28" selection-start="22370" selection-end="22381" vertical-scroll-proportion="0.031598512">
               <folding />
             </state>
           </provider>
@@ -210,7 +201,7 @@
       <file leaf-file-name="Format.java" pinned="false" current="false" current-in-tab="false">
         <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/text/Format.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="138" column="24" selection-start="5510" selection-end="5510" vertical-scroll-proportion="0.021711366">
+            <state line="138" column="24" selection-start="5510" selection-end="5510" vertical-scroll-proportion="0.031598512">
               <folding />
             </state>
           </provider>
@@ -219,7 +210,7 @@
       <file leaf-file-name="String.java" pinned="false" current="false" current-in-tab="false">
         <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/lang/String.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2035" column="18" selection-start="78010" selection-end="78010" vertical-scroll-proportion="0.022135416">
+            <state line="2035" column="18" selection-start="78010" selection-end="78010" vertical-scroll-proportion="0.03250478">
               <folding />
             </state>
           </provider>
@@ -228,7 +219,7 @@
       <file leaf-file-name="CallableStatement.java" pinned="false" current="false" current-in-tab="false">
         <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/sql/CallableStatement.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="154" column="11" selection-start="6984" selection-end="6984" vertical-scroll-proportion="0.022135416">
+            <state line="154" column="11" selection-start="6984" selection-end="6984" vertical-scroll-proportion="0.03250478">
               <folding />
             </state>
           </provider>
@@ -237,7 +228,7 @@
       <file leaf-file-name="Map.java" pinned="false" current="false" current-in-tab="false">
         <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/util/Map.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="204" column="6" selection-start="10151" selection-end="10151" vertical-scroll-proportion="0.021711366">
+            <state line="204" column="6" selection-start="10151" selection-end="10151" vertical-scroll-proportion="0.031598512">
               <folding />
             </state>
           </provider>
@@ -887,6 +878,15 @@
   <component name="RestoreUpdateTree" />
   <component name="RunManager">
     <activeType name="Application" />
+    <configuration selected="false" default="true" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <module name="" />
+    </configuration>
     <configuration selected="false" default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -909,15 +909,6 @@
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
       </option>
-    </configuration>
-    <configuration selected="false" default="true" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <module name="" />
     </configuration>
     <configuration selected="false" default="true" type="Applet" factoryName="Applet">
       <module name="" />
@@ -951,11 +942,17 @@
     <configuration selected="true" default="false" name="bundling" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="loader" />
       <option name="VM_PARAMETERS" value="" />
-      <option name="PROGRAM_PARAMETERS" value="LOCP 10.200.8.1 5021 DESVOC01 DESV5066 -win.csv -h1 -tSESSION.SBDSP057 -oout%d.txt -pd90.SBDSP057 -s%y -i%p1" />
+      <option name="PROGRAM_PARAMETERS" value="LOCP 10.200.8.1 5021 DESVOC01 DESV5066 -wrepair_passports_200801.csv -h1 -tSESSION.SBDSP057 -odata/bundling_kolesa_200801.csv -llog/bundling_kolesa_200801.log -pd90.SBDSP057 -s2008 -i%p1" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" value="" />
       <module name="loader" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
     </configuration>
   </component>
   <component name="SelectInManager" />
@@ -1006,10 +1003,10 @@
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.3290993" order="7" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.30781758" order="0" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.31270358" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.3290993" order="11" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.32894737" order="11" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
       <window_info id="Module Dependencies" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="9" />
@@ -1018,7 +1015,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3290993" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.24938875" order="2" />
       <window_info id="File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="4" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3409091" order="4" x="26" y="368" width="1228" height="257" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.284689" order="4" x="26" y="368" width="1228" height="257" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="10" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
@@ -1125,72 +1122,72 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/lang/Thread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="886" column="7" selection-start="34877" selection-end="34877" vertical-scroll-proportion="0.124236256">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/util/Map.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="204" column="6" selection-start="10151" selection-end="10151" vertical-scroll-proportion="0.021711366">
+        <state line="204" column="6" selection-start="10151" selection-end="10151" vertical-scroll-proportion="0.031598512">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/sql/CallableStatement.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="154" column="11" selection-start="6984" selection-end="6984" vertical-scroll-proportion="0.022135416">
+        <state line="154" column="11" selection-start="6984" selection-end="6984" vertical-scroll-proportion="0.03250478">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/lang/String.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2035" column="18" selection-start="78010" selection-end="78010" vertical-scroll-proportion="0.022135416">
+        <state line="2035" column="18" selection-start="78010" selection-end="78010" vertical-scroll-proportion="0.03250478">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/text/Format.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="138" column="24" selection-start="5510" selection-end="5510" vertical-scroll-proportion="0.021711366">
+        <state line="138" column="24" selection-start="5510" selection-end="5510" vertical-scroll-proportion="0.031598512">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/util/Calendar.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="496" column="28" selection-start="22370" selection-end="22381" vertical-scroll-proportion="0.021711366">
+        <state line="496" column="28" selection-start="22370" selection-end="22381" vertical-scroll-proportion="0.031598512">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/lang/Integer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="21" selection-start="1126" selection-end="1126" vertical-scroll-proportion="0.022135416">
+        <state line="34" column="21" selection-start="1126" selection-end="1126" vertical-scroll-proportion="0.03250478">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/lang/Object.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="33" selection-start="1558" selection-end="1558" vertical-scroll-proportion="0.021711366">
+        <state line="47" column="33" selection-start="1558" selection-end="1558" vertical-scroll-proportion="0.031598512">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://C:/Program Files/IBM/SQLLIB/java/db2jcc.jar!/com/ibm/db2/jcc/c/ig.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="188" column="0" selection-start="7512" selection-end="7512" vertical-scroll-proportion="0.20572917">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.6.0_02/src.zip!/java/lang/Thread.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="638" column="0" selection-start="23985" selection-end="23985" vertical-scroll-proportion="0.20817369">
+        <state line="188" column="0" selection-start="7512" selection-end="7512" vertical-scroll-proportion="0.03250478">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/loader.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="140" column="16" selection-start="4574" selection-end="4574" vertical-scroll-proportion="0.4049479">
+        <state line="129" column="0" selection-start="4181" selection-end="4181" vertical-scroll-proportion="0.332696">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
