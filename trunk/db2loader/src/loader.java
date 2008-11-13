@@ -119,6 +119,13 @@ public class loader {
                 x.printStackTrace();
             }
             e.printStackTrace();
+
+            if (out != null) {
+                out.close();
+            }
+            if (log != null) {
+                log.close();
+            }
         }
     }
 
