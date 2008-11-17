@@ -293,6 +293,7 @@ BOOL CTextMergerDlg::OnInitDialog()
 	m_ctrlFiles.InsertColumn(1, _T("Path"), LVCFMT_LEFT, 230);
 
 	m_ctrlHeaderLines.SetRange(0, 100);
+	m_ctrlHeaderLines.SetPos(1);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -349,11 +350,14 @@ HCURSOR CTextMergerDlg::OnQueryDragIcon()
 void CTextMergerDlg::OnBnClickedAdd()
 {
 	std::vector<CString> files = GetFiles();
+	CString csPath;
+	CString csName;
 	if (files.size() == 1)
 	{
 		LPTSTR sName = ::PathFindFileName(files[0]);
-		CString sPath(files[0], sName - ((LPCTSTR)files[0]) - 1);
-		InsertFile(m_ctrlFiles.GetItemCount(), sName, sPath);
+		csPath = CString(files[0], sName - ((LPCTSTR)files[0]) - 1);
+		InsertFile(m_ctrlFiles.GetItemCount(), sName, csPath);
+		csName = sName;
 	}
 	else if (files.size() > 1)
 	{
@@ -361,6 +365,22 @@ void CTextMergerDlg::OnBnClickedAdd()
 		{
 			InsertFile(m_ctrlFiles.GetItemCount(), files[i], files[0]);
 		}
+		csPath = files[0];
+		csName = files[1];
+	}
+
+	CString csOutFileName;
+	m_ctrlOutputFile.GetWindowText(csOutFileName);
+	if (!csPath.IsEmpty() && csOutFileName.Trim().IsEmpty())
+	{
+		csOutFileName = csPath;
+		csOutFileName += _T("\\");
+		LPCTSTR sName = (LPCTSTR)csName;
+		LPCTSTR sExt = ::PathFindExtension(sName);
+		csOutFileName += CString(sName, sExt - sName);
+		csOutFileName += _T("_merged");
+		csOutFileName += sExt;
+		m_ctrlOutputFile.SetWindowText(csOutFileName);
 	}
 }
 void CTextMergerDlg::OnClose()
