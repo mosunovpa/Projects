@@ -204,6 +204,7 @@ CtextsplitterDlg::CtextsplitterDlg(CWnd* pParent /*=NULL*/)
 		m_bCanceled(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_hIconSm = AfxGetApp()->LoadIcon(IDI_SMALL);
 }
 
 void CtextsplitterDlg::DoDataExchange(CDataExchange* pDX)
@@ -261,7 +262,7 @@ BOOL CtextsplitterDlg::OnInitDialog()
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+	SetIcon(m_hIconSm, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
 	m_spinParts.SetRange(0, 100);
@@ -307,7 +308,7 @@ void CtextsplitterDlg::OnPaint()
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
 		// Draw the icon
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, m_hIconSm);
 	}
 	else
 	{

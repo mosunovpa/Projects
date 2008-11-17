@@ -7,6 +7,8 @@
 #define IDS_ABOUTBOX                    101
 #define IDD_TEXTSPLITTER_DIALOG         102
 #define IDR_MAINFRAME                   128
+#define IDI_ICON1                       129
+#define IDI_SMALL                       129
 #define IDC_EDIT_FILE                   1000
 #define IDC_FILE                        1001
 #define IDC_EDIT_PARTS                  1002
@@ -22,7 +24,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        129
+#define _APS_NEXT_RESOURCE_VALUE        130
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           101
