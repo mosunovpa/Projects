@@ -65,6 +65,7 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\TextMerger.ico"
+IDR_MAINFRAME_SM        ICON                    "res\\idr_main.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -98,7 +99,7 @@ BEGIN
     LTEXT           "Output File:",IDC_STATIC,7,214,39,8
     EDITTEXT        IDC_EDIT_OUTPUT_FILE,7,226,275,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse",IDC_BTN_BROWSE_OUTPUT,290,226,50,14
-    PUSHBUTTON      "Merge",IDC_MERGE,232,262,50,14
+    DEFPUSHBUTTON   "Merge",IDC_MERGE,232,262,50,14
     PUSHBUTTON      "Close",IDCANCEL,290,262,50,14
     LTEXT           "Files for Merge:",IDC_STATIC,7,7,51,8
     CONTROL         "",IDC_FILES,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,18,275,171
