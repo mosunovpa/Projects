@@ -92,6 +92,12 @@ UINT __cdecl Merge_Thread( LPVOID pParam )
 		AfxMessageBox(_T("Specify input files."));
 		return 0;
 	}
+	CFile fileOutput;
+	if (!fileOutput.Open(pMergeParam->csFileName, CFile::modeCreate | CFile::modeWrite))
+	{
+		AfxMessageBox(_T("Can not open output file."));
+		return 0;
+	}
 
 	ULONGLONG nFileSize = GetFilesSizes(pMergeParam->slFiles);
 	pMergeParam->pParentWnd->PostMessage(WMS_START, (WPARAM)nFileSize);
@@ -105,7 +111,6 @@ UINT __cdecl Merge_Thread( LPVOID pParam )
 	std::back_insert_iterator< std::vector<byte> > itHeader(vHeader);
 	int nReaded = 0;
 
-	CFile fileOutput(pMergeParam->csFileName, CFile::modeCreate | CFile::modeWrite);
 
 	// merge files
 	int nProgress = 0;
