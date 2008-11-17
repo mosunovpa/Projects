@@ -217,6 +217,8 @@ CTextMergerDlg::CTextMergerDlg(CWnd* pParent /*=NULL*/)
 	, m_bCanceled(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_hIconSm = AfxGetApp()->LoadIcon(IDR_MAINFRAME_SM);
+
 }
 
 void CTextMergerDlg::DoDataExchange(CDataExchange* pDX)
@@ -279,7 +281,7 @@ BOOL CTextMergerDlg::OnInitDialog()
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+	SetIcon(m_hIconSm, FALSE);		// Set small icon
 
 //	m_ctrlFiles.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 	m_ctrlFiles.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 150);
@@ -324,7 +326,7 @@ void CTextMergerDlg::OnPaint()
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
 		// Draw the icon
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, m_hIconSm);
 	}
 	else
 	{
@@ -336,7 +338,7 @@ void CTextMergerDlg::OnPaint()
 //  the minimized window.
 HCURSOR CTextMergerDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(m_hIconSm);
 }
 
 void CTextMergerDlg::OnBnClickedAdd()
