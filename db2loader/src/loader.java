@@ -89,6 +89,7 @@ public class loader {
                     if (res_table_name.length() > 0) {
                         GetResultsFromTable(con, res_table_name);
                     }
+                    con.commit();
                 }
                 in.close();
             } else {
@@ -96,6 +97,7 @@ public class loader {
                 if (res_table_name.length() > 0) {
                     GetResultsFromTable(con, res_table_name);
                 }
+                con.commit();
             }
 
             System.err.println(String.format("Loaded %d records sucessfully.", new Integer(m_loader_cnt)));
@@ -107,7 +109,6 @@ public class loader {
             if (log != null) {
                 log.close();
             }
-            con.rollback();
             con.close();
         }
         catch (Exception e) {
@@ -388,7 +389,8 @@ public class loader {
         while (rs.next()) {
             m_loader_cnt++;
             for (int i = 1; i <= numOfColumns; i++) {
-                System.out.print(rs.getString(i));
+                String sval = rs.getString(i);
+                System.out.print(sval == null ? "" : sval);
                 if (i == numOfColumns) {
                     System.out.println("");
                 } else {
