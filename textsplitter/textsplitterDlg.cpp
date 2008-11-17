@@ -267,6 +267,9 @@ BOOL CtextsplitterDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 	m_spinParts.SetRange(0, 100);
 	m_spinHeaderLines.SetRange(0, 100);
+	m_spinParts.SetPos(2);
+	m_spinHeaderLines.SetPos(1);
+
 	m_txtProgressCaption.ShowWindow(SW_HIDE);
 	m_ctrlProgress.ShowWindow(SW_HIDE);
 
