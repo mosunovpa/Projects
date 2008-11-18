@@ -17,146 +17,124 @@ const UINT WMS_PROGRESS = WM_USER + 102;
 const UINT WMS_FINISH = WM_USER + 103;
 
 /**/
-CString GetPartFileName(CString csSplitFileName, int nCurrPart)
+CString GetOutFileName(CString csSplitFileName)
 {
 	LPCTSTR szExt = ::PathFindExtension(csSplitFileName);
 	CString csFile(csSplitFileName, (int)(szExt - csSplitFileName));
 	CString csFilePart;
-	csFilePart.Format(_T("%s_%d%s"), csFile, nCurrPart, szExt);
+	csFilePart.Format(_T("%s_filtered%s"), csFile, szExt);
+	int cnt = 1;
+	while (::PathFileExists(csFilePart))
+	{
+		csFilePart.Format(_T("%s_filtered(%d)%s"), csFile, cnt, szExt);
+		++cnt;
+	}
 	return csFilePart;
 }
 
-/**/
-BOOL FindEOL(std::vector<byte>buf, int nStart, int nEnd, std::vector<byte> vEOLMarker, int& nEOLPos, int& nCurMarkSymb)
+BOOL Consist(LPCTSTR pszLine, int nPos, CStringList const& filter)
 {
-	// найти строку
-	for (nEOLPos = nStart; nEOLPos < nEnd; ++nEOLPos)
+	CString csLine(pszLine);
+	int nStart = 0;
+	int nEnd = -1;
+	// go to needed position
+	while (nPos)
 	{
-		if (buf[nEOLPos] == vEOLMarker[nCurMarkSymb])
+		nStart = nEnd + 1;
+		nEnd = csLine.Find(_T(";"), nStart);
+		if (nEnd == -1)
 		{
-			++nCurMarkSymb;
-			if (nCurMarkSymb == vEOLMarker.size()) // found
+			if (nPos > 1) // too big position
 			{
-				nCurMarkSymb = 0;
-				++nEOLPos; // set next position
-				return TRUE;
+				return FALSE;
 			}
+			nEnd = csLine.GetLength();
+			break;
 		}
-		else
+		--nPos;
+	}
+
+	CString csField((LPCTSTR)csLine + nStart, nEnd - nStart);
+	POSITION pos = filter.GetHeadPosition();
+	while (pos)
+	{
+		CString const& csFilter = filter.GetNext(pos);
+		if (!csFilter.IsEmpty() && csField.Find(csFilter) != -1)
 		{
-			nCurMarkSymb = 0;
+			return TRUE;
 		}
 	}
 	return FALSE;
 }
 
-UINT __cdecl Split_Thread( LPVOID pParam )
+ 
+void ParseFilter(CString csFilter, CStringList& OUT filters)
 {
-	SearchParams* pSplitParam = (SearchParams*)pParam;
-	if (pSplitParam->csFileName.Trim().GetLength() == 0)
+	int pos = 0;
+	int nStart = 0;
+	while ((pos = csFilter.Find(_T(";"), nStart)) != -1)
+	{
+		filters.AddTail(CString(((LPCTSTR)csFilter) + nStart, pos));
+		nStart = pos + 1;
+	}
+	filters.AddTail(CString(((LPCTSTR)csFilter) + nStart, csFilter.GetLength() - nStart));
+}
+
+
+UINT __cdecl Filter_Thread( LPVOID pParam )
+{
+	FilterParams* pFilterParam = (FilterParams*)pParam;
+	if (pFilterParam->csFileName.Trim().GetLength() == 0)
 	{
 		AfxMessageBox(_T("Specify file name."));
 		return 0;
 	}
-	if (!::PathFileExists(pSplitParam->csFileName))
+	if (!::PathFileExists(pFilterParam->csFileName))
 	{
 		AfxMessageBox(_T("File is not found."));
 		return 0;
 	}
-	if (pSplitParam->nParts <= 0)
-	{
-		AfxMessageBox(_T("Specify parts count."));
-		return 0;
-	}
 	
-	int nCurrPart = 1;
-	CFile fileSplit(pSplitParam->csFileName, CFile::modeRead);
+	CStdioFile fileInput(pFilterParam->csFileName, CFile::modeRead);
 
-	std::vector<byte> buf(128);
-
-	int nHeadLinesLeft = pSplitParam->nHeaderLines;
-	int nCurMarkSymb = 0; // current character in line marker 
-	int nEOLPos;	// end line position
-	std::vector<byte> vHeader;
-	std::back_insert_iterator< std::vector<byte> > itHeader(vHeader);
 	int nReaded = 0;
 
-	// read header
-	while (nHeadLinesLeft && (nReaded = fileSplit.Read(&buf[0], (int)buf.size())))
-	{
-		int nStart = 0;
-		while (nHeadLinesLeft && FindEOL(buf, nStart, nReaded, pSplitParam->vEOLMarker, nEOLPos, nCurMarkSymb))
-		{
-			std::copy(buf.begin() + nStart, buf.begin() + nEOLPos, itHeader);
-			nStart = nEOLPos;
-			--nHeadLinesLeft;
-		}
-		if (nHeadLinesLeft)
-		{
-			std::copy(buf.begin(), buf.end(), itHeader);
-		}
-	}
-	fileSplit.Seek(vHeader.size(), CFile::begin);
-
-	ULONGLONG nFileSize = fileSplit.GetLength() - vHeader.size();
-	int nPartSize = (int)(nFileSize / pSplitParam->nParts);
-	CFile filePart;
-	int nReadedInPart = 0;
+	ULONGLONG nFileSize = fileInput.GetLength();
 	int nProgress = 0;
 	int nProgressPartSize = (int)(nFileSize / 50);
 	int nProgressPart = 0;
 
-	pSplitParam->pParentWnd->PostMessage(WMS_START, (WPARAM)nFileSize);
+	pFilterParam->pParentWnd->PostMessage(WMS_START, (WPARAM)nFileSize);
 	
-	filePart.Open(GetPartFileName(pSplitParam->csFileName, nCurrPart), CFile::modeWrite | CFile::modeCreate);
-	if (!vHeader.empty())
+	CStdioFile fileOutput(GetOutFileName(pFilterParam->csFileName), CFile::modeWrite | CFile::modeCreate);
+
+	CStringList filters; 
+	ParseFilter(pFilterParam->csFilter, filters);
+	TCHAR line[2048];
+	while (fileInput.ReadString(line, 2047))
 	{
-		filePart.Write(&vHeader[0], (int)vHeader.size());
-	}
-	
-	int nBufSize = min(nPartSize, (int)buf.size());
-	while (nReaded = fileSplit.Read(&buf[0], nBufSize))
-	{
-		if (*(pSplitParam->pbCanceled) == TRUE)
+		if (*(pFilterParam->pbCanceled) == TRUE)
 		{
 			break;
-		}	
-		if (nReadedInPart >= nPartSize &&
-			FindEOL(buf, 0, nReaded, pSplitParam->vEOLMarker, nEOLPos, nCurMarkSymb)
-			) 
+		}			
+		if (Consist(line, pFilterParam->nPos, filters))
 		{
-			// write line and start next part
-			nReadedInPart = 0;
-			nProgress += nEOLPos;
-			fileSplit.Seek(vHeader.size() + nProgress, CFile::begin);
-
-			filePart.Write(&buf[0], nEOLPos);
-			filePart.Close();
-			filePart.Open(GetPartFileName(pSplitParam->csFileName, ++nCurrPart), CFile::modeWrite | CFile::modeCreate);
-			if (!vHeader.empty())
-			{
-				filePart.Write(&vHeader[0], (int)vHeader.size());
-			}
+			fileOutput.WriteString(line);
 		}
-		else
-		{
-			filePart.Write(&buf[0], nReaded);
-			nReadedInPart += nReaded;
-			nProgress += nReaded;
-		}
-
 		// update progress bar
+		nReaded = lstrlen(line);
+		nProgress += nReaded;
 		nProgressPart += nReaded;
 		if (nProgressPart > nProgressPartSize)
 		{
 			nProgressPart = 0;
-			pSplitParam->pParentWnd->PostMessage(WMS_PROGRESS, (WPARAM)nProgress, (LPARAM)nFileSize);
+			pFilterParam->pParentWnd->PostMessage(WMS_PROGRESS, (WPARAM)nProgress, (LPARAM)nFileSize);
 		}
 	}
-	pSplitParam->pParentWnd->PostMessage(WMS_FINISH);
+	pFilterParam->pParentWnd->PostMessage(WMS_FINISH);
 
-	filePart.Close();
-	fileSplit.Close();
+	fileOutput.Close();
+	fileInput.Close();
 
 	return 0;
 }
@@ -210,11 +188,11 @@ CTextFilterDlg::CTextFilterDlg(CWnd* pParent /*=NULL*/)
 void CTextFilterDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_SPIN_PARTS, m_spinParts);
-	DDX_Control(pDX, IDC_SPIN_HEADER, m_spinHeaderLines);
+	DDX_Control(pDX, IDC_SPIN_POS, m_spinPos);
 	DDX_Control(pDX, IDC_EDIT_FILE, m_editFile);
+	DDX_Control(pDX, IDC_EDIT_FILTER, m_editFilter);
 	DDX_Control(pDX, IDC_PROGRESS, m_ctrlProgress);
-	DDX_Control(pDX, IDSPLIT, m_btnSplit);
+	DDX_Control(pDX, IDFILTER, m_btnSplit);
 	DDX_Control(pDX, IDC_STATIC_PROGRESS, m_txtProgressCaption);
 }
 
@@ -224,7 +202,7 @@ BEGIN_MESSAGE_MAP(CTextFilterDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
 	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDSPLIT, &CTextFilterDlg::OnBnClickedSplit)
+	ON_BN_CLICKED(IDFILTER, &CTextFilterDlg::OnBnClickedFilter)
 	ON_BN_CLICKED(IDCLOSE, &CTextFilterDlg::OnBnClickedClose)
 	ON_BN_CLICKED(IDC_FILE, &CTextFilterDlg::OnBnClickedFile)
 
@@ -265,10 +243,8 @@ BOOL CTextFilterDlg::OnInitDialog()
 	SetIcon(m_hIconSm, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-	m_spinParts.SetRange(0, 100);
-	m_spinHeaderLines.SetRange(0, 100);
-	m_spinParts.SetPos(2);
-	m_spinHeaderLines.SetPos(1);
+	m_spinPos.SetRange(1, 100);
+	m_spinPos.SetPos(1);
 
 	m_txtProgressCaption.ShowWindow(SW_HIDE);
 	m_ctrlProgress.ShowWindow(SW_HIDE);
@@ -342,7 +318,7 @@ void CTextFilterDlg::OnClose()
 }
 
 /**/
-void CTextFilterDlg::OnBnClickedSplit()
+void CTextFilterDlg::OnBnClickedFilter()
 {
 	if (IsRunning())
 	{
@@ -350,17 +326,15 @@ void CTextFilterDlg::OnBnClickedSplit()
 	}
 	else
 	{
-		CString csFileName;
-		m_editFile.GetWindowText(csFileName);
-		m_SplitParams.csFileName = csFileName;
-		m_SplitParams.nParts = m_spinParts.GetPos();
-		m_SplitParams.nHeaderLines = m_spinHeaderLines.GetPos();
-		m_SplitParams.pParentWnd = this;
-		m_SplitParams.pbCanceled = &m_bCanceled;
+		m_editFile.GetWindowText(m_FilterParams.csFileName);
+		m_FilterParams.nPos = m_spinPos.GetPos();
+		m_editFilter.GetWindowText(m_FilterParams.csFilter);
+		m_FilterParams.pParentWnd = this;
+		m_FilterParams.pbCanceled = &m_bCanceled;
 
 		m_bCanceled = FALSE;
 		delete m_pThread;
-		m_pThread = AfxBeginThread(Split_Thread, &m_SplitParams, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
+		m_pThread = AfxBeginThread(Filter_Thread, &m_FilterParams, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
 		m_pThread->m_bAutoDelete = FALSE;
 		m_pThread->ResumeThread();
 	}
@@ -398,7 +372,7 @@ void CTextFilterDlg::OnBnClickedFile()
 	m_editFile.GetWindowText(csFileName);
 	CFileDialog fdlg(TRUE, _T("*.csv"), csFileName, OFN_FILEMUSTEXIST, 
 		_T("CSV Files (*.csv)|*.csv|All Files|*.*||"));
-	if (fdlg.DoModal())
+	if (fdlg.DoModal() == IDOK)
 	{
 		m_editFile.SetWindowText(fdlg.GetPathName());
 	}
@@ -425,10 +399,10 @@ LRESULT CTextFilterDlg::OnFinish( WPARAM wParam, LPARAM lParam )
 {
 	m_bCanceled = FALSE;
 	m_ctrlProgress.SetPos(0);
-	m_btnSplit.SetWindowText(_T("Split"));
+	m_btnSplit.SetWindowText(_T("Filter"));
 	m_txtProgressCaption.ShowWindow(SW_HIDE);
 	m_ctrlProgress.ShowWindow(SW_HIDE);
-	AfxMessageBox(_T("File has been splitted successfully"));
+	AfxMessageBox(_T("File has been filtered successfully"));
 
 	return 0;
 }
