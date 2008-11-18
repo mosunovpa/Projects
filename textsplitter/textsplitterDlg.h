@@ -26,11 +26,11 @@ struct SplitParams
 };
 
 // CtextsplitterDlg dialog
-class CtextsplitterDlg : public CDialog
+class CTextSplitterDlg : public CDialog
 {
 // Construction
 public:
-	CtextsplitterDlg(CWnd* pParent = NULL);	// standard constructor
+	CTextSplitterDlg(CWnd* pParent = NULL);	// standard constructor
 
 // Dialog Data
 	enum { IDD = IDD_TEXTSPLITTER_DIALOG };
