@@ -7,22 +7,19 @@
 #include <vector>
 
 /**/
-struct SearchParams
+struct FilterParams
 {
-	SearchParams() : 
-		nParts(0), nHeaderLines(0), 
+	FilterParams() : 
+		nPos(0),
 		pParentWnd(NULL), pbCanceled(NULL)
 	{
-		vEOLMarker.push_back('\r');
-		vEOLMarker.push_back('\n');
 	}
 
 	CString csFileName;
-	int nParts;
-	int nHeaderLines;
+	int nPos;
+	CString csFilter;
 	CWnd* pParentWnd;
 	LPBOOL pbCanceled;
-	std::vector<byte> vEOLMarker;
 };
 
 // CTextFilterDlg dialog
@@ -51,7 +48,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnClose();
-	afx_msg void OnBnClickedSplit();
+	afx_msg void OnBnClickedFilter();
 	afx_msg void OnBnClickedClose();
 	afx_msg void OnBnClickedFile();
 
@@ -68,13 +65,12 @@ private:
 	BOOL IsRunning();
 
 	CEdit m_editFile;
+	CEdit m_editFilter;
 	CStatic m_txtProgressCaption;
 	CProgressCtrl m_ctrlProgress;
-	CSpinButtonCtrl m_spinParts;
-	CSpinButtonCtrl m_spinHeaderLines;
+	CSpinButtonCtrl m_spinPos;
 	CWinThread* m_pThread;
 	BOOL m_bCanceled;
 	CButton m_btnSplit;
-	SearchParams m_SplitParams;
-
+	FilterParams m_FilterParams;
 };
