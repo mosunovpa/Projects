@@ -198,8 +198,8 @@ END_MESSAGE_MAP()
 
 
 
-CtextsplitterDlg::CtextsplitterDlg(CWnd* pParent /*=NULL*/)
-	:	CDialog(CtextsplitterDlg::IDD, pParent), 
+CTextSplitterDlg::CTextSplitterDlg(CWnd* pParent /*=NULL*/)
+	:	CDialog(CTextSplitterDlg::IDD, pParent), 
 		m_pThread(NULL),
 		m_bCanceled(FALSE)
 {
@@ -207,7 +207,7 @@ CtextsplitterDlg::CtextsplitterDlg(CWnd* pParent /*=NULL*/)
 	m_hIconSm = AfxGetApp()->LoadIcon(IDI_SMALL);
 }
 
-void CtextsplitterDlg::DoDataExchange(CDataExchange* pDX)
+void CTextSplitterDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_SPIN_PARTS, m_spinParts);
@@ -218,15 +218,15 @@ void CtextsplitterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_PROGRESS, m_txtProgressCaption);
 }
 
-BEGIN_MESSAGE_MAP(CtextsplitterDlg, CDialog)
+BEGIN_MESSAGE_MAP(CTextSplitterDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
 	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDSPLIT, &CtextsplitterDlg::OnBnClickedSplit)
-	ON_BN_CLICKED(IDCLOSE, &CtextsplitterDlg::OnBnClickedClose)
-	ON_BN_CLICKED(IDC_FILE, &CtextsplitterDlg::OnBnClickedFile)
+	ON_BN_CLICKED(IDSPLIT, &CTextSplitterDlg::OnBnClickedSplit)
+	ON_BN_CLICKED(IDCLOSE, &CTextSplitterDlg::OnBnClickedClose)
+	ON_BN_CLICKED(IDC_FILE, &CTextSplitterDlg::OnBnClickedFile)
 
 	ON_MESSAGE(WMS_START, OnStart)
 	ON_MESSAGE(WMS_PROGRESS, OnProgress)
@@ -237,7 +237,7 @@ END_MESSAGE_MAP()
 
 // CtextsplitterDlg message handlers
 
-BOOL CtextsplitterDlg::OnInitDialog()
+BOOL CTextSplitterDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
@@ -277,7 +277,7 @@ BOOL CtextsplitterDlg::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-void CtextsplitterDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void CTextSplitterDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
@@ -294,7 +294,7 @@ void CtextsplitterDlg::OnSysCommand(UINT nID, LPARAM lParam)
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
 
-void CtextsplitterDlg::OnPaint()
+void CTextSplitterDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -321,19 +321,19 @@ void CtextsplitterDlg::OnPaint()
 
 // The system calls this function to obtain the cursor to display while the user drags
 //  the minimized window.
-HCURSOR CtextsplitterDlg::OnQueryDragIcon()
+HCURSOR CTextSplitterDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
 /* */
-void CtextsplitterDlg::OnCancel()
+void CTextSplitterDlg::OnCancel()
 {
 	// do nothing
 }
 
 /**/
-void CtextsplitterDlg::OnClose()
+void CTextSplitterDlg::OnClose()
 {
 	StopThread();
 	delete m_pThread;
@@ -342,7 +342,7 @@ void CtextsplitterDlg::OnClose()
 }
 
 /**/
-void CtextsplitterDlg::OnBnClickedSplit()
+void CTextSplitterDlg::OnBnClickedSplit()
 {
 	if (IsRunning())
 	{
@@ -367,7 +367,7 @@ void CtextsplitterDlg::OnBnClickedSplit()
 }
 
 /**/
-BOOL CtextsplitterDlg::StopThread()
+BOOL CTextSplitterDlg::StopThread()
 {
 	::InterlockedExchange((LONG*)&m_bCanceled, TRUE);
 	if (m_pThread != NULL)
@@ -386,13 +386,13 @@ BOOL CtextsplitterDlg::StopThread()
 }
 
 /**/
-void CtextsplitterDlg::OnBnClickedClose()
+void CTextSplitterDlg::OnBnClickedClose()
 {
 	PostMessage(WM_CLOSE);
 }
 
 /**/
-void CtextsplitterDlg::OnBnClickedFile()
+void CTextSplitterDlg::OnBnClickedFile()
 {
 	CString csFileName;
 	m_editFile.GetWindowText(csFileName);
@@ -404,7 +404,7 @@ void CtextsplitterDlg::OnBnClickedFile()
 	}
 }
 
-LRESULT CtextsplitterDlg::OnStart( WPARAM wParam, LPARAM lParam )
+LRESULT CTextSplitterDlg::OnStart( WPARAM wParam, LPARAM lParam )
 {
 	m_ctrlProgress.SetRange32(0, (int)wParam);
 	m_ctrlProgress.SetPos(0);
@@ -415,13 +415,13 @@ LRESULT CtextsplitterDlg::OnStart( WPARAM wParam, LPARAM lParam )
 	return 0;
 }
 
-LRESULT CtextsplitterDlg::OnProgress( WPARAM wParam, LPARAM lParam )
+LRESULT CTextSplitterDlg::OnProgress( WPARAM wParam, LPARAM lParam )
 {
 	m_ctrlProgress.SetPos((int)wParam);
 	return 0;
 }
 
-LRESULT CtextsplitterDlg::OnFinish( WPARAM wParam, LPARAM lParam )
+LRESULT CTextSplitterDlg::OnFinish( WPARAM wParam, LPARAM lParam )
 {
 	m_bCanceled = FALSE;
 	m_ctrlProgress.SetPos(0);
@@ -433,7 +433,7 @@ LRESULT CtextsplitterDlg::OnFinish( WPARAM wParam, LPARAM lParam )
 	return 0;
 }
 
-BOOL CtextsplitterDlg::IsRunning()
+BOOL CTextSplitterDlg::IsRunning()
 {
 	if (m_pThread != NULL)
 	{

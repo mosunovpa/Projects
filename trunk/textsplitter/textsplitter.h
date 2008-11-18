@@ -14,10 +14,10 @@
 // See textsplitter.cpp for the implementation of this class
 //
 
-class CtextsplitterApp : public CWinApp
+class CTextSplitterApp : public CWinApp
 {
 public:
-	CtextsplitterApp();
+	CTextSplitterApp();
 
 // Overrides
 	public:
@@ -28,4 +28,4 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CtextsplitterApp theApp;
+extern CTextSplitterApp theApp;

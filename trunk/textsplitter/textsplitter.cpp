@@ -12,14 +12,14 @@
 
 // CtextsplitterApp
 
-BEGIN_MESSAGE_MAP(CtextsplitterApp, CWinApp)
+BEGIN_MESSAGE_MAP(CTextSplitterApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 
 // CtextsplitterApp construction
 
-CtextsplitterApp::CtextsplitterApp()
+CTextSplitterApp::CTextSplitterApp()
 {
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
@@ -28,12 +28,12 @@ CtextsplitterApp::CtextsplitterApp()
 
 // The one and only CtextsplitterApp object
 
-CtextsplitterApp theApp;
+CTextSplitterApp theApp;
 
 
 // CtextsplitterApp initialization
 
-BOOL CtextsplitterApp::InitInstance()
+BOOL CTextSplitterApp::InitInstance()
 {
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
@@ -56,7 +56,7 @@ BOOL CtextsplitterApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
-	CtextsplitterDlg dlg;
+	CTextSplitterDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

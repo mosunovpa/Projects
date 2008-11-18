@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="textsplitter"
+	Name="TextSplitter"
 	ProjectGUID="{B2A78861-E9C1-4193-B4FD-A00E1DAC5036}"
 	RootNamespace="textsplitter"
 	Keyword="MFCProj"
