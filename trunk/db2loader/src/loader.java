@@ -23,6 +23,7 @@ public class loader {
         Connection con = null;
         PrintStream out = null;
         PrintStream log = null;
+        String out_file_name = "";
 
         try {
             int posProcedure = GetParamsPos(argv);
@@ -33,7 +34,7 @@ public class loader {
             db.connect();
             con = db.con;
 
-            String out_file_name = ParceFileName(GetArg(argv, "-o"));
+            out_file_name = ParceFileName(GetArg(argv, "-o"));
             if (!out_file_name.isEmpty()) {
                 out = new PrintStream(
                         new BufferedOutputStream(
@@ -126,6 +127,10 @@ public class loader {
             }
             if (log != null) {
                 log.close();
+            }
+            if (!out_file_name.isEmpty()) {
+                File f = new File(out_file_name);
+                f.delete();
             }
         }
     }
