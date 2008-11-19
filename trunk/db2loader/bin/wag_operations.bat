@@ -1,0 +1,1 @@
+java loader LOCP 10.200.8.1 5021 DESVOC01 DESV5066 -odata/wag_operations_%%d.csv -llog/wag_operations_%%d.log -plrao02.gspnrp1b -i0 -i2 -s(20) -i0 -i0 -i1 -s() -s1 -ri
