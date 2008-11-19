@@ -1,0 +1,3 @@
+java loader LOCP 10.200.8.1 5021 DESVOC01 DESV5066 -wdata/repair_passports_%%d.csv -h1 -tSESSION.SBDSP057 -odata/bundling_kolesa_%%d.csv -llog/bundling_kolesa_%%d.log -pd90.SBDSP057 -s"%%y" -i%%p1
+java loader LOCP 10.200.8.1 5021 DESVOC01 DESV5066 -wdata/repair_passports_%%d.csv -h1 -tSESSION.SBDSP058 -odata/bundling_lit_det_%%d.csv -llog/bundling_lit_det_%%d.log -pd90.SBDSP058 -s"%%y" -i%%p1
+java loader LOCP 10.200.8.1 5021 DESVOC01 DESV5066 -wdata/repair_passports_%%d.csv -h1 -tSESSION.SBDSP059 -odata/bundling_telega_%%d.csv -llog/bundling_telega_%%d.log -pd90.SBDSP059 -s"%%y" -i%%p1
