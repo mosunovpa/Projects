@@ -153,7 +153,7 @@ UINT __cdecl Split_Thread( LPVOID pParam )
 			pSplitParam->pParentWnd->PostMessage(WMS_PROGRESS, (WPARAM)nProgress, (LPARAM)nFileSize);
 		}
 	}
-	pSplitParam->pParentWnd->PostMessage(WMS_FINISH);
+	pSplitParam->pParentWnd->PostMessage(WMS_FINISH, *(pSplitParam->pbCanceled));
 
 	filePart.Close();
 	fileSplit.Close();
@@ -428,8 +428,16 @@ LRESULT CTextSplitterDlg::OnFinish( WPARAM wParam, LPARAM lParam )
 	m_btnSplit.SetWindowText(_T("Split"));
 	m_txtProgressCaption.ShowWindow(SW_HIDE);
 	m_ctrlProgress.ShowWindow(SW_HIDE);
-	AfxMessageBox(_T("File has been splitted successfully"));
 
+
+	if (wParam == 0) // successfully
+	{
+		AfxMessageBox(_T("File has been splitted successfully."));
+	}
+	else
+	{
+		AfxMessageBox(_T("Splitting canceled."));
+	}
 	return 0;
 }
 
