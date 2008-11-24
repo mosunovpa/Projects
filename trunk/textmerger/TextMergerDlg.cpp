@@ -172,7 +172,7 @@ UINT __cdecl Merge_Thread( LPVOID pParam )
 	}
 	fileOutput.Close();
 
-	pMergeParam->pParentWnd->PostMessage(WMS_FINISH);
+	pMergeParam->pParentWnd->PostMessage(WMS_FINISH, *(pMergeParam->pbCanceled));
 
 	return 0;
 }
@@ -595,7 +595,14 @@ LRESULT CTextMergerDlg::OnFinish( WPARAM wParam, LPARAM lParam )
 	m_btnMerge.SetWindowText(_T("Merge"));
 	m_txtProgressCaption.ShowWindow(SW_HIDE);
 	m_ctrlProgress.ShowWindow(SW_HIDE);
-	AfxMessageBox(_T("Files have been splitted successfully"));
+	if (wParam == 0) // successfully
+	{
+		AfxMessageBox(_T("Files have been merged successfully."));
+	}
+	else
+	{
+		AfxMessageBox(_T("Merging canceled."));
+	}
 
 	return 0;
 }
