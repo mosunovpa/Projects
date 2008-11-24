@@ -10,13 +10,14 @@
 struct FilterParams
 {
 	FilterParams() : 
-		nPos(0),
+		nPos(0), nHeader(0),
 		pParentWnd(NULL), pbCanceled(NULL)
 	{
 	}
 
 	CString csFileName;
 	int nPos;
+	int nHeader;
 	CString csFilter;
 	CWnd* pParentWnd;
 	LPBOOL pbCanceled;
@@ -73,4 +74,5 @@ private:
 	BOOL m_bCanceled;
 	CButton m_btnSplit;
 	FilterParams m_FilterParams;
+	CSpinButtonCtrl m_ctrlHeaderLines;
 };
