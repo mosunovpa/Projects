@@ -72,12 +72,21 @@ void ParseFilter(CString csFilter, CStringList& OUT filters)
 {
 	int pos = 0;
 	int nStart = 0;
+	CString csLex;
 	while ((pos = csFilter.Find(_T(";"), nStart)) != -1)
 	{
-		filters.AddTail(CString(((LPCTSTR)csFilter) + nStart, pos));
+		csLex = CString(((LPCTSTR)csFilter) + nStart, pos - nStart);
+		if (!csLex.IsEmpty())
+		{
+			filters.AddTail(csLex);
+		}
 		nStart = pos + 1;
 	}
-	filters.AddTail(CString(((LPCTSTR)csFilter) + nStart, csFilter.GetLength() - nStart));
+	csLex = CString(((LPCTSTR)csFilter) + nStart, csFilter.GetLength() - nStart);
+	if (!csLex.IsEmpty())
+	{
+		filters.AddTail(csLex);
+	}
 }
 
 
@@ -94,6 +103,11 @@ UINT __cdecl Filter_Thread( LPVOID pParam )
 		AfxMessageBox(_T("File is not found."));
 		return 0;
 	}
+	if (pFilterParam->csFilter.IsEmpty())
+	{
+		AfxMessageBox(_T("Filter is not defined."));
+		return 0;
+	}
 	
 	CStdioFile fileInput(pFilterParam->csFileName, CFile::modeRead);
 
@@ -107,11 +121,28 @@ UINT __cdecl Filter_Thread( LPVOID pParam )
 	pFilterParam->pParentWnd->PostMessage(WMS_START, (WPARAM)nFileSize);
 	
 	CStdioFile fileOutput(GetOutFileName(pFilterParam->csFileName), CFile::modeWrite | CFile::modeCreate);
+	TCHAR line[4096];
 
+	// skip header
+	CStringList slistHeader;
+	while (pFilterParam->nHeader)
+	{
+		fileInput.ReadString(line, 4096);
+		slistHeader.AddTail(line);
+		--pFilterParam->nHeader;
+	}
+	// copy header
+	POSITION pos = slistHeader.GetHeadPosition();
+	while (pos)
+	{
+		CString const& csHeaderLine = slistHeader.GetNext(pos);
+		fileOutput.WriteString(csHeaderLine);
+	}
+
+	// copy content
 	CStringList filters; 
 	ParseFilter(pFilterParam->csFilter, filters);
-	TCHAR line[2048];
-	while (fileInput.ReadString(line, 2047))
+	while (fileInput.ReadString(line, 2048))
 	{
 		if (*(pFilterParam->pbCanceled) == TRUE)
 		{
@@ -131,7 +162,7 @@ UINT __cdecl Filter_Thread( LPVOID pParam )
 			pFilterParam->pParentWnd->PostMessage(WMS_PROGRESS, (WPARAM)nProgress, (LPARAM)nFileSize);
 		}
 	}
-	pFilterParam->pParentWnd->PostMessage(WMS_FINISH);
+	pFilterParam->pParentWnd->PostMessage(WMS_FINISH, *pFilterParam->pbCanceled);
 
 	fileOutput.Close();
 	fileInput.Close();
@@ -194,6 +225,7 @@ void CTextFilterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PROGRESS, m_ctrlProgress);
 	DDX_Control(pDX, IDFILTER, m_btnSplit);
 	DDX_Control(pDX, IDC_STATIC_PROGRESS, m_txtProgressCaption);
+	DDX_Control(pDX, IDC_SPIN_HEADER, m_ctrlHeaderLines);
 }
 
 BEGIN_MESSAGE_MAP(CTextFilterDlg, CDialog)
@@ -245,6 +277,8 @@ BOOL CTextFilterDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 	m_spinPos.SetRange(1, 100);
 	m_spinPos.SetPos(1);
+	m_ctrlHeaderLines.SetRange(1, 100);
+	m_ctrlHeaderLines.SetPos(1);
 
 	m_txtProgressCaption.ShowWindow(SW_HIDE);
 	m_ctrlProgress.ShowWindow(SW_HIDE);
@@ -328,6 +362,7 @@ void CTextFilterDlg::OnBnClickedFilter()
 	{
 		m_editFile.GetWindowText(m_FilterParams.csFileName);
 		m_FilterParams.nPos = m_spinPos.GetPos();
+		m_FilterParams.nHeader = m_ctrlHeaderLines.GetPos();
 		m_editFilter.GetWindowText(m_FilterParams.csFilter);
 		m_FilterParams.pParentWnd = this;
 		m_FilterParams.pbCanceled = &m_bCanceled;
@@ -402,7 +437,14 @@ LRESULT CTextFilterDlg::OnFinish( WPARAM wParam, LPARAM lParam )
 	m_btnSplit.SetWindowText(_T("Filter"));
 	m_txtProgressCaption.ShowWindow(SW_HIDE);
 	m_ctrlProgress.ShowWindow(SW_HIDE);
-	AfxMessageBox(_T("File has been filtered successfully"));
+	if (wParam == 0) // successfully
+	{
+		AfxMessageBox(_T("File has been filtered successfully."));
+	}
+	else // canceled
+	{
+		AfxMessageBox(_T("Filtering canceled."));
+	}
 
 	return 0;
 }
