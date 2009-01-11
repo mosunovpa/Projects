@@ -37,6 +37,17 @@ std::vector<CString> GetFiles()
 	return files;
 }
 
+
+// Sort items by associated lParam
+static int CALLBACK FilesCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	CString* ps1 = (CString*)lParam1;
+	CString* ps2 = (CString*)lParam2;
+
+	return lParamSort ? lstrcmp(ps2->GetString(), ps1->GetString()) :
+		lstrcmp(ps1->GetString(), ps2->GetString());
+}
+
 //////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
 
@@ -76,7 +87,8 @@ END_MESSAGE_MAP()
 
 
 CAviDatesDlg::CAviDatesDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CAviDatesDlg::IDD, pParent)
+	: CDialog(CAviDatesDlg::IDD, pParent),
+	m_bSortOrder(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -89,6 +101,7 @@ void CAviDatesDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAviDatesDlg, CDialog)
+	ON_WM_CLOSE()
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -99,6 +112,7 @@ BEGIN_MESSAGE_MAP(CAviDatesDlg, CDialog)
 	ON_BN_CLICKED(IDC_DOWN, &CAviDatesDlg::OnBnClickedDown)
 	ON_BN_CLICKED(IDC_CACULATE, &CAviDatesDlg::OnBnClickedCalculate)
 	ON_BN_CLICKED(IDCANCEL, &CAviDatesDlg::OnBnClickedCancel)
+	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, &CAviDatesDlg::OnLvnColumnclickFiles)
 END_MESSAGE_MAP()
 
 
@@ -140,6 +154,20 @@ BOOL CAviDatesDlg::OnInitDialog()
 	m_ctrlDates.InsertColumn(1, _T("Position"), LVCFMT_LEFT, 190);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
+}
+
+void CAviDatesDlg::OnClose()
+{
+	int cnt = m_ctrlFiles.GetItemCount();
+	if (cnt > 0)
+	{
+		for (int i = cnt - 1; i >= 0; --i)
+		{
+			DeleteFile(i);
+		}
+	}
+
+	EndDialog(IDCANCEL);
 }
 
 void CAviDatesDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -216,7 +244,7 @@ void CAviDatesDlg::OnBnClickedRemove()
 	{
 		for (int i = (int)vDeleted.size() - 1; i >= 0; --i)
 		{
-			m_ctrlFiles.DeleteItem(vDeleted[i]);
+			DeleteFile(vDeleted[i]);
 		}
 	}
 }
@@ -314,7 +342,7 @@ void CAviDatesDlg::MoveFile(int nIndex, int nStep)
 	{
 		CString sName = m_ctrlFiles.GetItemText(nIndex, 0);
 		CString sPath = m_ctrlFiles.GetItemText(nIndex, 1);
-		m_ctrlFiles.DeleteItem(nIndex);
+		DeleteFile(nIndex);
 		InsertFile(nTargetIndex, sName, sPath);
 		m_ctrlFiles.SetItemState(nTargetIndex, LVIS_SELECTED, LVIS_SELECTED);
 	}
@@ -324,4 +352,23 @@ void CAviDatesDlg::InsertFile(int nIndex, CString sName, CString sPath)
 {
 	int nPos = m_ctrlFiles.InsertItem(nIndex, sName);
 	m_ctrlFiles.SetItem(nPos, 1, LVIF_TEXT, sPath, 0, 0, 0, 0);
+	m_ctrlFiles.SetItemData(nPos, (DWORD_PTR)(new CString(sName)));
 }
+
+void CAviDatesDlg::DeleteFile( int nIndex )
+{
+	delete (CString*)(m_ctrlFiles.GetItemData(nIndex));
+	m_ctrlFiles.DeleteItem(nIndex);
+}
+
+void CAviDatesDlg::OnLvnColumnclickFiles(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	if (pNMLV->iSubItem == 0)
+	{
+		m_ctrlFiles.SortItems(FilesCompareProc, (DWORD_PTR)m_bSortOrder);
+		m_bSortOrder = !m_bSortOrder;
+	}
+	*pResult = 0;
+}
+

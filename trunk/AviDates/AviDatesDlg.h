@@ -24,6 +24,7 @@ protected:
 	HICON m_hIcon;
 	CListCtrl m_ctrlFiles;
 	CListCtrl m_ctrlDates;
+	BOOL m_bSortOrder;
 
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
@@ -43,4 +44,7 @@ protected:
 	std::vector<int> GetSelectedFiles();
 	void MoveFile(int nIndex, int nStep);
 	void InsertFile(int nIndex, CString sName, CString sPath);
+	void OnLvnColumnclickFiles(NMHDR *pNMHDR, LRESULT *pResult);
+	void DeleteFile( int nIndex );
+	void OnClose();
 };
