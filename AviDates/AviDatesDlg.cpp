@@ -48,6 +48,18 @@ static int CALLBACK FilesCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lPar
 		lstrcmp(ps1->GetString(), ps2->GetString());
 }
 
+CString ToString(std::pair<CTime, int> pos)
+{
+	TCHAR buf(10);
+	_itot_s(pos.second, &buf, sizeof(buf)/sizeof(TCHAR), 10);
+	return pos.first.Format(_T("%H:%M:S.")) + CString(buf);
+}
+
+CString ToString(CTime tm)
+{
+	return tm.Format(_T("%d %B %Y"));
+}
+
 //////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
 
@@ -150,8 +162,8 @@ BOOL CAviDatesDlg::OnInitDialog()
 	m_ctrlFiles.InsertColumn(1, _T("Path"), LVCFMT_LEFT, 230);
 
 	m_ctrlDates.SetExtendedStyle(LVS_EX_FULLROWSELECT);
-	m_ctrlDates.InsertColumn(0, _T("Date"), LVCFMT_LEFT, 190);
-	m_ctrlDates.InsertColumn(1, _T("Position"), LVCFMT_LEFT, 190);
+	m_ctrlDates.InsertColumn(0, _T("Position In Movie"), LVCFMT_LEFT, 190);
+	m_ctrlDates.InsertColumn(1, _T("Date"), LVCFMT_LEFT, 190);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -273,10 +285,23 @@ void CAviDatesDlg::OnBnClickedDown()
 	}
 }
 
+std::pair<CTime, int> CAviDatesDlg::FramesToTime(int nFrames)
+{
+	int nSeconds = nFrames / 25;
+	int nRestFrames = nFrames % 25;
+	int nMinutes = nSeconds / 60;
+	int nRestSeconds = nSeconds % 60;
+	int nHours = nMinutes / 60;
+	int nRestMinutes = nMinutes % 60;
+	int nRestHours = nHours % 24;
+	return std::pair<CTime, int>(CTime(2000,1,1,nRestHours,nRestMinutes,nRestSeconds), nRestFrames);
+}
+
 void CAviDatesDlg::OnBnClickedCalculate()
 {
-	int nTotalFrames = 0;
+	int nFramesFromBegin = 0;
 	CTime dtCurrent = 0;
+	int nFrames = 0;
 	for (int i = 0; i < m_ctrlFiles.GetItemCount(); ++i)
 	{
 		CString sFileName = m_ctrlFiles.GetItemText(i, 0) + CString(_T("\\")) + m_ctrlFiles.GetItemText(i, 1);
@@ -287,7 +312,6 @@ void CAviDatesDlg::OnBnClickedCalculate()
 			return;
 		}
 		CString s;
-		int nFrames = 0;
 		while (file.ReadString(s))
 		{
 			int len = s.GetLength();
@@ -306,13 +330,14 @@ void CAviDatesDlg::OnBnClickedCalculate()
 				if (dt != dtCurrent)
 				{
 					dtCurrent = dt;
-					//...
+					std::pair<CTime, int> PosInMovie = FramesToTime(nFramesFromBegin + nFrames);
+					int nPos = m_ctrlDates.InsertItem(m_ctrlDates.GetItemCount(), ToString(PosInMovie));
+					m_ctrlFiles.SetItem(nPos, 1, LVIF_TEXT, ToString(dtCurrent), 0, 0, 0, 0);
 				}
 			}
-			nTotalFrames += nFrames;
 		}
+		nFramesFromBegin += nFrames;
 		file.Close();
-		
 	}
 }
 
