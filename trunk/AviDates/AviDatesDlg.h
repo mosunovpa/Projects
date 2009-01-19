@@ -47,4 +47,5 @@ protected:
 	void OnLvnColumnclickFiles(NMHDR *pNMHDR, LRESULT *pResult);
 	void DeleteFile( int nIndex );
 	void OnClose();
+	std::pair<CTime, int> FramesToTime(int nFrames);
 };
