@@ -48,11 +48,11 @@ static int CALLBACK FilesCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lPar
 		lstrcmp(ps1->GetString(), ps2->GetString());
 }
 
-CString ToString(std::pair<CTime, int> pos)
+CString ToString(std::pair<CTimeSpan, int> pos)
 {
-	TCHAR buf(10);
-	_itot_s(pos.second, &buf, sizeof(buf)/sizeof(TCHAR), 10);
-	return pos.first.Format(_T("%H:%M:S.")) + CString(buf);
+	TCHAR buf[10];
+	_itot_s(pos.second, buf, sizeof(buf)/sizeof(TCHAR), 10);
+	return pos.first.Format(_T("%H:%M:%S.")) + CString(buf);
 }
 
 CString ToString(CTime tm)
@@ -285,7 +285,7 @@ void CAviDatesDlg::OnBnClickedDown()
 	}
 }
 
-std::pair<CTime, int> CAviDatesDlg::FramesToTime(int nFrames)
+std::pair<CTimeSpan, int> CAviDatesDlg::FramesToTime( int nFrames )
 {
 	int nSeconds = nFrames / 25;
 	int nRestFrames = nFrames % 25;
@@ -294,7 +294,7 @@ std::pair<CTime, int> CAviDatesDlg::FramesToTime(int nFrames)
 	int nHours = nMinutes / 60;
 	int nRestMinutes = nMinutes % 60;
 	int nRestHours = nHours % 24;
-	return std::pair<CTime, int>(CTime(2000,1,1,nRestHours,nRestMinutes,nRestSeconds), nRestFrames);
+	return std::pair<CTimeSpan, int>(CTimeSpan(0,nRestHours,nRestMinutes,nRestSeconds), nRestFrames);
 }
 
 void CAviDatesDlg::OnBnClickedCalculate()
@@ -302,9 +302,10 @@ void CAviDatesDlg::OnBnClickedCalculate()
 	int nFramesFromBegin = 0;
 	CTime dtCurrent = 0;
 	int nFrames = 0;
+	m_ctrlDates.DeleteAllItems();
 	for (int i = 0; i < m_ctrlFiles.GetItemCount(); ++i)
 	{
-		CString sFileName = m_ctrlFiles.GetItemText(i, 0) + CString(_T("\\")) + m_ctrlFiles.GetItemText(i, 1);
+		CString sFileName = m_ctrlFiles.GetItemText(i, 1) + CString(_T("\\")) + m_ctrlFiles.GetItemText(i, 0);
 		CStdioFile file;
 		if (!file.Open(sFileName, CFile::modeRead))
 		{
@@ -323,16 +324,17 @@ void CAviDatesDlg::OnBnClickedCalculate()
 			nFrames = _ttoi(s.Left(8));
 			if (len == 26)
 			{
-				int year = _ttoi(s.Mid(10, 2));
-				int month = _ttoi(s.Mid(13, 2));
-				int day = _ttoi(s.Mid(16, 2));
-				CTime dt(year, month, day, 0, 0, 0);
-				if (dt != dtCurrent)
+				int year = 2000 + _ttoi(s.Mid(9, 2));
+				int month = _ttoi(s.Mid(12, 2));
+				int day = _ttoi(s.Mid(15, 2));
+				if (month > 0)
 				{
-					dtCurrent = dt;
-					std::pair<CTime, int> PosInMovie = FramesToTime(nFramesFromBegin + nFrames);
-					int nPos = m_ctrlDates.InsertItem(m_ctrlDates.GetItemCount(), ToString(PosInMovie));
-					m_ctrlFiles.SetItem(nPos, 1, LVIF_TEXT, ToString(dtCurrent), 0, 0, 0, 0);
+					CTime dt(year, month, day, 0, 0, 0);
+					if (dt != dtCurrent)
+					{
+						dtCurrent = dt;
+						InsertDate(dtCurrent, nFramesFromBegin + nFrames);
+					}
 				}
 			}
 		}
@@ -341,9 +343,19 @@ void CAviDatesDlg::OnBnClickedCalculate()
 	}
 }
 
+void CAviDatesDlg::InsertDate(CTime dt, int nFrames)
+{
+	std::pair<CTimeSpan, int> PosInMovie = FramesToTime(nFrames);
+	int nPos = m_ctrlDates.InsertItem(m_ctrlDates.GetItemCount(), ToString(PosInMovie));
+	m_ctrlDates.SetItem(nPos, 1, LVIF_TEXT, ToString(dt), 0, 0, 0, 0);
+}
+
 void CAviDatesDlg::OnBnClickedCancel()
 {
-	OnCancel();
+	if (AfxMessageBox(_T("Close?"), MB_YESNO | MB_ICONQUESTION) == IDYES)
+	{
+		PostMessage(WM_CLOSE);
+	}
 }
 
 std::vector<int> CAviDatesDlg::GetSelectedFiles()
@@ -396,4 +408,5 @@ void CAviDatesDlg::OnLvnColumnclickFiles(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 	*pResult = 0;
 }
+
 
