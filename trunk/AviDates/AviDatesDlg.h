@@ -28,6 +28,7 @@ protected:
 
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
+
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
@@ -47,5 +48,6 @@ protected:
 	void OnLvnColumnclickFiles(NMHDR *pNMHDR, LRESULT *pResult);
 	void DeleteFile( int nIndex );
 	void OnClose();
-	std::pair<CTime, int> FramesToTime(int nFrames);
+	std::pair<CTimeSpan, int> FramesToTime(int nFrames);
+	void InsertDate(CTime dt, int nFrames);
 };
