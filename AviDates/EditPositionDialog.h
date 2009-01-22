@@ -11,8 +11,8 @@ class CEditPositionDialog : public CDialog
 public:
 	CEditPositionDialog(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CEditPositionDialog();
-	void SetPosition(CPositionInMovie p);
-	CPositionInMovie GetPosition() const;
+	void SetPosition(int nPos);
+	int GetPosition() const;
 
 // Dialog Data
 	enum { IDD = IDD_EDIT_POS };
@@ -26,6 +26,6 @@ public:
 	BOOL m_bMoveNextPos;
 
 private:
-	CPositionInMovie m_pos;
+	int m_pos;
 	afx_msg void OnBnClickedOk();
 };

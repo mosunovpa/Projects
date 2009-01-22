@@ -5,9 +5,7 @@
 #include "afxcmn.h"
 #include "vector"
 
-typedef std::pair<CTimeSpan, int> CPositionInMovie;
-
-CString ToString(CPositionInMovie pos);
+CString FramesToTimeFormat(int nFrames);
 
 
 // CAviDatesDlg dialog
@@ -57,7 +55,6 @@ protected:
 	void OnDblClick(NMHDR *pNMHDR, LRESULT *pResult);
 	void DeleteFile( int nIndex );
 	void OnClose();
-	CPositionInMovie FramesToTime(int nFrames);
 	void InsertDate(CTime dt, int nFrames);
 	void UpdateControls();
 	void DeleteAllDates();

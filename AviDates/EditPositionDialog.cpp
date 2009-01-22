@@ -23,7 +23,7 @@ CEditPositionDialog::~CEditPositionDialog()
 
 BOOL CEditPositionDialog::OnInitDialog()
 {
-	GetDlgItem(IDC_POSITION)->SetWindowText(ToString(m_pos));
+	GetDlgItem(IDC_POSITION)->SetWindowText(FramesToTimeFormat(m_pos));
 	return TRUE;
 }
 
@@ -38,12 +38,12 @@ BEGIN_MESSAGE_MAP(CEditPositionDialog, CDialog)
 	ON_BN_CLICKED(IDOK, &CEditPositionDialog::OnBnClickedOk)
 END_MESSAGE_MAP()
 
-void CEditPositionDialog::SetPosition( CPositionInMovie p )
+void CEditPositionDialog::SetPosition( int nPos )
 {
-	m_pos = p;
+	m_pos = nPos;
 }
 
-CPositionInMovie CEditPositionDialog::GetPosition() const
+int CEditPositionDialog::GetPosition() const
 {
 	return m_pos;
 }
@@ -52,17 +52,38 @@ CPositionInMovie CEditPositionDialog::GetPosition() const
 
 BOOL CheckFormat(CString cs)
 {
-	
+	int len = cs.GetLength();
+	if (len < 10) 
+		return FALSE;
+
+	for(int i = 0; i < len; ++i)
+	{
+		switch (i)
+		{
+		case 2:
+		case 5:
+			if (cs[i] != ':') 
+				return FALSE;
+			break;
+		case 8:
+			if (cs[i] != '.') 
+				return FALSE;
+			break;
+		default:
+			if (!_istdigit(cs[i])) 
+				return FALSE;
+		}
+	}
 	return TRUE;
 }
 
-CPositionInMovie ToPosition(CString cs)
+int ToPosition(CString cs)
 {
-	int h = 
-	int m = 
-	int s = 
-	int 
-	return CPositionInMovie(CTimeSpan(0, h, m, s), f);
+	int h = _ttoi(CString((LPCTSTR)cs, 2));
+	int m = _ttoi(CString((LPCTSTR)cs + 3, 2));
+	int s = _ttoi(CString((LPCTSTR)cs + 6, 2));
+	int f = _ttoi((LPCTSTR)cs + 9);
+	return f + 25 * (s + m * 60 + h * 3600);
 }
 
 void CEditPositionDialog::OnBnClickedOk()
@@ -76,6 +97,6 @@ void CEditPositionDialog::OnBnClickedOk()
 	}
 	else
 	{
-		AfxMessageBox(_T("Not correct position."));
+		AfxMessageBox(_T("Position is not correct."));
 	}
 }

@@ -14,6 +14,8 @@
 //////////////////////////////////////////////////////////////////////////
 // helpers
 
+typedef std::pair<CTimeSpan, int> CPositionInMovie;
+
 std::vector<CString> GetFiles()
 {
 	std::vector<CString> files;
@@ -60,6 +62,24 @@ CString ToString(CTime tm)
 {
 	return tm.Format(_T("%d %B %Y"));
 }
+
+CPositionInMovie FramesToTime( int nFrames )
+{
+	int nSeconds = nFrames / 25;
+	int nRestFrames = nFrames % 25;
+	int nMinutes = nSeconds / 60;
+	int nRestSeconds = nSeconds % 60;
+	int nHours = nMinutes / 60;
+	int nRestMinutes = nMinutes % 60;
+	int nRestHours = nHours % 24;
+	return CPositionInMovie(CTimeSpan(0,nRestHours,nRestMinutes,nRestSeconds), nRestFrames);
+}
+
+CString FramesToTimeFormat( int nFrames )
+{
+	return ToString(FramesToTime(nFrames));
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
@@ -178,17 +198,20 @@ BOOL CAviDatesDlg::OnInitDialog()
 
 void CAviDatesDlg::OnClose()
 {
-	int cnt = m_ctrlFiles.GetItemCount();
-	if (cnt > 0)
+	if (AfxMessageBox(_T("Close?"), MB_YESNO | MB_ICONQUESTION) == IDYES)
 	{
-		for (int i = cnt - 1; i >= 0; --i)
+		int cnt = m_ctrlFiles.GetItemCount();
+		if (cnt > 0)
 		{
-			DeleteFile(i);
+			for (int i = cnt - 1; i >= 0; --i)
+			{
+				DeleteFile(i);
+			}
 		}
-	}
-	DeleteAllDates();
+		DeleteAllDates();
 
-	EndDialog(IDCANCEL);
+		EndDialog(IDCANCEL);
+	}
 }
 
 void CAviDatesDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -296,18 +319,6 @@ void CAviDatesDlg::OnBnClickedDown()
 	}
 }
 
-CPositionInMovie CAviDatesDlg::FramesToTime( int nFrames )
-{
-	int nSeconds = nFrames / 25;
-	int nRestFrames = nFrames % 25;
-	int nMinutes = nSeconds / 60;
-	int nRestSeconds = nSeconds % 60;
-	int nHours = nMinutes / 60;
-	int nRestMinutes = nMinutes % 60;
-	int nRestHours = nHours % 24;
-	return CPositionInMovie(CTimeSpan(0,nRestHours,nRestMinutes,nRestSeconds), nRestFrames);
-}
-
 void CAviDatesDlg::OnBnClickedCalculate()
 {
 	int nFramesFromBegin = 0;
@@ -361,41 +372,58 @@ void CAviDatesDlg::OnBnClickedEdit()
 	{
 		int i = m_ctrlDates.GetNextSelectedItem(pos);
 		CEditPositionDialog dlg;
-		dlg.SetPosition(*(CPositionInMovie*)m_ctrlDates.GetItemData(i));
+		int nCurFrames = (int)m_ctrlDates.GetItemData(i);
+		dlg.SetPosition(nCurFrames);
 		if (dlg.DoModal() == IDOK)
 		{
-
+			int nNewFrames = dlg.GetPosition();
+			if (i > 0)
+			{
+				if ((int)m_ctrlDates.GetItemData(i - 1) >= nNewFrames)
+				{
+					AfxMessageBox(_T("Next position should be larger then previous."));
+					return;
+				}
+			}
+			if (!dlg.m_bMoveNextPos && i < (int)m_ctrlDates.GetItemCount() - 1)
+			{
+				if ((int)m_ctrlDates.GetItemData(i + 1) <= nNewFrames)
+				{
+					AfxMessageBox(_T("Next position should be larger then previous."));
+					return;
+				}
+			}
+			if (dlg.m_bMoveNextPos)
+			{
+				int nDelta = nNewFrames - nCurFrames;
+				for (int j = i + 1; j < (int)m_ctrlDates.GetItemCount(); ++j)
+				{
+					int nFrames = (int)m_ctrlDates.GetItemData(j);
+					m_ctrlDates.SetItem(j, 0, LVIF_TEXT, FramesToTimeFormat(nFrames + nDelta), 0, 0, 0, 0);
+					m_ctrlDates.SetItemData(j, (DWORD_PTR)(nFrames + nDelta));
+				}
+			}
+			m_ctrlDates.SetItem(i, 0, LVIF_TEXT, FramesToTimeFormat(nNewFrames), 0, 0, 0, 0);
+			m_ctrlDates.SetItemData(i, (DWORD_PTR)nNewFrames);
 		}
 	}
 }
 
 void CAviDatesDlg::InsertDate(CTime dt, int nFrames)
 {
-	CPositionInMovie PosInMovie = FramesToTime(nFrames);
-	int nPos = m_ctrlDates.InsertItem(m_ctrlDates.GetItemCount(), ToString(PosInMovie));
+	int nPos = m_ctrlDates.InsertItem(m_ctrlDates.GetItemCount(), FramesToTimeFormat(nFrames));
 	m_ctrlDates.SetItem(nPos, 1, LVIF_TEXT, ToString(dt), 0, 0, 0, 0);
-	m_ctrlDates.SetItemData(nPos, (DWORD_PTR)(new CPositionInMovie(PosInMovie)));
+	m_ctrlDates.SetItemData(nPos, (DWORD_PTR)nFrames);
 }
 
 void CAviDatesDlg::DeleteAllDates()
 {
-	int cnt = m_ctrlDates.GetItemCount();
-	if (cnt > 0)
-	{
-		for (int i = cnt - 1; i >= 0; --i)
-		{
-			delete (CPositionInMovie*)(m_ctrlDates.GetItemData(i));
-		}
-	}
 	m_ctrlDates.DeleteAllItems();
 }
 
 void CAviDatesDlg::OnBnClickedCancel()
 {
-	if (AfxMessageBox(_T("Close?"), MB_YESNO | MB_ICONQUESTION) == IDYES)
-	{
-		PostMessage(WM_CLOSE);
-	}
+	PostMessage(WM_CLOSE);
 }
 
 std::vector<int> CAviDatesDlg::GetSelectedFiles()
