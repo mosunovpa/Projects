@@ -5,11 +5,17 @@
 #include "afxcmn.h"
 #include "vector"
 
+typedef std::pair<CTimeSpan, int> CPositionInMovie;
+
+CString ToString(CPositionInMovie pos);
+
+
 // CAviDatesDlg dialog
 class CAviDatesDlg : public CDialog
 {
 // Construction
 public:
+
 	CAviDatesDlg(CWnd* pParent = NULL);	// standard constructor
 
 // Dialog Data
@@ -39,6 +45,7 @@ protected:
 	afx_msg void OnBnClickedDown();
 	afx_msg void OnBnClickedCalculate();
 	afx_msg void OnBnClickedCancel();
+	afx_msg void OnBnClickedEdit();
 
 	DECLARE_MESSAGE_MAP()
 
@@ -46,8 +53,12 @@ protected:
 	void MoveFile(int nIndex, int nStep);
 	void InsertFile(int nIndex, CString sName, CString sPath);
 	void OnLvnColumnclickFiles(NMHDR *pNMHDR, LRESULT *pResult);
+	void OnUpdateControls(NMHDR *pNMHDR, LRESULT *pResult);
+	void OnDblClick(NMHDR *pNMHDR, LRESULT *pResult);
 	void DeleteFile( int nIndex );
 	void OnClose();
-	std::pair<CTimeSpan, int> FramesToTime(int nFrames);
+	CPositionInMovie FramesToTime(int nFrames);
 	void InsertDate(CTime dt, int nFrames);
+	void UpdateControls();
+	void DeleteAllDates();
 };
