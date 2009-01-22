@@ -5,6 +5,7 @@
 #include "AviDates.h"
 #include "AviDatesDlg.h"
 #include "shlwapi.h"
+#include "EditPositionDialog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -48,7 +49,7 @@ static int CALLBACK FilesCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lPar
 		lstrcmp(ps1->GetString(), ps2->GetString());
 }
 
-CString ToString(std::pair<CTimeSpan, int> pos)
+CString ToString(CPositionInMovie pos)
 {
 	TCHAR buf[10];
 	_itot_s(pos.second, buf, sizeof(buf)/sizeof(TCHAR), 10);
@@ -123,8 +124,13 @@ BEGIN_MESSAGE_MAP(CAviDatesDlg, CDialog)
 	ON_BN_CLICKED(IDC_UP, &CAviDatesDlg::OnBnClickedUp)
 	ON_BN_CLICKED(IDC_DOWN, &CAviDatesDlg::OnBnClickedDown)
 	ON_BN_CLICKED(IDC_CACULATE, &CAviDatesDlg::OnBnClickedCalculate)
+	ON_BN_CLICKED(IDC_EDIT, &CAviDatesDlg::OnBnClickedEdit)
 	ON_BN_CLICKED(IDCANCEL, &CAviDatesDlg::OnBnClickedCancel)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, &CAviDatesDlg::OnLvnColumnclickFiles)
+	ON_NOTIFY(NM_CLICK, IDC_FILES, &CAviDatesDlg::OnUpdateControls)
+	ON_NOTIFY(NM_CLICK, IDC_DATES, &CAviDatesDlg::OnUpdateControls)
+	ON_NOTIFY(NM_DBLCLK, IDC_DATES, &CAviDatesDlg::OnDblClick)
+
 END_MESSAGE_MAP()
 
 
@@ -165,6 +171,8 @@ BOOL CAviDatesDlg::OnInitDialog()
 	m_ctrlDates.InsertColumn(0, _T("Position In Movie"), LVCFMT_LEFT, 190);
 	m_ctrlDates.InsertColumn(1, _T("Date"), LVCFMT_LEFT, 190);
 
+	UpdateControls();
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -178,6 +186,7 @@ void CAviDatesDlg::OnClose()
 			DeleteFile(i);
 		}
 	}
+	DeleteAllDates();
 
 	EndDialog(IDCANCEL);
 }
@@ -247,6 +256,7 @@ void CAviDatesDlg::OnBnClickedAdd()
 			InsertFile(m_ctrlFiles.GetItemCount(), files[i], files[0]);
 		}
 	}
+	UpdateControls();
 }
 
 void CAviDatesDlg::OnBnClickedRemove()
@@ -259,6 +269,7 @@ void CAviDatesDlg::OnBnClickedRemove()
 			DeleteFile(vDeleted[i]);
 		}
 	}
+	UpdateControls();
 }
 
 void CAviDatesDlg::OnBnClickedUp()
@@ -285,7 +296,7 @@ void CAviDatesDlg::OnBnClickedDown()
 	}
 }
 
-std::pair<CTimeSpan, int> CAviDatesDlg::FramesToTime( int nFrames )
+CPositionInMovie CAviDatesDlg::FramesToTime( int nFrames )
 {
 	int nSeconds = nFrames / 25;
 	int nRestFrames = nFrames % 25;
@@ -294,7 +305,7 @@ std::pair<CTimeSpan, int> CAviDatesDlg::FramesToTime( int nFrames )
 	int nHours = nMinutes / 60;
 	int nRestMinutes = nMinutes % 60;
 	int nRestHours = nHours % 24;
-	return std::pair<CTimeSpan, int>(CTimeSpan(0,nRestHours,nRestMinutes,nRestSeconds), nRestFrames);
+	return CPositionInMovie(CTimeSpan(0,nRestHours,nRestMinutes,nRestSeconds), nRestFrames);
 }
 
 void CAviDatesDlg::OnBnClickedCalculate()
@@ -302,7 +313,7 @@ void CAviDatesDlg::OnBnClickedCalculate()
 	int nFramesFromBegin = 0;
 	CTime dtCurrent = 0;
 	int nFrames = 0;
-	m_ctrlDates.DeleteAllItems();
+	DeleteAllDates();
 	for (int i = 0; i < m_ctrlFiles.GetItemCount(); ++i)
 	{
 		CString sFileName = m_ctrlFiles.GetItemText(i, 1) + CString(_T("\\")) + m_ctrlFiles.GetItemText(i, 0);
@@ -343,11 +354,40 @@ void CAviDatesDlg::OnBnClickedCalculate()
 	}
 }
 
+void CAviDatesDlg::OnBnClickedEdit()
+{
+	POSITION pos = m_ctrlDates.GetFirstSelectedItemPosition();
+	if (pos)
+	{
+		int i = m_ctrlDates.GetNextSelectedItem(pos);
+		CEditPositionDialog dlg;
+		dlg.SetPosition(*(CPositionInMovie*)m_ctrlDates.GetItemData(i));
+		if (dlg.DoModal() == IDOK)
+		{
+
+		}
+	}
+}
+
 void CAviDatesDlg::InsertDate(CTime dt, int nFrames)
 {
-	std::pair<CTimeSpan, int> PosInMovie = FramesToTime(nFrames);
+	CPositionInMovie PosInMovie = FramesToTime(nFrames);
 	int nPos = m_ctrlDates.InsertItem(m_ctrlDates.GetItemCount(), ToString(PosInMovie));
 	m_ctrlDates.SetItem(nPos, 1, LVIF_TEXT, ToString(dt), 0, 0, 0, 0);
+	m_ctrlDates.SetItemData(nPos, (DWORD_PTR)(new CPositionInMovie(PosInMovie)));
+}
+
+void CAviDatesDlg::DeleteAllDates()
+{
+	int cnt = m_ctrlDates.GetItemCount();
+	if (cnt > 0)
+	{
+		for (int i = cnt - 1; i >= 0; --i)
+		{
+			delete (CPositionInMovie*)(m_ctrlDates.GetItemData(i));
+		}
+	}
+	m_ctrlDates.DeleteAllItems();
 }
 
 void CAviDatesDlg::OnBnClickedCancel()
@@ -409,4 +449,25 @@ void CAviDatesDlg::OnLvnColumnclickFiles(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
+void CAviDatesDlg::OnUpdateControls(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	UpdateControls();
+	*pResult = 0;
+}
 
+void CAviDatesDlg::UpdateControls()
+{
+	BOOL bFilesSelected = (m_ctrlFiles.GetSelectedCount() == 1);
+	BOOL bDatesSelected = (m_ctrlDates.GetSelectedCount() == 1);
+	GetDlgItem(IDC_REMOVE)->EnableWindow(bFilesSelected);
+	GetDlgItem(IDC_UP)->EnableWindow(bFilesSelected);
+	GetDlgItem(IDC_DOWN)->EnableWindow(bFilesSelected);
+	GetDlgItem(IDC_CACULATE)->EnableWindow(m_ctrlFiles.GetItemCount() > 0);
+	GetDlgItem(IDC_EDIT)->EnableWindow(bDatesSelected);
+}
+
+void CAviDatesDlg::OnDblClick( NMHDR *pNMHDR, LRESULT *pResult )
+{
+	OnBnClickedEdit();
+	*pResult = 0;
+}

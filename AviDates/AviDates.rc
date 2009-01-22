@@ -101,6 +101,18 @@ BEGIN
     CONTROL         "",IDC_FILES,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,18,275,105
 END
 
+IDD_EDIT_POS DIALOGEX 0, 0, 186, 55
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit Position"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    LTEXT           "Position in movie:",IDC_STATIC,7,7,56,8
+    EDITTEXT        IDC_POSITION,7,19,65,14,ES_AUTOHSCROLL
+    CONTROL         "Move next positions",IDC_MOVE_NEXT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,38,80,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -165,6 +177,14 @@ BEGIN
         VERTGUIDE, 290
         TOPMARGIN, 7
         BOTTOMMARGIN, 315
+    END
+
+    IDD_EDIT_POS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
     END
 END
 #endif    // APSTUDIO_INVOKED

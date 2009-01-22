@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\EditPositionDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -229,6 +233,10 @@
 			</File>
 			<File
 				RelativePath=".\AviDatesDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EditPositionDialog.h"
 				>
 			</File>
 			<File
