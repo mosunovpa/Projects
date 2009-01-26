@@ -157,6 +157,24 @@ static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 		}
 		note.SetModifiedDate(t);
 	}
+	if ((nMask & CApplication::NM_DELETED) == CApplication::NM_DELETED)
+	{
+		CHECK_HR(spElement->getAttribute(L"deleted", &val));
+		time_t t;
+		if (val.vt == VT_NULL) // attribute not found
+		{
+			t = 0;
+		}
+		else if (val.vt == VT_BSTR)
+		{
+			t =_ttoi(val.bstrVal);
+		}
+		else
+		{
+			ThrowError(_T("Attribute deleted not found"));
+		}
+		note.SetDeletedDate(t);
+	}
 	return note;
 }
 
@@ -226,6 +244,10 @@ static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& not
 	if ((nMask & CApplication::NM_MODIFIED) == CApplication::NM_MODIFIED)
 	{
 		CHECK_HR(spElement->setAttribute(L"modified", CComVariant(note.GetModifiedDate())));
+	}
+	if ((nMask & CApplication::NM_DELETED) == CApplication::NM_DELETED)
+	{
+		CHECK_HR(spElement->setAttribute(L"deleted", CComVariant(note.GetDeletedDate())));
 	}
 }
 

@@ -18,12 +18,13 @@ public:
 	// GetAllNotes mask
 	enum NoteMask
 	{
-		NM_ID = 0x01,
-		NM_TEXT = 0x02,
-		NM_POS = 0x4,
-		NM_CREATED = 0x8,
-		NM_MODIFIED = 0x8,
-		NM_ALL = NM_ID | NM_TEXT | NM_POS | NM_CREATED | NM_MODIFIED
+		NM_ID = 0x0001,
+		NM_TEXT = 0x0002,
+		NM_POS = 0x0004,
+		NM_CREATED = 0x0008,
+		NM_MODIFIED = 0x0016,
+		NM_DELETED = 0x0032,
+		NM_ALL = NM_ID | NM_TEXT | NM_POS | NM_CREATED | NM_MODIFIED | NM_DELETED
 	};
 
 	void CreateAppWindow();

@@ -129,7 +129,10 @@ public:
 	void SetCreatedDate(time_t dt);
 	time_t GetModifiedDate() const;
 	void SetModifiedDate(time_t dt);
+	time_t GetDeletedDate() const;
+	void SetDeletedDate(time_t dt);
 	CNoteEdit& GetEditor();
+
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
 	BEGIN_MSG_MAP_EX(CNoteWnd)
@@ -224,4 +227,5 @@ private:
 	BOOL m_bPosChanged;
 	time_t m_dtCreated;
 	time_t m_dtModified;
+	time_t m_dtDeleted;
 };

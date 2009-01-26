@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Note.h"
 
-CNote::CNote(void) : m_id(0), m_dtCreated(0), m_dtModified(0)
+CNote::CNote(void) : m_id(0), m_dtCreated(0), m_dtModified(0), m_dtDeleted(0)
 {
 }
 
@@ -64,3 +64,12 @@ void CNote::SetModifiedDate(time_t dt)
 	m_dtModified = dt;
 }
 
+time_t CNote::GetDeletedDate() const
+{
+	return m_dtDeleted;
+}
+
+void CNote::SetDeletedDate( time_t dt )
+{
+	m_dtDeleted = dt;
+}
