@@ -228,6 +228,7 @@ int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 	note.SetPos(CWindowRect(pWnd->m_hWnd));
 	note.SetCreatedDate(pWnd->GetCreatedDate());
 	note.SetModifiedDate(pWnd->GetModifiedDate());
+	note.SetDeletedDate(pWnd->GetDeletedDate());
 	m_storage.SaveNote(note, nMask);
 	return note.GetId();
 }
@@ -267,7 +268,15 @@ void CApplication::DeleteFromStorage(int nNoteId)
 	if (nNoteId > 0)
 	{
 		CNote note = m_storage.GetNote(nNoteId);
-		m_storage.DeleteNote(nNoteId);
+		if (note.GetDeletedDate() == 0)
+		{
+			note.SetDeletedDate(dateutils::GetCurrentDate());
+			m_storage.SaveNote(note, CApplication::NM_DELETED);
+		}
+		else
+		{
+			m_storage.DeleteNote(nNoteId);
+		}
 		AddToUndeleteList(note);
 	}
 }
@@ -322,6 +331,7 @@ CNoteWnd* CApplication::OpenNote( CNote const& note )
 		pWnd->SetText(note.GetText());
 		pWnd->SetCreatedDate(note.GetCreatedDate());
 		pWnd->SetModifiedDate(note.GetModifiedDate());
+		pWnd->SetDeletedDate(note.GetDeletedDate());
 	}
 	return pWnd;
 }

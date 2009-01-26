@@ -36,7 +36,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_bSaveError(FALSE),
 	m_bPosChanged(FALSE),
 	m_dtCreated(0),
-	m_dtModified(0)
+	m_dtModified(0),
+	m_dtDeleted(0)
 {
 }
 
@@ -581,3 +582,14 @@ LRESULT CNoteWnd::OnLink(LPNMHDR pnmh)
 	return 0;
 }
 
+
+time_t CNoteWnd::GetDeletedDate() const
+{
+	return m_dtDeleted;
+
+}
+
+void CNoteWnd::SetDeletedDate( time_t dt )
+{
+	m_dtDeleted = dt;
+}
