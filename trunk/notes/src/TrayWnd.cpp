@@ -293,7 +293,8 @@ void CTrayWnd::OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* DELETED_CMD_FIRST - DELETED_CMD_LAST */
 void CTrayWnd::OnDeletedNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	CApplication::Get().UndeleteNote(GET_DELETED_ID_FROM_CMD(nID));
+	CApplication::Get().ShowNote(GET_DELETED_ID_FROM_CMD(nID));
+//	CApplication::Get().UndeleteNote(GET_DELETED_ID_FROM_CMD(nID));
 }
 
 /* WM_MENURBUTTONUP */
@@ -408,6 +409,11 @@ bool compare_by_modify_date(CNote const& left, CNote const& right)
 {
 	return left.GetModifiedDate() < right.GetModifiedDate();
 }
+/**/
+bool compare_by_deleted_date(CNote const& left, CNote const& right)
+{
+	return left.GetDeletedDate() < right.GetDeletedDate();
+}
 
 /**/
 void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
@@ -419,13 +425,24 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 		CApplication::NM_ID | CApplication::NM_TEXT | CApplication::NM_MODIFIED | CApplication::NM_DELETED);
 	std::sort(notes.begin(), notes.end(), compare_by_modify_date);
 
+	// check notes list
+	BOOL bIsNotesExists = FALSE;
+	BOOL bIsDeletedNotesExists = FALSE;
+	for (int i = 0; i < notes.size(); ++i)
+	{
+		bIsNotesExists = bIsNotesExists || (notes[i].GetDeletedDate() == 0);
+		bIsDeletedNotesExists = bIsDeletedNotesExists || (notes[i].GetDeletedDate() != 0);
+		if (bIsNotesExists && bIsDeletedNotesExists)
+			break;
+	}
+
 	/* check separator */
 	int nState = menuNotes.GetMenuState(0, MF_BYPOSITION);
-	if (notes.empty() && (nState & MF_SEPARATOR) == MF_SEPARATOR)
+	if (!bIsNotesExists && (nState & MF_SEPARATOR) == MF_SEPARATOR)
 	{
 		menuNotes.DeleteMenu(0, MF_BYPOSITION);
 	}
-	if (!notes.empty() && (nState & MF_SEPARATOR) != MF_SEPARATOR)
+	if (bIsNotesExists && (nState & MF_SEPARATOR) != MF_SEPARATOR)
 	{
 		menuNotes.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR);
 	}
@@ -433,24 +450,34 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	// show all notes
 	for (int i = 0; i < notes.size(); ++i)
 	{
-		_tstring sCaption = GetCaption(notes[i].GetText());
-		int nId = CREATE_NOTE_CMD(notes[i].GetId());
-		menuNotes.InsertMenu(0, MF_BYPOSITION, nId, sCaption.c_str());
-		menuNotes.SetMenuItemBitmaps(nId, MF_BYCOMMAND, 
-			NULL, m_bmpDeleted); 
+		if (notes[i].GetDeletedDate() == 0)
+		{
+			_tstring sCaption = GetCaption(notes[i].GetText());
+			int nId = CREATE_NOTE_CMD(notes[i].GetId());
+			menuNotes.InsertMenu(0, MF_BYPOSITION, nId, sCaption.c_str());
+			menuNotes.SetMenuItemBitmaps(nId, MF_BYCOMMAND, 
+				NULL, m_bmpDeleted); 
+		}
 	}
 
 	// show deleted notes
 	CMenuHandle menuDeleted = GetUndeleteMenu(menuNotes);
-	std::list<CNote> const& listDeleted = CApplication::Get().GetUndeleteList();
-	if (!listDeleted.empty())
+//	std::list<CNote> const& listDeleted = CApplication::Get().GetUndeleteList();
+	std::sort(notes.begin(), notes.end(), compare_by_deleted_date);
+	if (bIsDeletedNotesExists)
 	{
 		menuDeleted.DeleteMenu(ID_UNDELETE_EMPTY, MF_BYCOMMAND);
 	}
-	for(std::list<CNote>::const_iterator it = listDeleted.begin(); it != listDeleted.end(); ++it)
+	for (int i = 0; i < notes.size(); ++i)
 	{
-		CNote const& note = *it;
-		_tstring sCaption = GetCaption(note.GetText());
-		menuDeleted.AppendMenu(MF_STRING, CREATE_DELETED_CMD(note.GetId()), sCaption.c_str());
+		if (notes[i].GetDeletedDate() != 0)
+		{
+			_tstring sCaption = GetCaption(notes[i].GetText());
+			int nCmd = CREATE_DELETED_CMD(notes[i].GetId());
+			menuDeleted.AppendMenu(MF_STRING, nCmd, sCaption.c_str());
+			menuDeleted.SetMenuItemBitmaps(nCmd, MF_BYCOMMAND, NULL, m_bmpDeleted); 
+			menuDeleted.CheckMenuItem(nCmd, MF_BYCOMMAND | MF_CHECKED);
+
+		}
 	}
 }
