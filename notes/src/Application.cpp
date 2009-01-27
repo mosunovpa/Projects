@@ -277,17 +277,6 @@ void CApplication::DeleteFromStorage(int nNoteId)
 		{
 			m_storage.DeleteNote(nNoteId);
 		}
-		AddToUndeleteList(note);
-	}
-}
-
-/**/
-void CApplication::AddToUndeleteList(const CNote& note)
-{
-	m_listDeleted.push_front(note);
-	if (m_listDeleted.size() > 20)
-	{
-		m_listDeleted.pop_back();
 	}
 }
 
@@ -444,6 +433,7 @@ void CApplication::Command(int nCmd, HWND hWnd)
 /**/
 void CApplication::UndeleteNote( int nNoteId )
 {
+/*
 	for(std::list<CNote>::iterator it = m_listDeleted.begin(); it != m_listDeleted.end(); ++it)
 	{
 		if (it->GetId() == nNoteId)
@@ -457,4 +447,5 @@ void CApplication::UndeleteNote( int nNoteId )
 			return;
 		}
 	}
+*/
 }

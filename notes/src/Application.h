@@ -48,7 +48,6 @@ public:
 	void SaveOptions();
 	void ReleaseStorage();
 	void NoteTextToClipboard(int nNoteId);
-	std::list<CNote> const& GetUndeleteList() const { return m_listDeleted; };
 protected:
 	CApplication();
 	virtual ~CApplication();
@@ -64,10 +63,8 @@ private:
 	void GetSomePossiblePositions(CRect const& center, std::vector<CRect>& poss);
 	CRect GetOptimumPosition(std::vector<CRect> const& vPossiblePositions, 
 		CNote::List const& notes);
-	void AddToUndeleteList(const CNote& note);
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;
-	std::list<CNote> m_listDeleted;
 	CStorage m_storage;
 	_tstring m_sDataFile;
 	COptions m_options;
