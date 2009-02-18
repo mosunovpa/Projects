@@ -474,7 +474,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 		{
 			_tstring sCaption = GetCaption(notes[i].GetText());
 			int nCmd = CREATE_DELETED_CMD(notes[i].GetId());
-			menuDeleted.AppendMenu(MF_STRING, nCmd, sCaption.c_str());
+			menuDeleted.InsertMenu(0, MF_BYPOSITION, nCmd, sCaption.c_str());
 			menuDeleted.SetMenuItemBitmaps(nCmd, MF_BYCOMMAND, NULL, m_bmpDeleted); 
 			menuDeleted.CheckMenuItem(nCmd, MF_BYCOMMAND | MF_CHECKED);
 
