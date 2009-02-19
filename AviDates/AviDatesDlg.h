@@ -58,4 +58,6 @@ protected:
 	void InsertDate(CTime dt, int nFrames);
 	void UpdateControls();
 	void DeleteAllDates();
+public:
+	afx_msg void OnBnClickedSave();
 };

@@ -25,7 +25,7 @@ std::vector<CString> GetFiles()
 	CString fileName;
 	dlgFiles.GetOFN().lpstrFile = fileName.GetBuffer(1000 * (_MAX_PATH + 1) + 1);
 	dlgFiles.GetOFN().nMaxFile = 1000;
-	if (dlgFiles.DoModal())
+	if (dlgFiles.DoModal() == IDOK)
 	{
 		LPCTSTR p = (LPCTSTR)fileName;
 		int len = lstrlen(p);
@@ -151,6 +151,7 @@ BEGIN_MESSAGE_MAP(CAviDatesDlg, CDialog)
 	ON_NOTIFY(NM_CLICK, IDC_DATES, &CAviDatesDlg::OnUpdateControls)
 	ON_NOTIFY(NM_DBLCLK, IDC_DATES, &CAviDatesDlg::OnDblClick)
 
+	ON_BN_CLICKED(IDC_SAVE, &CAviDatesDlg::OnBnClickedSave)
 END_MESSAGE_MAP()
 
 
@@ -360,6 +361,7 @@ void CAviDatesDlg::OnBnClickedCalculate()
 				}
 			}
 		}
+		UpdateControls();
 		nFramesFromBegin += nFrames;
 		file.Close();
 	}
@@ -492,10 +494,54 @@ void CAviDatesDlg::UpdateControls()
 	GetDlgItem(IDC_DOWN)->EnableWindow(bFilesSelected);
 	GetDlgItem(IDC_CACULATE)->EnableWindow(m_ctrlFiles.GetItemCount() > 0);
 	GetDlgItem(IDC_EDIT)->EnableWindow(bDatesSelected);
+	GetDlgItem(IDC_SAVE)->EnableWindow(m_ctrlDates.GetItemCount() > 0);
 }
 
 void CAviDatesDlg::OnDblClick( NMHDR *pNMHDR, LRESULT *pResult )
 {
 	OnBnClickedEdit();
 	*pResult = 0;
+}
+
+void CAviDatesDlg::OnBnClickedSave()
+{
+	CHAR arTab[] = { '\t' };
+	CHAR arRet[] = { '\r', '\n' };
+
+	if (m_ctrlDates.GetItemCount() > 0)
+	{
+		CFileDialog dlgFile(FALSE, _T("txt"), NULL, 
+			OFN_ENABLESIZING | OFN_EXPLORER | OFN_OVERWRITEPROMPT, 
+			_T("Text files (*.txt)|*.txt|All Files (*.*)|*.*||"));
+		CString fileName;
+		if (dlgFile.DoModal() == IDOK)
+		{
+			CFile file;
+			CString filename = dlgFile.GetPathName();
+			if (file.Open(filename, CFile::modeCreate | CFile::modeWrite))
+			{
+				int count = m_ctrlDates.GetItemCount();
+				CHeaderCtrl* pHeader = m_ctrlDates.GetHeaderCtrl();
+				if (pHeader)
+				{
+					int nColCount = pHeader->GetItemCount();
+
+					for (int i = 0; i < count; ++i)
+					{
+						for (int j = 0; j < nColCount; ++j)
+						{
+							CString csColText = m_ctrlDates.GetItemText(i, j);
+							CHAR mbbuf[20] = { 0 };
+							WideCharToMultiByte(CP_UTF8, 0, csColText, csColText.GetLength(), mbbuf, sizeof(mbbuf), NULL, NULL);
+							file.Write(mbbuf, strlen(mbbuf));
+							file.Write(arTab, sizeof(arTab));
+						}
+						file.Write(arRet, sizeof(arRet));
+					}
+				}
+				AfxMessageBox(_T("Saved successfully"));
+				file.Close();
+			}
+		}
+	}
 }
