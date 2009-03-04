@@ -385,6 +385,12 @@ void CTextMergerDlg::OnBnClickedAdd()
 }
 void CTextMergerDlg::OnClose()
 {
+	CString msg;
+	msg.Format(_T("Do you really want exit?"));
+	if (IDNO == AfxMessageBox(msg, MB_YESNO))
+	{
+		return;
+	}
 	::InterlockedExchange((LONG*)&m_bCanceled, TRUE);
 	if (m_pThread != NULL)
 	{
@@ -499,6 +505,17 @@ void CTextMergerDlg::OnBnClickedMerge()
 	}
 	else
 	{
+		CString csOutputFileName;
+		m_ctrlOutputFile.GetWindowText(csOutputFileName);
+		if (::PathFileExists(csOutputFileName))
+		{
+			CString msg;
+			msg.Format(_T("File '%s' exsists. Do you want owerwrite it?"), csOutputFileName);
+			if (IDNO == AfxMessageBox(msg, MB_YESNO))
+			{
+				return;
+			}
+		}
 
 		m_MergeParams.slFiles.RemoveAll();
 		int cnt = m_ctrlFiles.GetItemCount();
@@ -507,7 +524,7 @@ void CTextMergerDlg::OnBnClickedMerge()
 			m_MergeParams.slFiles.AddTail(m_ctrlFiles.GetItemText(i, 0));
 		}
 
-		m_ctrlOutputFile.GetWindowText(m_MergeParams.csFileName);
+		m_MergeParams.csFileName = csOutputFileName;
 		m_MergeParams.nHeaderLines = m_ctrlHeaderLines.GetPos();
 		m_MergeParams.pParentWnd = this;
 		m_MergeParams.pbCanceled = &m_bCanceled;
@@ -605,4 +622,9 @@ LRESULT CTextMergerDlg::OnFinish( WPARAM wParam, LPARAM lParam )
 	}
 
 	return 0;
+}
+
+void CTextMergerDlg::OnCancel()
+{
+	PostMessage(WM_CLOSE);
 }
