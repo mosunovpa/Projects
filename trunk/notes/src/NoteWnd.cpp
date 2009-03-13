@@ -528,12 +528,8 @@ void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_DELETE */
 void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
-//	CSimpleDialog<IDD_DELETENOTECONFIRM> dlg;
-//	if (dlg.DoModal() == IDYES)
-//	{
-		SetText(_T(""));
-		PostMessage(WM_CLOSE);
-//	}
+	SetText(_T(""));
+	PostMessage(WM_CLOSE);
 }
 
 
