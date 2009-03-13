@@ -206,6 +206,7 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 
 	// Display the shortcut menu. Track the right mouse button
 
+	m_listDeletedNodes.clear();
 	if (!menuTrackPopup.TrackPopupMenu(TPM_RIGHTALIGN | TPM_BOTTOMALIGN, pt.x, pt.y, m_hWnd, NULL))
 	{
 		ATLTRACE(_T("Shortcut menu was not displayed!\n"));
@@ -215,10 +216,16 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	}
 
 	::PostMessage(m_hWnd, WM_NULL, 0, 0);
-
+	
 	// Destroy the menu and free any memory that the menu occupies
 	m_menuPopup.DestroyMenu();
 	m_menuPopup.m_hMenu = NULL;
+
+	for (std::list<int>::iterator it = m_listDeletedNodes.begin();
+		it != m_listDeletedNodes.end(); ++it)
+	{
+		CApplication::Get().DeleteNote(*it);
+	}
 
 	return 0;
 }
@@ -329,13 +336,10 @@ void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 	{
 		// delete note
 		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId);
-		CApplication::Get().DeleteNote(nNoteId);
+		m_listDeletedNodes.push_back(nNoteId);
 
 		CMenuHandle menuTrackPopup = GetMenuNotes(m_menuPopup.m_hMenu);
 		menuTrackPopup.CheckMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_CHECKED);
-//		menuutils::SetMenuItemEnable(menuTrackPopup, m_nSelectedMenuItemId, FALSE);
-
-//		EndMenu();
 		m_nSelectedMenuItemId = 0;
 	}
 }
