@@ -86,6 +86,6 @@ private:
 	LRESULT DisplayShortcutMenu();
 	void CreateBitmaps();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
-	std::list<int> m_listDeletedNodes;
+	std::list<int> m_listDeletedNotes;
 	int m_nSelectedMenuItemId;
 };

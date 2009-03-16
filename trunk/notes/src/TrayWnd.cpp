@@ -206,7 +206,7 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 
 	// Display the shortcut menu. Track the right mouse button
 
-	m_listDeletedNodes.clear();
+	m_listDeletedNotes.clear();
 	if (!menuTrackPopup.TrackPopupMenu(TPM_RIGHTALIGN | TPM_BOTTOMALIGN, pt.x, pt.y, m_hWnd, NULL))
 	{
 		ATLTRACE(_T("Shortcut menu was not displayed!\n"));
@@ -221,8 +221,8 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	m_menuPopup.DestroyMenu();
 	m_menuPopup.m_hMenu = NULL;
 
-	for (std::list<int>::iterator it = m_listDeletedNodes.begin();
-		it != m_listDeletedNodes.end(); ++it)
+	for (std::list<int>::iterator it = m_listDeletedNotes.begin();
+		it != m_listDeletedNotes.end(); ++it)
 	{
 		CApplication::Get().DeleteNote(*it);
 	}
@@ -336,7 +336,7 @@ void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 	{
 		// delete note
 		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId);
-		m_listDeletedNodes.push_back(nNoteId);
+		m_listDeletedNotes.push_back(nNoteId);
 
 		CMenuHandle menuTrackPopup = GetMenuNotes(m_menuPopup.m_hMenu);
 		menuTrackPopup.CheckMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_CHECKED);
@@ -416,7 +416,7 @@ bool compare_by_modify_date(CNote const& left, CNote const& right)
 /**/
 bool compare_by_deleted_date(CNote const& left, CNote const& right)
 {
-	return left.GetDeletedDate() < right.GetDeletedDate();
+	return left.GetDeletedDate() > right.GetDeletedDate();
 }
 
 /**/
@@ -466,22 +466,32 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 
 	// show deleted notes
 	CMenuHandle menuDeleted = GetUndeleteMenu(menuNotes);
-//	std::list<CNote> const& listDeleted = CApplication::Get().GetUndeleteList();
 	std::sort(notes.begin(), notes.end(), compare_by_deleted_date);
 	if (bIsDeletedNotesExists)
 	{
 		menuDeleted.DeleteMenu(ID_UNDELETE_EMPTY, MF_BYCOMMAND);
 	}
+	int nMaxDelCnt = 30;
 	for (int i = 0; i < notes.size(); ++i)
 	{
 		if (notes[i].GetDeletedDate() != 0)
 		{
-			_tstring sCaption = GetCaption(notes[i].GetText());
-			int nCmd = CREATE_DELETED_CMD(notes[i].GetId());
-			menuDeleted.InsertMenu(0, MF_BYPOSITION, nCmd, sCaption.c_str());
-			menuDeleted.SetMenuItemBitmaps(nCmd, MF_BYCOMMAND, NULL, m_bmpDeleted); 
-			menuDeleted.CheckMenuItem(nCmd, MF_BYCOMMAND | MF_CHECKED);
-
+			if (nMaxDelCnt < 0 &&
+				(CApplication::Get().FindNote(notes[i].GetId()) == NULL) )// note is not opened
+			{
+				CApplication::Get().DeleteFromStorage(notes[i].GetId());
+			}
+			else
+			{
+				_tstring sCaption = GetCaption(notes[i].GetText());
+				int nCmd = CREATE_DELETED_CMD(notes[i].GetId());
+				menuDeleted.AppendMenu(MF_BYPOSITION, nCmd, sCaption.c_str());
+				menuDeleted.SetMenuItemBitmaps(nCmd, MF_BYCOMMAND, NULL, m_bmpDeleted); 
+				menuDeleted.CheckMenuItem(nCmd, MF_BYCOMMAND | MF_CHECKED);
+			}
+			
+			
+			--nMaxDelCnt;
 		}
 	}
 }

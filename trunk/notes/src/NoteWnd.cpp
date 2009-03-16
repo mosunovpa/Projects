@@ -158,11 +158,12 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 
 	AdjustSystemMenu();
 
+	/*
 	_tstring sTooltip = RESSTR(IDS_CLOSE);
 	m_tooltip.Create(m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
 	m_tooltip.AddTool(&CToolInfo( TTF_SUBCLASS, m_hWnd, 1, &(GetCloseButtonRect()), &sTooltip[0]));
 	m_tooltip.SetMaxTipWidth(300);
-
+*/
 
 	m_btnClose.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE, 0, ID_CLOSE);
 	m_btnClose.SetBitmapButtonExtendedStyle(BMPBTN_HOVER | BMPBTN_AUTOSIZE);
@@ -331,7 +332,7 @@ void CNoteWnd::OnSize(UINT wParam, CSize sz)
 	CRect rcCreated(0, rc.bottom - s_nStatusBarSize + 1, 135, rc.bottom);
 	m_editCreated.MoveWindow(&rcCreated, TRUE);
 
-	m_tooltip.SetToolRect(m_hWnd, 1, &(GetCloseButtonRect()));
+//	m_tooltip.SetToolRect(m_hWnd, 1, &(GetCloseButtonRect()));
 	m_edit.MoveWindow(&(GetClientRect()), TRUE);
 
 	m_bPosChanged = TRUE;
