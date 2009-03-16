@@ -216,7 +216,7 @@ private:
 	static CPen m_hPen;
 	static CFont m_hStatusFont;
 
-	CToolTipCtrl m_tooltip;
+//	CToolTipCtrl m_tooltip;
 	CNoteEdit m_edit;
 	CEdit m_editCreated;
 	CStaticSysIcon m_icon;
