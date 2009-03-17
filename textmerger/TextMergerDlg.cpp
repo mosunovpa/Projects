@@ -521,7 +521,9 @@ void CTextMergerDlg::OnBnClickedMerge()
 		int cnt = m_ctrlFiles.GetItemCount();
 		for (int i = 0; i < cnt; ++i)
 		{
-			m_MergeParams.slFiles.AddTail(m_ctrlFiles.GetItemText(i, 0));
+			TCHAR dest[1025];
+			::PathCombine(dest, m_ctrlFiles.GetItemText(i, 1), m_ctrlFiles.GetItemText(i, 0));
+			m_MergeParams.slFiles.AddTail(dest);
 		}
 
 		m_MergeParams.csFileName = csOutputFileName;
