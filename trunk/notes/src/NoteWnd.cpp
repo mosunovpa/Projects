@@ -519,11 +519,14 @@ void CNoteWnd::OnNoteClose( UINT uNotifyCode, int nID, CWindow wndCtl )
 /* ID_CLIPBRD_COPY */
 void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
- 	long nStart, nEnd;
- 	m_edit.GetSel(nStart, nEnd);
- 	m_edit.SetSel(0, -1);
- 	m_edit.Copy();
- 	m_edit.SetSel(nStart, nEnd);
+	if (!GetText().empty())
+	{
+ 		long nStart, nEnd;
+ 		m_edit.GetSel(nStart, nEnd);
+		m_edit.SetSel(0, -1);
+		m_edit.Copy();
+		m_edit.SetSel(nStart, nEnd);
+	}
 }
 
 /* ID_DELETE */
