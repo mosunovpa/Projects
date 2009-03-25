@@ -72,6 +72,7 @@ BEGIN
         END
         MENUITEM SEPARATOR
         MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
+        MENUITEM "New and &Paste",              ID_POPUP_NEWANDPASTE
         MENUITEM SEPARATOR
         POPUP "&Options"
         BEGIN
@@ -123,7 +124,8 @@ IDR_TRAY_NOTE_MENU MENU
 BEGIN
     POPUP "TrayNoteMenu"
     BEGIN
-        MENUITEM "C&opy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
+        MENUITEM "&Open",                       40056
+        MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
     END
