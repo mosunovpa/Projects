@@ -42,6 +42,7 @@ public:
 		MSG_WM_SETFOCUS(OnFocus)
 		MSG_WM_SYSCOMMAND(OnSysCommand)
 		MSG_WM_MENURBUTTONUP(OnMenuRButtonUp)
+		MSG_WM_MENUSELECT(OnMenuSelect)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWANDPASTE, OnNewAndPaste)
@@ -53,6 +54,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_FONTSIZE_MEDIUM, OnFontSizeMedium)
 		COMMAND_ID_HANDLER_EX(ID_FONTSIZE_LARGE, OnFontSizeLarge)
 		COMMAND_ID_HANDLER_EX(ID_OPTIONS_FONT, OnOptionsFont);
+		COMMAND_ID_HANDLER_EX(ID_TNM_OPEN_NOTE, OnOpenNote);
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
@@ -66,6 +68,7 @@ public:
 	LRESULT	OnQueryEndSession(UINT wParam, UINT lParam);
 	void OnFocus(HWND hWnd);
 	void OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu);
+	void OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -79,6 +82,7 @@ public:
 	void OnFontSizeSmall(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnFontSizeMedium(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnFontSizeLarge(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -88,4 +92,6 @@ private:
 	void ModifyNotesMenu(CMenuHandle menuNotes);
 	std::list<int> m_listDeletedNotes;
 	int m_nSelectedMenuItemId;
+	CToolTipCtrl m_tooltip;
+
 };

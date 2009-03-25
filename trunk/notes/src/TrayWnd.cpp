@@ -29,7 +29,7 @@ CMenuHandle GetMenuNotes(CMenuHandle menuPopup)
 CMenuHandle GetUndeleteMenu(CMenuHandle menuNotes)
 {
 	int nCount = menuNotes.GetMenuItemCount();
-	return menuNotes.GetSubMenu(nCount - 8);
+	return menuNotes.GetSubMenu(nCount - 9);
 }
 
 ///////////////////////////////////////////////////////////
@@ -86,6 +86,10 @@ LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SetWindowPos(bAlwaisOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, CRect(0,0,0,0), SWP_NOSIZE | SWP_NOMOVE);
 
 	CreateBitmaps();
+
+	m_tooltip.Create(m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
+	m_tooltip.AddTool(&CToolInfo( TTF_IDISHWND | TTF_TRACK | TTF_ABSOLUTE/*TTF_SUBCLASS*/, m_hWnd, (UINT)m_hWnd));
+	m_tooltip.SetMaxTipWidth(300);
 
 	return 0;
 }
@@ -193,7 +197,7 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 
 	// set menu item states
 	menuTrackPopup.SetMenuDefaultItem(ID_POPUP_NEWNOTE);
-
+	
 	BOOL bAlwaisOnTop = CApplication::Get().GetOptions().GetAlwaysOnTop();
 	menuTrackPopup.CheckMenuItem(ID_POPUP_ALWAYS_ON_TOP, MF_BYCOMMAND | (bAlwaisOnTop ? MF_CHECKED : MF_UNCHECKED));
 
@@ -314,7 +318,19 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		::GetCursorPos(&pt);
 		CMenu menuNoteContext;
 		menuNoteContext.LoadMenu(IDR_TRAY_NOTE_MENU);
+		menuNoteContext.GetSubMenu(0).SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
 		menuNoteContext.GetSubMenu(0).TrackPopupMenu(TPM_LEFTALIGN | TPM_RECURSE, pt.x, pt.y, m_hWnd, NULL);
+	}
+}
+
+/* ID_TNM_OPEN_NOTE */
+void CTrayWnd::OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
+	{
+		CApplication::Get().ShowNote(GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId));
+		m_nSelectedMenuItemId = 0;
+		EndMenu();
 	}
 }
 
@@ -494,4 +510,10 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 			--nMaxDelCnt;
 		}
 	}
+}
+
+/**/
+void CTrayWnd::OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu)
+{
+//	m_tooltip.TrackActivate()
 }
