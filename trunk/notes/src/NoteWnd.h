@@ -24,7 +24,6 @@ public:
 	DECLARE_WND_SUPERCLASS(NULL, CRichEditCtrl::GetWndClassName())
     BEGIN_MSG_MAP_EX(CNoteEdit)
 		MESSAGE_HANDLER_EX(WM_KEYDOWN, OnKeyDown)
-		MESSAGE_HANDLER_EX(WM_CHAR, OnChar)
         CHAIN_MSG_MAP_ALT(CRichEditCommands<CNoteEdit>, 1)
     END_MSG_MAP_EX()
 
@@ -32,18 +31,10 @@ public:
 	{
 		if (wParam == VK_ESCAPE)
 		{
-//			GetParent().PostMessage(uMsg, wParam, lParam);
 			GetParent().PostMessage(WM_CLOSE);
 		}
-		SetMsgHandled(FALSE);
-		return 0;
-	}
-
-	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam)
-	{
-		if (/*GetKeyState(VK_CONTROL) && */wParam == 4) // 'Ctrl+D'
+		if (wParam == 68 && GetKeyState(VK_CONTROL) & 0x8000) // Ctrl+D
 		{
-//			GetParent().PostMessage(uMsg, wParam, lParam);
 			GetParent().PostMessage(WM_COMMAND, ID_DELETE);
 		}
 		SetMsgHandled(FALSE);
@@ -158,7 +149,6 @@ public:
 			MSG_WM_ERASEBKGND(OnErasebkgnd)
 			MSG_WM_GETMINMAXINFO(OnGetMinMaxInfo)
 			MSG_WM_SIZE(OnSize)
-//			MSG_WM_KEYDOWN(OnKeyDown)
 			MSG_WM_SETFOCUS(OnFocus)
 			MSG_WM_KILLFOCUS(OnKillFocus)
 			MSG_WM_MOVE(OnMove)
@@ -190,7 +180,6 @@ public:
 	BOOL OnErasebkgnd(HDC hdc) { return TRUE; }
 	void OnGetMinMaxInfo(LPMINMAXINFO lParam);
 	void OnSize(UINT wParam, CSize sz);
-	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	void OnFocus(HWND hWnd);
 	void OnKillFocus(CWindow wndFocus);
 	void OnMove(CPoint pt);
