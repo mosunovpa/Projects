@@ -532,6 +532,12 @@ void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_DELETE */
 void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
+	try
+	{
+		StoreNote(); // save content before deleting for undelete
+	}
+	CATCH_ALL_ERRORS(m_hWnd)
+
 	SetText(_T(""));
 	PostMessage(WM_CLOSE);
 }
