@@ -96,7 +96,7 @@ BEGIN
     BEGIN
         MENUITEM "C&opy To Clipboard",          ID_CLIPBRD_COPY
         MENUITEM SEPARATOR
-        MENUITEM "&Delete",                     ID_DELETE
+        MENUITEM "&Delete \tCtrl+D",            ID_DELETE
         MENUITEM SEPARATOR
         MENUITEM "&Close\tEsc",                 ID_CLOSE
         MENUITEM "Close &All",                  ID_CLOSEALL
