@@ -338,21 +338,6 @@ void CNoteWnd::OnSize(UINT wParam, CSize sz)
 	m_bPosChanged = TRUE;
 }
 
-/**
- WM_KEYDOWN
- */
-void CNoteWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-	if (nChar == VK_ESCAPE)
-	{
-		PostMessage(WM_CLOSE);
-	}
-	else
-	{
-		SetMsgHandled(FALSE);
-	}
-}
-
 /*
 WM_SETFOCUS
 */
