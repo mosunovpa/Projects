@@ -33,6 +33,7 @@ public:
 	int SaveNote(CNoteWnd* pWnd, UINT nMask);
 	void DeleteFromStorage(int nNoteId);
 	void DeleteNote(int nNoteId);
+	BOOL IsNoteDeleted(int nNoteId);
 	void Command(int nCmd, int nNoteId);
 	void Command(int nCmd, HWND hWnd);
 	void ShowAllNotes();

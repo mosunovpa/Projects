@@ -177,6 +177,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NotesMenuActions.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\NoteWnd.cpp"
 				>
 			</File>
@@ -232,6 +236,10 @@
 			</File>
 			<File
 				RelativePath=".\Note.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NotesMenuActions.h"
 				>
 			</File>
 			<File
