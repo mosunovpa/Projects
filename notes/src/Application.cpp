@@ -449,3 +449,10 @@ void CApplication::UndeleteNote( int nNoteId )
 	}
 */
 }
+
+/**/
+BOOL CApplication::IsNoteDeleted( int nNoteId )
+{
+	CNote note = m_storage.GetNote(nNoteId);
+	return (note.GetDeletedDate() == 0);
+}

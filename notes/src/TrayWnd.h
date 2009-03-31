@@ -3,6 +3,7 @@
 
 #include "TrayIcon.h"
 #include "resource.h"
+#include "NotesMenuActions.h"
 
 #define NOTE_CMD_FIRST 50000
 #define NOTE_CMD_RANGE 10000
@@ -11,10 +12,12 @@
 #define GET_NOTE_ID_FROM_CMD(cmd) ((cmd) - NOTE_CMD_FIRST)
 #define IS_NOTE_CMD(cmd) (cmd > NOTE_CMD_FIRST && cmd <= NOTE_CMD_LAST)
 
+/*
 #define DELETED_CMD_FIRST NOTE_CMD_LAST
 #define DELETED_CMD_LAST (DELETED_CMD_FIRST + NOTE_CMD_RANGE)
 #define CREATE_DELETED_CMD(id) ((id) + DELETED_CMD_FIRST)
 #define GET_DELETED_ID_FROM_CMD(cmd) ((cmd) - DELETED_CMD_FIRST)
+*/
 
 class CTrayWnd : public CWindowImpl<CTrayWnd> 
 {
@@ -58,10 +61,10 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
-		COMMAND_RANGE_HANDLER_EX(DELETED_CMD_FIRST + 1, DELETED_CMD_LAST, OnDeletedNoteSelected)
 	}
 	CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()
+
 
 	LRESULT OnCreate(LPCREATESTRUCT lpCreateStruct);
 	LRESULT OnDestroy(void);
@@ -77,7 +80,6 @@ public:
 	void OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSysCommand(UINT nID, CPoint pt);
 	void OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnDeletedNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnAlwaysOnTop(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnFontSizeSmall(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnFontSizeMedium(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -86,12 +88,15 @@ public:
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl);
+
 private:
 	LRESULT DisplayShortcutMenu();
 	void CreateBitmaps();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
-	std::list<int> m_listDeletedNotes;
+	void ProcessNotesMenuActions();
+
 	int m_nSelectedMenuItemId;
 	CToolTipCtrl m_tooltip;
+	CNotesMenuActions m_listNotesMenuActions;
 
 };
