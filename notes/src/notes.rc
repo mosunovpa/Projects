@@ -66,7 +66,7 @@ IDR_TRAYMENU MENU
 BEGIN
     POPUP "TrayMenu"
     BEGIN
-        POPUP "&Deleted"
+        POPUP "&Trash"
         BEGIN
             MENUITEM "(Empty)",                     ID_UNDELETE_EMPTY
         END
@@ -126,6 +126,7 @@ BEGIN
     BEGIN
         MENUITEM "&Open",                       40056
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
+        MENUITEM "&Mark",                       ID_TNM_MARK
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
     END
@@ -189,6 +190,8 @@ BEGIN
     IDS_CLOSE               "Close (Hold 'Ctrl' for close all)"
     IDS_DELETE_NOTE_CONFIRM "Do you really want to delete this note?"
     IDS_CREATED_FRM         "Created %s"
+    IDS_DELETE              "&Delete"
+    IDS_DELETE_MARKED       "&Delete Marked (%d)"
 END
 
 #endif    // Russian resources

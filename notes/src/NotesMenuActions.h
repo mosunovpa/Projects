@@ -3,7 +3,7 @@
 class CNotesMenuItem
 {
 public:
-	enum Actions { acNone = 0, acDeleted, asRestored };
+	enum Actions { acNone = 0, acMarked };
 
 	CNotesMenuItem(int nNoteId = 0, HMENU hPpopupMenu = NULL) 
 		: m_nNoteId(nNoteId), m_hPpopupMenu(hPpopupMenu), m_action(acNone)
@@ -22,5 +22,6 @@ class CNotesMenuActions : public std::list<CNotesMenuItem>
 {
 public:
 	CNotesMenuActions::iterator find(int nNoteId);
+	int GetMarkedCount() const;
 };
 

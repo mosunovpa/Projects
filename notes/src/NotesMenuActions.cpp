@@ -22,3 +22,16 @@ CNotesMenuActions::iterator CNotesMenuActions::find(int nNoteId)
 	}
 	return end();
 }
+
+int CNotesMenuActions::GetMarkedCount() const
+{
+	int count = 0;
+	for (CNotesMenuActions::const_iterator it = begin(); it != end(); ++it)
+	{
+		if (it->m_action == CNotesMenuItem::acMarked)
+		{
+			++count;
+		}
+	}
+	return count;
+}

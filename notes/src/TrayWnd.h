@@ -59,6 +59,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_OPTIONS_FONT, OnOptionsFont);
 		COMMAND_ID_HANDLER_EX(ID_TNM_OPEN_NOTE, OnOpenNote);
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
+		COMMAND_ID_HANDLER_EX(ID_TNM_MARK, OnNoteMark);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
 	}
@@ -85,6 +86,7 @@ public:
 	void OnFontSizeLarge(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNoteMark(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl);
 
