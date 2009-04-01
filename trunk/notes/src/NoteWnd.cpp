@@ -33,7 +33,6 @@ CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell D
  */
 CNoteWnd::CNoteWnd(int nNoteId /*= 0*/) 
 :	m_nNoteId(nNoteId),
-	m_bSaveError(FALSE),
 	m_bPosChanged(FALSE),
 	m_dtCreated(0),
 	m_dtModified(0),
@@ -310,6 +309,12 @@ void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
    	m_btnClose.UpdateWindow();
 	Invalidate(FALSE);
 	UpdateWindow();
+
+	if (nState == WA_INACTIVE)
+	{
+		StoreNote();
+	}
+
 }
 
 /**
@@ -374,24 +379,6 @@ HBRUSH CNoteWnd::OnCtlColorEdit(CDCHandle dc, CEdit edit)
 	return m_hBgBrush;
 }
 
-/*
-WM_KILLFOCUS
-*/
-void CNoteWnd::OnKillFocus(CWindow wndFocus)
-{
-	try 
-	{
-		if (!m_bSaveError) // need for prevent recursion when error occurs
-		{
-			StoreNote();
-		}
-	}
-	catch(...)
-	{
-		m_bSaveError = TRUE;
-		throw;
-	}
-}
 
 /*
 Store note if text is not empty

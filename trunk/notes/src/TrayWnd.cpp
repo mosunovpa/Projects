@@ -180,10 +180,6 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	POINT pt;
 	::GetCursorPos(&pt);
 
-	// Display a shortcut menu at the specified location
-	// See "PRB: Menus for Notification Icons Don't Work Correctly" in MSDN
-	::SetForegroundWindow(m_hWnd);
-
 	// TrackPopupMenu cannot display the menu bar so get
 	// a handle to the first shortcut menu
 	CMenuHandle menuTrackPopup = GetMenuNotes(m_menuPopup.m_hMenu);
@@ -211,6 +207,9 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 
 	// Display the shortcut menu. Track the right mouse button
 
+	// Display a shortcut menu at the specified location
+	// See "PRB: Menus for Notification Icons Don't Work Correctly" in MSDN
+	::SetForegroundWindow(m_hWnd);
 	if (!menuTrackPopup.TrackPopupMenu(TPM_RIGHTALIGN | TPM_BOTTOMALIGN, pt.x, pt.y, m_hWnd, NULL))
 	{
 		ATLTRACE(_T("Shortcut menu was not displayed!\n"));
@@ -218,7 +217,6 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 		m_menuPopup.m_hMenu = NULL;
 		return 0;
 	}
-
 	::PostMessage(m_hWnd, WM_NULL, 0, 0);
 	
 	// Destroy the menu and free any memory that the menu occupies
@@ -313,6 +311,12 @@ void CTrayWnd::OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* WM_MENURBUTTONUP */
 void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 {
+	UINT state  = menu.GetMenuState(wParam, MF_BYPOSITION);
+	if (state & MF_GRAYED == MF_GRAYED)
+	{
+		return;
+	}
+
 	m_nSelectedMenuItemId = menu.GetMenuItemID(wParam);
 	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
 	{
@@ -358,14 +362,7 @@ void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 		if (it != m_listNotesMenuActions.end())
 		{
 			it->m_action = CNotesMenuItem::acDeleted;
-			if (CApplication::Get().IsNoteDeleted(nNoteId))
-			{
-				CMenuHandle(it->m_hPpopupMenu).EnableMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_GRAYED);
-			}
-			else
-			{
-				CMenuHandle(it->m_hPpopupMenu).CheckMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_CHECKED);
-			}
+			CMenuHandle(it->m_hPpopupMenu).EnableMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_GRAYED);
 		}
 		m_nSelectedMenuItemId = 0;
 	}
@@ -479,8 +476,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 			int nId = notes[i].GetId();
 			int nCmd = CREATE_NOTE_CMD(nId);
 			menuNotes.InsertMenu(0, MF_BYPOSITION, nCmd, sCaption.c_str());
-			menuNotes.SetMenuItemBitmaps(nCmd, MF_BYCOMMAND, 
-				NULL, m_bmpDeleted); 
+//			menuNotes.SetMenuItemBitmaps(nCmd, MF_BYCOMMAND, NULL, m_bmpDeleted); 
 			m_listNotesMenuActions.push_back(CNotesMenuItem(nId, menuNotes));
 		}
 	}
@@ -508,8 +504,8 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 				int nId = notes[i].GetId();
 				int nCmd = CREATE_NOTE_CMD(nId);
 				menuDeleted.AppendMenu(MF_BYPOSITION, nCmd, sCaption.c_str());
-				menuDeleted.SetMenuItemBitmaps(nCmd, MF_BYCOMMAND, NULL, m_bmpDeleted); 
-				menuDeleted.CheckMenuItem(nCmd, MF_BYCOMMAND | MF_CHECKED);
+//				menuDeleted.SetMenuItemBitmaps(nCmd, MF_BYCOMMAND, NULL, m_bmpDeleted); 
+//				menuDeleted.CheckMenuItem(nCmd, MF_BYCOMMAND | MF_CHECKED);
 				m_listNotesMenuActions.push_back(CNotesMenuItem(nId, menuDeleted));
 
 			}
@@ -525,3 +521,4 @@ void CTrayWnd::OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu)
 {
 //	m_tooltip.TrackActivate()
 }
+

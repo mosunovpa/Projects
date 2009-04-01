@@ -150,7 +150,6 @@ public:
 			MSG_WM_GETMINMAXINFO(OnGetMinMaxInfo)
 			MSG_WM_SIZE(OnSize)
 			MSG_WM_SETFOCUS(OnFocus)
-			MSG_WM_KILLFOCUS(OnKillFocus)
 			MSG_WM_MOVE(OnMove)
 			MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
 			MSG_WM_CTLCOLOREDIT(OnCtlColorEdit)
@@ -181,7 +180,6 @@ public:
 	void OnGetMinMaxInfo(LPMINMAXINFO lParam);
 	void OnSize(UINT wParam, CSize sz);
 	void OnFocus(HWND hWnd);
-	void OnKillFocus(CWindow wndFocus);
 	void OnMove(CPoint pt);
 	HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
 	HBRUSH OnCtlColorEdit(CDCHandle dc, CEdit edit);
@@ -222,7 +220,6 @@ private:
 	CBitmapButton m_btnClose;
 		
 	int m_nNoteId;
-	BOOL m_bSaveError;
 	BOOL m_bPosChanged;
 	time_t m_dtCreated;
 	time_t m_dtModified;

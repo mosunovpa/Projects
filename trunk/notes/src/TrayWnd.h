@@ -65,7 +65,6 @@ public:
 	CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()
 
-
 	LRESULT OnCreate(LPCREATESTRUCT lpCreateStruct);
 	LRESULT OnDestroy(void);
 	LRESULT	OnQueryEndSession(UINT wParam, UINT lParam);
