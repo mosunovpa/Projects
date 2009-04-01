@@ -223,21 +223,21 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	m_menuPopup.DestroyMenu();
 	m_menuPopup.m_hMenu = NULL;
 
-	ProcessNotesMenuActions();
-	m_listNotesMenuActions.clear();
+//	ProcessNotesMenuActions();
+//	m_listNotesMenuActions.clear();
 	return 0;
 }
 
 void CTrayWnd::ProcessNotesMenuActions()
 {
-	for (CNotesMenuActions::iterator it = m_listNotesMenuActions.begin();
-		it != m_listNotesMenuActions.end(); ++it)
-	{
-		if (it->m_action == CNotesMenuItem::acDeleted)
-		{
-			CApplication::Get().DeleteNote(it->m_nNoteId);
-		}
-	}
+// 	for (CNotesMenuActions::iterator it = m_listNotesMenuActions.begin();
+// 		it != m_listNotesMenuActions.end(); ++it)
+// 	{
+// 		if (it->m_action == CNotesMenuItem::acDeleted)
+// 		{
+// 			CApplication::Get().DeleteNote(it->m_nNoteId);
+// 		}
+// 	}
 }
 
 
@@ -324,7 +324,19 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		::GetCursorPos(&pt);
 		CMenu menuNoteContext;
 		menuNoteContext.LoadMenu(IDR_TRAY_NOTE_MENU);
-		menuNoteContext.GetSubMenu(0).SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
+		CMenuHandle submenu = menuNoteContext.GetSubMenu(0);
+		submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
+		int marked = m_listNotesMenuActions.GetMarkedCount();
+		if (marked > 0)
+		{
+			_tstring txt = resutils::resstring_fmt(IDS_DELETE_MARKED, marked);
+			submenu.ModifyMenu(ID_TNM_DELETE, MF_BYCOMMAND | MF_STRING, (UINT_PTR)ID_TNM_DELETE, txt.c_str());
+		}
+		else
+		{
+			_tstring txt = resutils::resstring(IDS_DELETE);
+			submenu.ModifyMenu(ID_TNM_DELETE, MF_BYCOMMAND | MF_STRING, (UINT_PTR)ID_TNM_DELETE, txt.c_str());
+		}
 		menuNoteContext.GetSubMenu(0).TrackPopupMenu(TPM_LEFTALIGN | TPM_RECURSE, pt.x, pt.y, m_hWnd, NULL);
 	}
 }
@@ -334,9 +346,9 @@ void CTrayWnd::OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
 	{
+		EndMenu();
 		CApplication::Get().ShowNote(GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId));
 		m_nSelectedMenuItemId = 0;
-		EndMenu();
 	}
 }
 
@@ -345,9 +357,35 @@ void CTrayWnd::OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
 	{
+		EndMenu();
 		CApplication::Get().NoteTextToClipboard(GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId));
 		m_nSelectedMenuItemId = 0;
-		EndMenu();
+	}
+}
+
+/* ID_TNM_MARK */
+void CTrayWnd::OnNoteMark(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
+	{
+		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId);
+		CNotesMenuActions::iterator it = m_listNotesMenuActions.find(nNoteId);
+		if (it != m_listNotesMenuActions.end())
+		{
+			CMenuHandle menu(it->m_hPpopupMenu);
+			UINT state = menu.GetMenuState(m_nSelectedMenuItemId, MF_BYCOMMAND);
+			if ((state & MF_CHECKED) == MF_CHECKED)
+			{
+				menu.CheckMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_UNCHECKED);
+				it->m_action = CNotesMenuItem::acNone;
+			}
+			else
+			{
+				menu.CheckMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_CHECKED);
+				it->m_action = CNotesMenuItem::acMarked;
+			}
+		}
+		m_nSelectedMenuItemId = 0;
 	}
 }
 
@@ -356,14 +394,27 @@ void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
 	{
+		EndMenu();
+
 		// delete note
-		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId);
-		CNotesMenuActions::iterator it = m_listNotesMenuActions.find(nNoteId);
-		if (it != m_listNotesMenuActions.end())
+		BOOL bMarkedDeleted = FALSE;
+		for (CNotesMenuActions::iterator it = m_listNotesMenuActions.begin();
+			it != m_listNotesMenuActions.end(); ++it)
 		{
-			it->m_action = CNotesMenuItem::acDeleted;
-			CMenuHandle(it->m_hPpopupMenu).EnableMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_GRAYED);
+			if (it->m_action == CNotesMenuItem::acMarked)
+			{
+				CApplication::Get().DeleteNote(it->m_nNoteId);
+				bMarkedDeleted = TRUE;
+			}
 		}
+
+		if (!bMarkedDeleted)
+		{
+			int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId);
+			CApplication::Get().DeleteNote(nNoteId);
+		}
+
+		m_listNotesMenuActions.clear();
 		m_nSelectedMenuItemId = 0;
 	}
 }
