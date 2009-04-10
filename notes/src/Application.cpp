@@ -201,10 +201,10 @@ void CApplication::OnNoteClosed(CNoteWnd* pWnd)
 
 	if (m_listNotes.empty())
 	{
-		if (::IsWindow(m_TrayWnd.m_hWnd))
-		{
-			m_TrayWnd.ShowWindow(SW_HIDE);
-		}
+// 		if (::IsWindow(m_TrayWnd.m_hWnd))
+// 		{
+// 			m_TrayWnd.ShowWindow(SW_HIDE);
+// 		}
 		SetActiveWindow(NULL); // activate previous application in z-order
 	}
 	else
@@ -337,7 +337,7 @@ CNoteWnd* CApplication::CreateNoteWnd(CRect& rc)
 		//  		WS_THICKFRAME | WS_OVERLAPPED /*| WS_MINIMIZEBOX | WS_MAXIMIZEBOX*/, 
 		//  		WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR | WS_EX_WINDOWEDGE | WS_EX_APPWINDOW
 		);
-	m_TrayWnd.ShowWindow(SW_SHOW);
+//	m_TrayWnd.ShowWindow(SW_SHOW);
 	return pWnd;
 }
 
