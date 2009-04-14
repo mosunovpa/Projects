@@ -133,6 +133,7 @@ public:
 	time_t GetDeletedDate() const;
 	void SetDeletedDate(time_t dt);
 	CNoteEdit& GetEditor();
+	CRect GetRealNoteRect();
 
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
@@ -154,6 +155,7 @@ public:
 			MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
 			MSG_WM_CTLCOLOREDIT(OnCtlColorEdit)
 			MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
+			MSG_WM_NCLBUTTONDBLCLK(OnNcLButtonDblClk)
 			COMMAND_ID_HANDLER_EX(ID_CLIPBRD_COPY, OnCopyToClipboard);
 			COMMAND_ID_HANDLER_EX(ID_PASTE, OnPaste);
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALL, OnNoteCloseAll)
@@ -184,6 +186,7 @@ public:
 	HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
 	HBRUSH OnCtlColorEdit(CDCHandle dc, CEdit edit);
 	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
+	void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
 	void OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -191,6 +194,7 @@ public:
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	LRESULT OnLink(LPNMHDR pnmh);
+
 private:
 	enum DownRegion
 	{
@@ -201,12 +205,16 @@ private:
 
 	CRect GetIconRect();
 	CRect GetCaptionRect();
+	int GetMinimizedHeight();
 	CRect GetBottomRightRect();
 	CRect GetCloseButtonRect();
 	CRect GetClientRect();
 	CMenuHandle AdjustSystemMenu();
 	void StoreNote();
 	void DrawStatusBar(CDC& dc);
+	void Minimize();
+	void Restore();
+
 	static CBrush m_hBgBrush;
 	static CIcon m_hIcon;
 	static CIcon m_hIconSm;
@@ -224,4 +232,7 @@ private:
 	time_t m_dtCreated;
 	time_t m_dtModified;
 	time_t m_dtDeleted;
+
+	BOOL m_bMinimized;
+	CRect m_rcRestored;
 };
