@@ -225,7 +225,7 @@ int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 	CNote note;
 	note.SetId(pWnd->GetId());
 	note.SetText(pWnd->GetText().c_str());
-	note.SetPos(CWindowRect(pWnd->m_hWnd));
+	note.SetPos(pWnd->GetRealNoteRect() /*CWindowRect(pWnd->m_hWnd)*/);
 	note.SetCreatedDate(pWnd->GetCreatedDate());
 	note.SetModifiedDate(pWnd->GetModifiedDate());
 	note.SetDeletedDate(pWnd->GetDeletedDate());
@@ -456,3 +456,4 @@ BOOL CApplication::IsNoteDeleted( int nNoteId )
 	CNote note = m_storage.GetNote(nNoteId);
 	return (note.GetDeletedDate() == 0);
 }
+

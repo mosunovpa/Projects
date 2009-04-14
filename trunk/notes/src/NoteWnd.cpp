@@ -36,7 +36,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_bPosChanged(FALSE),
 	m_dtCreated(0),
 	m_dtModified(0),
-	m_dtDeleted(0)
+	m_dtDeleted(0),
+	m_bMinimized(FALSE)
 {
 }
 
@@ -67,6 +68,13 @@ CRect CNoteWnd::GetCaptionRect()
 	return rc;
 }
 
+/**/
+int CNoteWnd::GetMinimizedHeight()
+{
+	return s_nCaptionSize + ::GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXSIZEFRAME);
+}
+
+/**/
 CRect CNoteWnd::GetClientRect()
 {
 	CClientRect rc(m_hWnd);
@@ -75,6 +83,18 @@ CRect CNoteWnd::GetClientRect()
 	return rc;
 }
 
+/**/
+CRect CNoteWnd::GetRealNoteRect()
+{
+	CRect rc;
+	GetWindowRect(rc);
+	if (m_bMinimized)
+	{
+		rc.right = rc.left + m_rcRestored.Width();
+		rc.bottom = rc.top + m_rcRestored.Height();
+	}
+	return rc;
+}
 
 /**
  Returns close button rect
@@ -109,8 +129,6 @@ void CNoteWnd::OnFinalMessage(HWND hWnd)
 /* draw status bar */
 void CNoteWnd::DrawStatusBar(CDC& dc)
 {
-	
-
 	HPEN hOldPen, hPenLine;
 
 	CRect rectDlg;
@@ -247,11 +265,18 @@ LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 	{
 		return HTCAPTION;
 	}
-	if (GetBottomRightRect().PtInRect(pt))
+	if (!m_bMinimized)
 	{
-		return HTBOTTOMRIGHT;
+		if (GetBottomRightRect().PtInRect(pt))
+		{
+			return HTBOTTOMRIGHT;
+		}
+		SetMsgHandled(FALSE);
 	}
-	SetMsgHandled(FALSE);
+	else
+	{
+		SetMsgHandled(TRUE);
+	}
 	return 0;
 }
 
@@ -295,7 +320,10 @@ void CNoteWnd::OnPaint(HDC hdc)
 		CClientRect rcClient(m_hWnd);
 		CMemoryDC memDc(dc, rcClient);
 		memDc.FillRect(&rcClient, m_hBgBrush);
-		DrawStatusBar(memDc);
+		if (!m_bMinimized)
+		{
+			DrawStatusBar(memDc);
+		}
 	}
 }
 
@@ -322,7 +350,14 @@ void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
  */
 void CNoteWnd::OnGetMinMaxInfo(LPMINMAXINFO lParam)
 {
-	lParam->ptMinTrackSize = CPoint(160, s_nCaptionSize + 46);
+	if (!m_bMinimized)
+	{
+		lParam->ptMinTrackSize = CPoint(160, s_nCaptionSize + 46);
+	}
+	else
+	{
+//		lParam->ptMinTrackSize = lParam->ptMaxTrackSize = CPoint(160, GetMinimizedHeight());
+	}
 }
 
 /**
@@ -545,6 +580,63 @@ void CNoteWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu
 	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_CLEAR, m_edit.CanClear());
 	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_SELECT_ALL, m_edit.CanSelectAll());
 }
+
+/**/
+void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
+{
+	ScreenToClient(&point);
+	if (nHitTest = HTCAPTION)
+	{
+		if (m_bMinimized)
+		{
+			Restore();
+		}
+		else
+		{
+			Minimize();
+		}
+	}
+}
+
+/**/
+void CNoteWnd::Minimize()
+{
+	if (!m_bMinimized)
+	{
+		m_editCreated.ShowWindow(SW_HIDE);
+		m_edit.ShowWindow(SW_HIDE);
+
+		GetWindowRect(m_rcRestored);
+		CRect rc(m_rcRestored);
+		rc.bottom = rc.top + GetMinimizedHeight();
+
+		m_bMinimized = TRUE;
+		MoveWindow(rc);
+		Invalidate(FALSE);
+		UpdateWindow();
+	}
+}
+
+/**/
+void CNoteWnd::Restore()
+{
+	if (m_bMinimized)
+	{
+		CRect rc(GetRealNoteRect());
+		m_bMinimized = FALSE;
+		MoveWindow(rc);
+		Invalidate(FALSE);
+		UpdateWindow();
+
+		m_rcRestored.SetRectEmpty();
+
+		m_editCreated.ShowWindow(SW_SHOW);
+		m_edit.ShowWindow(SW_SHOW);
+
+		m_edit.PostMessage(WM_SETFOCUS);
+	}
+}
+
 
 /**/
 LRESULT CNoteWnd::OnLink(LPNMHDR pnmh)
