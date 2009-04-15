@@ -457,3 +457,14 @@ BOOL CApplication::IsNoteDeleted( int nNoteId )
 	return (note.GetDeletedDate() == 0);
 }
 
+/**/
+_tstring CApplication::GetNoteCaption(_tstring text)
+{
+	_tstring sCaption = strutils::trim_string(text.c_str(), 64);
+	std::replace(sCaption.begin(), sCaption.end(), _T('\t'), _T(' '));
+	if (sCaption.size() > 0 && sCaption.size() < text.size())
+	{
+		sCaption += _T("...");
+	}
+	return sCaption;
+}

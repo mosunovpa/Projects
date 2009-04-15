@@ -324,6 +324,18 @@ void CNoteWnd::OnPaint(HDC hdc)
 		{
 			DrawStatusBar(memDc);
 		}
+		else
+		{
+			// show caption in minimize mode
+			CFontHandle hOldFont = memDc.SelectFont(m_hStatusFont);
+			memDc.SetBkColor(RGB(255, 255, 204));
+			_tstring s = CApplication::Get().GetNoteCaption(GetText().c_str());
+			CRect rc = GetCaptionRect();
+			rc.top += 1;
+			rc.left += 2;
+			memDc.DrawText(s.c_str(), -1, rc, DT_LEFT | DT_VCENTER| DT_END_ELLIPSIS);
+			memDc.SelectFont(hOldFont);
+		}
 	}
 }
 
@@ -547,6 +559,19 @@ void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 
 	SetText(_T(""));
 	PostMessage(WM_CLOSE);
+}
+
+/* ID_ROLLUP */
+void CNoteWnd::OnRollUp(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (m_bMinimized)
+	{
+		Restore();
+	}
+	else
+	{
+		Minimize();
+	}
 }
 
 

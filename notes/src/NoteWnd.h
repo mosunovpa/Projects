@@ -162,6 +162,7 @@ public:
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
 			COMMAND_ID_HANDLER_EX(ID_DELETE, OnNoteDelete)
+			COMMAND_ID_HANDLER_EX(ID_ROLLUP, OnRollUp);
 			NOTIFY_CODE_HANDLER_EX(EN_LINK, OnLink)
 			CHAIN_COMMANDS_MEMBER(m_edit)
 		} 
@@ -193,6 +194,7 @@ public:
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnRollUp(UINT uNotifyCode, int nID, CWindow wndCtl);
 	LRESULT OnLink(LPNMHDR pnmh);
 
 private:

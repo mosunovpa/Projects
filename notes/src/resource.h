@@ -12,7 +12,6 @@
 #define IDS_CREATED_FRM                 105
 #define IDS_DELETE                      106
 #define IDB_CLOSE_PRESS                 107
-#define IDS_DELETE_MARKED               107
 #define IDR_NOTEMENU                    108
 #define IDR_ACCELERATOR1                109
 #define IDR_EDIT                        110
@@ -67,14 +66,21 @@
 #define ID_FONTSIZE_LARGE               40055
 #define ID_TNM_OPEN_NOTE                40056
 #define ID_MARK                         40058
-#define ID_TNM_MARK                     40059
+#define ID_TNM_CHECK                     40059
+#define ID_NOTEMENU_ROLLUP              40060
+#define ID_ROLLUP                       40061
+#define ID_TRAYNOTEMENU_MARKED          40062
+#define ID_MARKED_OPEN                  40063
+#define ID_MARKED_DELETE                40064
+#define ID_TNM_CHECKED_OPEN              40065
+#define ID_TNM_CHECKED_DELETE            40066
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        116
-#define _APS_NEXT_COMMAND_VALUE         40060
+#define _APS_NEXT_COMMAND_VALUE         40067
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           102
 #endif

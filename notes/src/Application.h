@@ -50,6 +50,7 @@ public:
 	void SaveOptions();
 	void ReleaseStorage();
 	void NoteTextToClipboard(int nNoteId);
+	_tstring GetNoteCaption(_tstring text);
 protected:
 	CApplication();
 	virtual ~CApplication();
