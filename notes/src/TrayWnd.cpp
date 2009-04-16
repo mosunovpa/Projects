@@ -217,6 +217,19 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 }
 
 /**/
+void CTrayWnd::SetNotesMenuActions(CNotesMenuItem::Actions action)
+{
+	for (CNotesMenuActions::iterator it = m_listNotesMenuActions.begin();
+		 it != m_listNotesMenuActions.end(); ++it)
+	{
+		if (it->IsState(CNotesMenuItem::stChecked))
+		{
+			it->m_action = action;
+		}
+	}
+}
+
+/**/
 void CTrayWnd::ProcessNotesMenuActions()
 {
 	for (CNotesMenuActions::iterator it = m_listNotesMenuActions.begin();
@@ -314,19 +327,32 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 	m_nSelectedMenuItemId = menu.GetMenuItemID(wParam);
 	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
 	{
-		POINT pt;
-		::GetCursorPos(&pt);
-		CMenu menuNoteContext;
-		menuNoteContext.LoadMenu(IDR_TRAY_NOTE_MENU);
-		CMenuHandle submenu = menuNoteContext.GetSubMenu(0);
-		submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
-		_tstring s = menuutils::GetMenuString(submenu, 6, MF_BYPOSITION);
-		int marked = m_listNotesMenuActions.GetMarkedCount();
-		_tstring txt = strutils::format(s.c_str(), marked);
-		submenu.ModifyMenu(6, MF_BYPOSITION | MF_STRING, (UINT_PTR)NULL, txt.c_str());
-		submenu.EnableMenuItem(6, MF_BYPOSITION | (marked == 0 ? MF_GRAYED : MF_ENABLED));
+		CNotesMenuActions::iterator it = m_listNotesMenuActions.find(GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId));
+		if (it != m_listNotesMenuActions.end())
+		{
+			POINT pt;
+			::GetCursorPos(&pt);
+			CMenu menuNoteContext;
+			if (it->IsState(CNotesMenuItem::stDeleted))
+			{
+				menuNoteContext.LoadMenu(IDR_TRAY_DEL_NOTE_MENU);
+				CMenuHandle submenu = menuNoteContext.GetSubMenu(0);
+				submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
+			}
+			else
+			{
+				menuNoteContext.LoadMenu(IDR_TRAY_NOTE_MENU);
+				CMenuHandle submenu = menuNoteContext.GetSubMenu(0);
+				submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
+				_tstring s = menuutils::GetMenuString(submenu, 6, MF_BYPOSITION);
+				int marked = m_listNotesMenuActions.GetMarkedCount();
+				_tstring txt = strutils::format(s.c_str(), marked);
+				submenu.ModifyMenu(6, MF_BYPOSITION | MF_STRING, (UINT_PTR)NULL, txt.c_str());
+				submenu.EnableMenuItem(6, MF_BYPOSITION | (marked == 0 ? MF_GRAYED : MF_ENABLED));
+			}
 
-		menuNoteContext.GetSubMenu(0).TrackPopupMenu(TPM_LEFTALIGN | TPM_RECURSE, pt.x, pt.y, m_hWnd, NULL);
+			menuNoteContext.GetSubMenu(0).TrackPopupMenu(TPM_LEFTALIGN | TPM_RECURSE, pt.x, pt.y, m_hWnd, NULL);
+		}
 	}
 }
 
@@ -366,12 +392,12 @@ void CTrayWnd::OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl)
 			if ((state & MF_CHECKED) == MF_CHECKED)
 			{
 				menu.CheckMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_UNCHECKED);
-				it->m_state = CNotesMenuItem::stNone;
+				it->SetState(CNotesMenuItem::stChecked, FALSE);
 			}
 			else
 			{
 				menu.CheckMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_CHECKED);
-				it->m_state = CNotesMenuItem::stChecked;
+				it->SetState(CNotesMenuItem::stChecked, TRUE);
 			}
 		}
 		m_nSelectedMenuItemId = 0;
@@ -395,28 +421,14 @@ void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_TNM_CHECKED_OPEN */
 void CTrayWnd::OnCheckedOpen(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	for (CNotesMenuActions::iterator it = m_listNotesMenuActions.begin();
-		it != m_listNotesMenuActions.end(); ++it)
-	{
-		if (it->m_state == CNotesMenuItem::stChecked)
-		{
-			it->m_action = CNotesMenuItem::acOpen;
-		}
-	}
+	SetNotesMenuActions(CNotesMenuItem::acOpen);
 	EndMenu();
 }
 
 /* ID_TNM_CHECKED_DELETE */
 void CTrayWnd::OnCheckedDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	for (CNotesMenuActions::iterator it = m_listNotesMenuActions.begin();
-		it != m_listNotesMenuActions.end(); ++it)
-	{
-		if (it->m_state == CNotesMenuItem::stChecked)
-		{
-			it->m_action = CNotesMenuItem::acDelete;
-		}
-	}
+	SetNotesMenuActions(CNotesMenuItem::acDelete);
 	EndMenu();
 }
 
@@ -558,7 +570,9 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 				menuDeleted.AppendMenu(MF_BYPOSITION, nCmd, sCaption.c_str());
 //				menuDeleted.SetMenuItemBitmaps(nCmd, MF_BYCOMMAND, NULL, m_bmpDeleted); 
 //				menuDeleted.CheckMenuItem(nCmd, MF_BYCOMMAND | MF_CHECKED);
-				m_listNotesMenuActions.push_back(CNotesMenuItem(nId, menuDeleted));
+				CNotesMenuItem item(nId, menuDeleted);
+				item.SetState(CNotesMenuItem::stDeleted);
+				m_listNotesMenuActions.push_back(item);
 
 			}
 			

@@ -28,7 +28,7 @@ int CNotesMenuActions::GetMarkedCount() const
 	int count = 0;
 	for (CNotesMenuActions::const_iterator it = begin(); it != end(); ++it)
 	{
-		if (it->m_state == CNotesMenuItem::stChecked)
+		if (it->IsState(CNotesMenuItem::stChecked))
 		{
 			++count;
 		}
