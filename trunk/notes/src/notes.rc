@@ -141,6 +141,18 @@ BEGIN
     END
 END
 
+IDR_TRAY_DEL_NOTE_MENU MENU 
+BEGIN
+    POPUP "TrayNoteMenu"
+    BEGIN
+        MENUITEM "&Open",                       40056
+        MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
+        MENUITEM "&Restore",                    ID_TNM_RESTORE
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete",                     ID_TNM_DELETE
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

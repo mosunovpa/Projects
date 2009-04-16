@@ -98,6 +98,7 @@ private:
 	LRESULT DisplayShortcutMenu();
 	void CreateBitmaps();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
+	void SetNotesMenuActions(CNotesMenuItem::Actions action);
 	void ProcessNotesMenuActions();
 
 	int m_nSelectedMenuItemId;
