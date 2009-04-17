@@ -408,6 +408,17 @@ void CApplication::DeleteNote(int nNoteId)
 }
 
 /**/
+void CApplication::RestoreNote(int nNoteId)
+{
+	if (nNoteId > 0)
+	{
+		CNote note = m_storage.GetNote(nNoteId);
+		note.SetDeletedDate(0);
+		m_storage.SaveNote(note, CApplication::NM_DELETED);
+	}
+}
+
+/**/
 void CApplication::ReleaseStorage()
 {
 	m_storage.Release();
@@ -467,4 +478,14 @@ _tstring CApplication::GetNoteCaption(_tstring text)
 		sCaption += _T("...");
 	}
 	return sCaption;
+}
+
+/* */
+void CApplication::OptionsUpdated()
+{
+	for (std::list<CNoteWnd*>::const_iterator it = m_listNotes.begin();
+		it != m_listNotes.end(); ++it)
+	{
+		(*it)->Refresh();
+	}
 }

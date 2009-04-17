@@ -3,58 +3,21 @@
 #include "resource.h"
 #include "atlwinmisc.h"
 #include "Application.h"
+#include "NoteWnd.h"
 #include "menuutils.h"
 
-CStaticSysIcon::CStaticSysIcon(void)
+CStaticSysIcon::CStaticSysIcon(CNoteWnd* pNoteWnd) : m_pNoteWnd(pNoteWnd)
 {
 }
 
 CStaticSysIcon::~CStaticSysIcon(void)
 {
-	// Destroy the menu
-	if (m_menuNotes.m_hMenu != NULL)
-		m_menuNotes.DestroyMenu();
 }
 
 void CStaticSysIcon::OnLButtonDown( UINT nFlags, CPoint point )
 {
 	CWindowRect rc(m_hWnd);
-
-	// Load the menu resource 
-	if (!m_menuNotes.LoadMenu(IDR_NOTEMENU))
-	{
-		m_menuNotes.DestroyMenu();
-		return;
-	}
-	CMenuHandle menuPopup = m_menuNotes.GetSubMenu(0);
-	if (menuPopup.m_hMenu == NULL)
-	{
-		m_menuNotes.DestroyMenu();
-		return;
-	}
-
-	MENUITEMINFO mif;
-	ZeroMemory(&mif, sizeof(MENUITEMINFO));
-	mif.cbSize = sizeof(MENUITEMINFO);
-	mif.fMask = MIIM_STATE;
-	mif.fState = MFS_DEFAULT;
-	::SetMenuItemInfo(menuPopup, ID_CLOSE, FALSE, &mif);
-
-	if (CApplication::Get().GetOpenedNotesCount() == 1)
-	{
-//		m_menuNotes.DeleteMenu(ID_CLOSEALL, MF_BYCOMMAND);
-//		m_menuNotes.DeleteMenu(ID_CLOSEALLBUTTHIS, MF_BYCOMMAND);
-		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALL, CApplication::Get().GetOpenedNotesCount() > 1);
-		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALLBUTTHIS, CApplication::Get().GetOpenedNotesCount() > 1);
-	}
-	if (!menuPopup.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
-		rc.left, rc.bottom, GetParent()))
-	{
-		m_menuNotes.DestroyMenu();
-		return;
-	}		
-
-	m_menuNotes.DestroyMenu();
+	ShowMenu(CPoint(rc.left, rc.bottom));
 }
 
 void CStaticSysIcon::OnLButtonDblClk( UINT nFlags, CPoint point )
@@ -62,3 +25,35 @@ void CStaticSysIcon::OnLButtonDblClk( UINT nFlags, CPoint point )
 	::PostMessage(GetParent(), WM_CLOSE, 0, 0);
 }
 
+void CStaticSysIcon::ShowMenu( CPoint pt )
+{
+	CMenu menuNotes;
+
+	// Load the menu resource 
+	if (!menuNotes.LoadMenu(IDR_NOTEMENU))
+	{
+		return;
+	}
+	CMenuHandle menuPopup = menuNotes.GetSubMenu(0);
+	if (menuPopup.m_hMenu == NULL)
+	{
+		return;
+	}
+
+	menuPopup.SetMenuDefaultItem(ID_CLOSE);
+
+	if (CApplication::Get().GetOpenedNotesCount() == 1)
+	{
+		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALL, CApplication::Get().GetOpenedNotesCount() > 1);
+		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALLBUTTHIS, CApplication::Get().GetOpenedNotesCount() > 1);
+	}
+	if (m_pNoteWnd->GetDeletedDate() == 0)
+	{
+		menuPopup.DeleteMenu(ID_RESTORE, MF_BYCOMMAND);
+	}
+	if (!menuPopup.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
+		pt.x, pt.y, GetParent()))
+	{
+		return;
+	}
+}

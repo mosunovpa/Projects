@@ -52,7 +52,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_POPUP_SHOWALLNOTES, OnPopupShowAllnotes)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_EXIT, OnPopupExit)
-		COMMAND_ID_HANDLER_EX(ID_POPUP_ALWAYS_ON_TOP, OnAlwaysOnTop);
+//		COMMAND_ID_HANDLER_EX(ID_POPUP_ALWAYS_ON_TOP, OnAlwaysOnTop);
 		COMMAND_ID_HANDLER_EX(ID_FONTSIZE_SMALL, OnFontSizeSmall)
 		COMMAND_ID_HANDLER_EX(ID_FONTSIZE_MEDIUM, OnFontSizeMedium)
 		COMMAND_ID_HANDLER_EX(ID_FONTSIZE_LARGE, OnFontSizeLarge)
@@ -61,6 +61,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECK, OnNoteCheck);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
+		COMMAND_ID_HANDLER_EX(ID_TNM_RESTORE, OnNoteRestore);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKED_OPEN, OnCheckedOpen);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKED_DELETE, OnCheckedDelete);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
@@ -90,6 +91,7 @@ public:
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCheckedOpen(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCheckedDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -102,7 +104,10 @@ private:
 	void ProcessNotesMenuActions();
 
 	int m_nSelectedMenuItemId;
+	CMenu m_menuNoteActions;
+
 	CToolTipCtrl m_tooltip;
 	CNotesMenuActions m_listNotesMenuActions;
+
 
 };

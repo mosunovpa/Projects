@@ -382,7 +382,7 @@ void CStorage::WriteOptions( COptions const& opt ) const
 	CComPtr<IXMLDOMNode> spFontNode;
 
 	CHECK_HR(spOptions->selectSingleNode(CComBSTR(_T("font-size")), &spFontNode));
-	if (!spNode)
+	if (!spFontNode)
 	{
 		CComPtr<IXMLDOMElement> spElem;
 		CHECK_HR(spDoc->createElement(L"font-size", &spElem));

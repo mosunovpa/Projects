@@ -76,7 +76,6 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "&Options"
         BEGIN
-            MENUITEM "&Always On Top",              ID_POPUP_ALWAYS_ON_TOP
             POPUP "&Font Size"
             BEGIN
                 MENUITEM "&Small",                      ID_FONTSIZE_SMALL
@@ -95,10 +94,11 @@ BEGIN
     POPUP "NoteMenu"
     BEGIN
         MENUITEM "C&opy To Clipboard",          ID_CLIPBRD_COPY
+        MENUITEM "&Restore",                    ID_RESTORE
         MENUITEM SEPARATOR
         MENUITEM "&Delete \tCtrl+D",            ID_DELETE
         MENUITEM SEPARATOR
-        MENUITEM "&Roll up / Unroll",           ID_ROLLUP
+        MENUITEM "Roll up / &Unroll",           ID_ROLLUP
         MENUITEM SEPARATOR
         MENUITEM "&Close\tEsc",                 ID_CLOSE
         MENUITEM "Close &All",                  ID_CLOSEALL
