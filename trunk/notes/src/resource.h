@@ -78,13 +78,15 @@
 #define ID_TNM_CHECKED_DELETE           40066
 #define ID_TRAYNOTEMENU_RESTORE         40067
 #define ID_TNM_RESTORE                  40068
+#define ID_NOTEMENU_RESTORE             40069
+#define ID_RESTORE                      40070
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        116
-#define _APS_NEXT_COMMAND_VALUE         40069
+#define _APS_NEXT_COMMAND_VALUE         40071
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           102
 #endif

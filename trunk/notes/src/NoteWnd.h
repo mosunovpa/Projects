@@ -134,6 +134,7 @@ public:
 	void SetDeletedDate(time_t dt);
 	CNoteEdit& GetEditor();
 	CRect GetRealNoteRect();
+	void Refresh();
 
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
@@ -156,7 +157,9 @@ public:
 			MSG_WM_CTLCOLOREDIT(OnCtlColorEdit)
 			MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 			MSG_WM_NCLBUTTONDBLCLK(OnNcLButtonDblClk)
+			MSG_WM_NCRBUTTONUP(OnNcRButtonUp)
 			COMMAND_ID_HANDLER_EX(ID_CLIPBRD_COPY, OnCopyToClipboard);
+			COMMAND_ID_HANDLER_EX(ID_RESTORE, OnRestore);
 			COMMAND_ID_HANDLER_EX(ID_PASTE, OnPaste);
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALL, OnNoteCloseAll)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
@@ -188,7 +191,9 @@ public:
 	HBRUSH OnCtlColorEdit(CDCHandle dc, CEdit edit);
 	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
 	void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
+	void OnNcRButtonUp(UINT nHitTest, CPoint point);
 	void OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -214,8 +219,8 @@ private:
 	CMenuHandle AdjustSystemMenu();
 	void StoreNote();
 	void DrawStatusBar(CDC& dc);
-	void Minimize();
-	void Restore();
+	void Rollup();
+	void Unroll();
 
 	static CBrush m_hBgBrush;
 	static CIcon m_hIcon;

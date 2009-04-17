@@ -37,7 +37,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_dtCreated(0),
 	m_dtModified(0),
 	m_dtDeleted(0),
-	m_bMinimized(FALSE)
+	m_bMinimized(FALSE),
+	m_icon(this)
 {
 }
 
@@ -200,7 +201,6 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 		WS_CHILD | WS_VISIBLE | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL, 
 		WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR | WS_EX_NOPARENTNOTIFY, 20000);
 	m_edit.SetBackgroundColor(RGB(255, 255, 204));
-
 
 	COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
 	CHARFORMAT cf;
@@ -548,6 +548,13 @@ void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 }
 
+/* ID_RESTORE */
+void CNoteWnd::OnRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CApplication::Get().RestoreNote(GetId());
+	SetDeletedDate(0);
+}
+
 /* ID_DELETE */
 void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
@@ -566,11 +573,11 @@ void CNoteWnd::OnRollUp(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (m_bMinimized)
 	{
-		Restore();
+		Unroll();
 	}
 	else
 	{
-		Minimize();
+		Rollup();
 	}
 }
 
@@ -614,17 +621,23 @@ void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 	{
 		if (m_bMinimized)
 		{
-			Restore();
+			Unroll();
 		}
 		else
 		{
-			Minimize();
+			Rollup();
 		}
 	}
 }
 
 /**/
-void CNoteWnd::Minimize()
+void CNoteWnd::OnNcRButtonUp(UINT nHitTest, CPoint point)
+{
+	m_icon.ShowMenu(point);
+}
+
+/**/
+void CNoteWnd::Rollup()
 {
 	if (!m_bMinimized)
 	{
@@ -643,7 +656,7 @@ void CNoteWnd::Minimize()
 }
 
 /**/
-void CNoteWnd::Restore()
+void CNoteWnd::Unroll()
 {
 	if (m_bMinimized)
 	{
@@ -687,4 +700,18 @@ time_t CNoteWnd::GetDeletedDate() const
 void CNoteWnd::SetDeletedDate( time_t dt )
 {
 	m_dtDeleted = dt;
+}
+
+void CNoteWnd::Refresh()
+{
+	COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
+	CHARFORMAT cf;
+	ZeroMemory(&cf, sizeof(CHARFORMAT));
+	cf.cbSize = sizeof(CHARFORMAT);
+	cf.dwMask = CFM_SIZE | CFM_BOLD | CFM_FACE;
+	m_edit.GetDefaultCharFormat(cf);
+	cf.yHeight = (fs == COptions::FS_SMALL ? 160 : (fs == COptions::FS_MEDIUM ? 200 : 240));
+	cf.dwEffects = 0;
+	lstrcpy(cf.szFaceName, _T("MS Shell Dlg"));
+	m_edit.SetDefaultCharFormat(cf);
 }
