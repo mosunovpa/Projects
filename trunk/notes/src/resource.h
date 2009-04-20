@@ -59,9 +59,6 @@
 #define ID_TRAYNOTEMENU_ID_CANCEL       40046
 #define ID_UNDELETE                     40047
 #define ID_MORE_HELP                    40048
-#define ID_FONTSIZE_8                   40049
-#define ID_FONTSIZE_10                  40050
-#define ID_FONTSIZE_12                  40051
 #define ID_UNDELETE_EMPTY               40052
 #define ID_FONTSIZE_SMALL               40053
 #define ID_FONTSIZE_MEDIUM              40054
@@ -80,13 +77,21 @@
 #define ID_TNM_RESTORE                  40068
 #define ID_NOTEMENU_RESTORE             40069
 #define ID_RESTORE                      40070
+#define ID_SHORTCUTS_NN_CTLR_SHIFT      40083
+#define ID_SHORTCUTS_NN_CTRL_ALT        40084
+#define ID_SHORTCUTS_NN_ALT_SHIFT       40085
+#define ID_SHORTCUTS_NN_NONE            40086
+#define ID_SHORTCUTS_NL_CTRL_SHIFT      40088
+#define ID_SHORTCUTS_NL_CTRL_ALT        40089
+#define ID_SHORTCUTS_NL_ALT_SHIFT       40090
+#define ID_SHORTCUTS_NL_NONE            40091
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        116
-#define _APS_NEXT_COMMAND_VALUE         40071
+#define _APS_NEXT_COMMAND_VALUE         40092
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           102
 #endif

@@ -74,13 +74,25 @@ BEGIN
         MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
         MENUITEM "New and &Paste",              ID_POPUP_NEWANDPASTE
         MENUITEM SEPARATOR
-        POPUP "&Options"
+        POPUP "&Settings"
         BEGIN
             POPUP "&Font Size"
             BEGIN
                 MENUITEM "&Small",                      ID_FONTSIZE_SMALL
                 MENUITEM "&Medium",                     ID_FONTSIZE_MEDIUM
                 MENUITEM "&Large",                      ID_FONTSIZE_LARGE
+            END
+            POPUP "&Shortcuts"
+            BEGIN
+                MENUITEM "New Note - None",             ID_SHORTCUTS_NN_NONE
+                MENUITEM "New Note - Ctrl+Shift+N",     ID_SHORTCUTS_NN_CTLR_SHIFT
+                MENUITEM "New Note - Ctrl+Alt+N",       ID_SHORTCUTS_NN_CTRL_ALT
+                MENUITEM "New Note - Alt+Shift+N",      ID_SHORTCUTS_NN_ALT_SHIFT
+                MENUITEM SEPARATOR
+                MENUITEM "Note List - None",            ID_SHORTCUTS_NL_NONE
+                MENUITEM "Note List - Ctrl+Shift+L",    ID_SHORTCUTS_NL_CTRL_SHIFT
+                MENUITEM "Note List - Ctrl+Alt+L",      ID_SHORTCUTS_NL_CTRL_ALT
+                MENUITEM "Note List - Alt+Shift+L",     ID_SHORTCUTS_NL_ALT_SHIFT
             END
         END
         MENUITEM "&Help",                       ID_MORE_HELP
