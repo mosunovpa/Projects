@@ -187,9 +187,11 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 //	menuTrackPopup.CheckMenuItem(ID_POPUP_ALWAYS_ON_TOP, MF_BYCOMMAND | (bAlwaisOnTop ? MF_CHECKED : MF_UNCHECKED));
 
 	COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
-	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_SMALL, MF_BYCOMMAND | (fs == COptions::FS_SMALL ? MF_CHECKED : MF_UNCHECKED));
-	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_MEDIUM, MF_BYCOMMAND | (fs == COptions::FS_MEDIUM ? MF_CHECKED : MF_UNCHECKED));
-	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_LARGE, MF_BYCOMMAND | (fs == COptions::FS_LARGE ? MF_CHECKED : MF_UNCHECKED));
+	UINT idCheck = ( fs == COptions::FS_SMALL ?  ID_FONTSIZE_SMALL : ( fs == COptions::FS_MEDIUM ? ID_FONTSIZE_MEDIUM : ID_FONTSIZE_LARGE ));
+	menuTrackPopup.CheckMenuRadioItem(ID_FONTSIZE_SMALL, ID_FONTSIZE_LARGE, idCheck, MF_BYCOMMAND);
+// 	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_SMALL, MF_BYCOMMAND | (fs == COptions::FS_SMALL ? MF_CHECKED : MF_UNCHECKED));
+// 	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_MEDIUM, MF_BYCOMMAND | (fs == COptions::FS_MEDIUM ? MF_CHECKED : MF_UNCHECKED));
+// 	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_LARGE, MF_BYCOMMAND | (fs == COptions::FS_LARGE ? MF_CHECKED : MF_UNCHECKED));
 
 	m_listNotesMenuActions.clear();
 	ModifyNotesMenu(menuTrackPopup);
@@ -351,7 +353,13 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 			int marked = m_listNotesMenuActions.GetMarkedCount();
 			_tstring txt = strutils::format(s.c_str(), marked);
 			submenu.ModifyMenu(6, MF_BYPOSITION | MF_STRING, (UINT_PTR)NULL, txt.c_str());
-			submenu.EnableMenuItem(6, MF_BYPOSITION | (marked == 0 ? MF_GRAYED : MF_ENABLED));
+//			submenu.EnableMenuItem(6, MF_BYPOSITION | (marked == 0 ? MF_GRAYED : MF_ENABLED));
+
+			CMenuHandle submenuChecked = submenu.GetSubMenu(6);
+			for (int i = 0; i < submenuChecked.GetMenuItemCount(); ++i)
+			{
+				submenuChecked.EnableMenuItem(i, MF_BYPOSITION | (marked == 0 ? MF_GRAYED : MF_ENABLED));
+			}
 		}
 
 		m_menuNoteActions.GetSubMenu(0).TrackPopupMenu(TPM_LEFTALIGN | TPM_RECURSE, pt.x, pt.y, m_hWnd, NULL);
