@@ -414,7 +414,8 @@ void CApplication::RestoreNote(int nNoteId)
 	{
 		CNote note = m_storage.GetNote(nNoteId);
 		note.SetDeletedDate(0);
-		m_storage.SaveNote(note, CApplication::NM_DELETED);
+		note.SetModifiedDate(dateutils::GetCurrentDate());
+		m_storage.SaveNote(note, CApplication::NM_DELETED | CApplication::NM_MODIFIED);
 	}
 }
 

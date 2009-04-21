@@ -242,4 +242,5 @@ private:
 
 	BOOL m_bMinimized;
 	CRect m_rcRestored;
+	BOOL m_bInitialized;
 };
