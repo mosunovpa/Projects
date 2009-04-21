@@ -274,47 +274,6 @@ void CTrayWnd::OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl)
 	PostMessage(WM_CLOSE);
 }
 
-/* ID_POPUP_ALWAYS_ON_TOP */
-void CTrayWnd::OnAlwaysOnTop( UINT uNotifyCode, int nID, CWindow wndCtl )
-{
-	BOOL bAlwaisOnTop = CApplication::Get().GetOptions().GetAlwaysOnTop();
-	bAlwaisOnTop = !bAlwaisOnTop;
-	SetWindowPos(bAlwaisOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, CRect(0,0,0,0), SWP_NOSIZE | SWP_NOMOVE);
-	CApplication::Get().GetOptions().SetAlwaysOnTop(bAlwaisOnTop);
-	CApplication::Get().SaveOptions();
-}
-
-/**/
-void CTrayWnd::OnFontSizeSmall(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	CApplication::Get().GetOptions().SetFontSize(COptions::FS_SMALL);
-	CApplication::Get().SaveOptions();
-	CApplication::Get().OptionsUpdated();
-}
-
-/**/
-void CTrayWnd::OnFontSizeMedium(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	CApplication::Get().GetOptions().SetFontSize(COptions::FS_MEDIUM);
-	CApplication::Get().SaveOptions();
-	CApplication::Get().OptionsUpdated();
-}
-
-/**/
-void CTrayWnd::OnFontSizeLarge(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	CApplication::Get().GetOptions().SetFontSize(COptions::FS_LARGE);
-	CApplication::Get().SaveOptions();
-	CApplication::Get().OptionsUpdated();
-}
-
-/* ID_OPTIONS_FONT */
-void CTrayWnd::OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	CFontDialog dlg(NULL, CF_EFFECTS | CF_SCREENFONTS, NULL, m_hWnd);
-	dlg.DoModal();
-}
-
 /* NOTE_CMD_FIRST - NOTE_CMD_LAST */
 void CTrayWnd::OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
@@ -349,13 +308,12 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 			m_menuNoteActions.LoadMenu(IDR_TRAY_NOTE_MENU);
 			CMenuHandle submenu = m_menuNoteActions.GetSubMenu(0);
 			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
-			_tstring s = menuutils::GetMenuString(submenu, 6, MF_BYPOSITION);
+			_tstring s = menuutils::GetMenuString(submenu, 1, MF_BYPOSITION);
 			int marked = m_listNotesMenuActions.GetMarkedCount();
 			_tstring txt = strutils::format(s.c_str(), marked);
-			submenu.ModifyMenu(6, MF_BYPOSITION | MF_STRING, (UINT_PTR)NULL, txt.c_str());
-//			submenu.EnableMenuItem(6, MF_BYPOSITION | (marked == 0 ? MF_GRAYED : MF_ENABLED));
+			submenu.ModifyMenu(1, MF_BYPOSITION | MF_STRING, (UINT_PTR)NULL, txt.c_str());
 
-			CMenuHandle submenuChecked = submenu.GetSubMenu(6);
+			CMenuHandle submenuChecked = submenu.GetSubMenu(1);
 			for (int i = 0; i < submenuChecked.GetMenuItemCount(); ++i)
 			{
 				submenuChecked.EnableMenuItem(i, MF_BYPOSITION | (marked == 0 ? MF_GRAYED : MF_ENABLED));
@@ -605,3 +563,17 @@ void CTrayWnd::OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu)
 	}
 }
 
+/**/
+void CTrayWnd::OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (m_pSettingsDlg.get() != NULL && ::IsWindow(m_pSettingsDlg->m_hWnd))
+	{
+		::SetForegroundWindow(m_pSettingsDlg->m_hWnd);
+	}
+	else
+	{
+		m_pSettingsDlg = std::auto_ptr<CSettingsSheet>(new CSettingsSheet(IDS_SETTINGS));
+		m_pSettingsDlg->DoModal(m_hWnd);
+		m_pSettingsDlg.reset();
+	}
+}

@@ -4,6 +4,7 @@
 #include "TrayIcon.h"
 #include "resource.h"
 #include "NotesMenuActions.h"
+#include "SettingsSheet.h"
 
 #define NOTE_CMD_FIRST 50000
 #define NOTE_CMD_RANGE 10000
@@ -52,11 +53,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_POPUP_SHOWALLNOTES, OnPopupShowAllnotes)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_EXIT, OnPopupExit)
-//		COMMAND_ID_HANDLER_EX(ID_POPUP_ALWAYS_ON_TOP, OnAlwaysOnTop);
-		COMMAND_ID_HANDLER_EX(ID_FONTSIZE_SMALL, OnFontSizeSmall)
-		COMMAND_ID_HANDLER_EX(ID_FONTSIZE_MEDIUM, OnFontSizeMedium)
-		COMMAND_ID_HANDLER_EX(ID_FONTSIZE_LARGE, OnFontSizeLarge)
-		COMMAND_ID_HANDLER_EX(ID_OPTIONS_FONT, OnOptionsFont);
+		COMMAND_ID_HANDLER_EX(ID_SETTINGS, OnSettings)
 		COMMAND_ID_HANDLER_EX(ID_TNM_OPEN_NOTE, OnOpenNote);
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECK, OnNoteCheck);
@@ -83,10 +80,6 @@ public:
 	void OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSysCommand(UINT nID, CPoint pt);
 	void OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnAlwaysOnTop(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnFontSizeSmall(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnFontSizeMedium(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnFontSizeLarge(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -94,7 +87,7 @@ public:
 	void OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCheckedOpen(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCheckedDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnOptionsFont(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl);
 
 private:
 	LRESULT DisplayShortcutMenu();
@@ -108,6 +101,8 @@ private:
 
 	CToolTipCtrl m_tooltip;
 	CNotesMenuActions m_listNotesMenuActions;
+
+	std::auto_ptr<CSettingsSheet> m_pSettingsDlg;
 
 
 };

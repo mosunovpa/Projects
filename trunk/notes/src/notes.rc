@@ -74,27 +74,7 @@ BEGIN
         MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
         MENUITEM "New and &Paste",              ID_POPUP_NEWANDPASTE
         MENUITEM SEPARATOR
-        POPUP "&Settings"
-        BEGIN
-            POPUP "&Font Size"
-            BEGIN
-                MENUITEM "&Small",                      ID_FONTSIZE_SMALL
-                MENUITEM "&Medium",                     ID_FONTSIZE_MEDIUM
-                MENUITEM "&Large",                      ID_FONTSIZE_LARGE
-            END
-            POPUP "&Shortcuts"
-            BEGIN
-                MENUITEM "New Note - None",             ID_SHORTCUTS_NN_NONE
-                MENUITEM "New Note - Ctrl+Shift+N",     ID_SHORTCUTS_NN_CTLR_SHIFT
-                MENUITEM "New Note - Ctrl+Alt+N",       ID_SHORTCUTS_NN_CTRL_ALT
-                MENUITEM "New Note - Alt+Shift+N",      ID_SHORTCUTS_NN_ALT_SHIFT
-                MENUITEM SEPARATOR
-                MENUITEM "Note List - None",            ID_SHORTCUTS_NL_NONE
-                MENUITEM "Note List - Ctrl+Shift+L",    ID_SHORTCUTS_NL_CTRL_SHIFT
-                MENUITEM "Note List - Ctrl+Alt+L",      ID_SHORTCUTS_NL_CTRL_ALT
-                MENUITEM "Note List - Alt+Shift+L",     ID_SHORTCUTS_NL_ALT_SHIFT
-            END
-        END
+        MENUITEM "&Settings...",                40092
         MENUITEM "&Help",                       ID_MORE_HELP
         MENUITEM SEPARATOR
         MENUITEM "&Exit",                       ID_POPUP_EXIT
@@ -138,11 +118,6 @@ IDR_TRAY_NOTE_MENU MENU
 BEGIN
     POPUP "TrayNoteMenu"
     BEGIN
-        MENUITEM "&Open",                       40056
-        MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
-        MENUITEM SEPARATOR
-        MENUITEM "&Delete",                     ID_TNM_DELETE
-        MENUITEM SEPARATOR
         MENUITEM "Check / &Uncheck",            ID_TNM_CHECK
         POPUP "Checked (%d)"
         BEGIN
@@ -150,6 +125,11 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "&Delete",                     ID_TNM_CHECKED_DELETE
         END
+        MENUITEM SEPARATOR
+        MENUITEM "&Open",                       40056
+        MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete",                     ID_TNM_DELETE
     END
 END
 
@@ -191,6 +171,15 @@ BEGIN
     LTEXT           "Do you really want to delete this note?",IDC_STATIC,37,11,125,8
 END
 
+IDD_NOTE_SETTING_PAGE DIALOGEX 0, 0, 235, 178
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CAPTION
+CAPTION "Note"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "&Note Font Size:",IDC_STATIC,7,10,50,8
+    COMBOBOX        IDC_COMBO_NOTE_FONT_SIZE,67,7,161,78,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -207,8 +196,33 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 48
     END
+
+    IDD_NOTE_SETTING_PAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 171
+    END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_NOTE_SETTING_PAGE DLGINIT
+BEGIN
+    IDC_COMBO_NOTE_FONT_SIZE, 0x403, 6, 0
+0x6d53, 0x6c61, 0x006c, 
+    IDC_COMBO_NOTE_FONT_SIZE, 0x403, 7, 0
+0x654d, 0x6964, 0x6d75, "\000" 
+    IDC_COMBO_NOTE_FONT_SIZE, 0x403, 6, 0
+0x614c, 0x6772, 0x0065, 
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -223,6 +237,10 @@ BEGIN
     IDS_CLOSE               "Close (Hold 'Ctrl' for close all)"
     IDS_DELETE_NOTE_CONFIRM "Do you really want to delete this note?"
     IDS_CREATED_FRM         "Created %s"
+    IDS_SMALL               "Small"
+    IDS_MEDIUM              "Medium"
+    IDS_LARGE               "Large"
+    IDS_Settings            "Settings"
 END
 
 #endif    // Russian resources

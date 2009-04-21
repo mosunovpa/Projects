@@ -177,6 +177,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NoteSettingPage.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\NotesMenuActions.cpp"
 				>
 			</File>
@@ -186,6 +190,10 @@
 			</File>
 			<File
 				RelativePath=".\Options.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SettingsSheet.cpp"
 				>
 			</File>
 			<File
@@ -239,6 +247,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NoteSettingPage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\NotesMenuActions.h"
 				>
 			</File>
@@ -252,6 +264,10 @@
 			</File>
 			<File
 				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SettingsSheet.h"
 				>
 			</File>
 			<File
