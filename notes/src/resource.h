@@ -24,7 +24,6 @@
 #define IDB_CLOSE_BTNS                  112
 #define IDR_TRAY_NOTE_MENU              114
 #define IDR_TRAY_NOTE_MENU1             115
-#define IDR_TRAY_DEL_NOTE_MENU          115
 #define IDD_NOTE_SETTING_PAGE           116
 #define IDICON                          1001
 #define IDC_COMBO_NOTE_FONT_SIZE        1002
@@ -93,13 +92,14 @@
 #define ID_SHORTCUTS_NL_ALT_SHIFT       40090
 #define ID_SHORTCUTS_NL_NONE            40091
 #define ID_SETTINGS                     40092
+#define ID_TNM_UNCHECK                  40093
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        118
-#define _APS_NEXT_COMMAND_VALUE         40093
+#define _APS_NEXT_COMMAND_VALUE         40094
 #define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           102
 #endif

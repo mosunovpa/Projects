@@ -57,6 +57,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_OPEN_NOTE, OnOpenNote);
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECK, OnNoteCheck);
+		COMMAND_ID_HANDLER_EX(ID_TNM_UNCHECK, OnNoteUncheck);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
 		COMMAND_ID_HANDLER_EX(ID_TNM_RESTORE, OnNoteRestore);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKED_OPEN, OnCheckedOpen);
@@ -83,6 +84,8 @@ public:
 	void OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNoteUncheck(UINT uNotifyCode, int nID, CWindow wndCtl);
+
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCheckedOpen(UINT uNotifyCode, int nID, CWindow wndCtl);

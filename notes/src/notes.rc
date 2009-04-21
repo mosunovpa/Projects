@@ -118,30 +118,26 @@ IDR_TRAY_NOTE_MENU MENU
 BEGIN
     POPUP "TrayNoteMenu"
     BEGIN
-        MENUITEM "Check / &Uncheck",            ID_TNM_CHECK
-        POPUP "Checked (%d)"
-        BEGIN
-            MENUITEM "&Open",                       ID_TNM_CHECKED_OPEN
-            MENUITEM SEPARATOR
-            MENUITEM "&Delete",                     ID_TNM_CHECKED_DELETE
-        END
-        MENUITEM SEPARATOR
         MENUITEM "&Open",                       40056
+        MENUITEM "C&heck",                      ID_TNM_CHECK
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
     END
-END
-
-IDR_TRAY_DEL_NOTE_MENU MENU 
-BEGIN
-    POPUP "TrayNoteMenu"
+    POPUP "TrayDeletedNoteMenu"
     BEGIN
         MENUITEM "&Open",                       40056
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
         MENUITEM "&Restore",                    ID_TNM_RESTORE
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
+    END
+    POPUP "TrayCheckedNoteMenu"
+    BEGIN
+        MENUITEM "&Open Checked",               ID_TNM_CHECKED_OPEN
+        MENUITEM "&Uncheck",                    ID_TNM_UNCHECK
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete Checked",             ID_TNM_CHECKED_DELETE
     END
 END
 

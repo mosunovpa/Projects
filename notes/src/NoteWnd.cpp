@@ -38,7 +38,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_dtModified(0),
 	m_dtDeleted(0),
 	m_bMinimized(FALSE),
-	m_icon(this)
+	m_icon(this),
+	m_bInitialized(FALSE)
 {
 }
 
@@ -253,6 +254,7 @@ LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	m_bPosChanged = FALSE;
 	m_edit.SetModify(FALSE);
 	m_edit.EmptyUndoBuffer();
+	m_bInitialized = TRUE;
 	return 0;
 }
 /**
@@ -350,7 +352,7 @@ void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 	Invalidate(FALSE);
 	UpdateWindow();
 
-	if (nState == WA_INACTIVE)
+	if (nState == WA_INACTIVE && m_bInitialized)
 	{
 		StoreNote();
 	}
