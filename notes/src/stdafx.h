@@ -28,6 +28,7 @@ extern CAppModule _Module;
 #include <atlframe.h>
 #include <atlmisc.h>
 #include <atlctrls.h>
+#define _WTL_NEW_PAGE_NOTIFY_HANDLERS
 #include <atldlgs.h>
 #include <atlctrlw.h>
 #include <atlctrlx.h>
