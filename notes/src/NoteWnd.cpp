@@ -573,14 +573,12 @@ void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 /* ID_ROLLUP */
 void CNoteWnd::OnRollUp(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	if (m_bMinimized)
-	{
-		Unroll();
-	}
-	else
-	{
-		Rollup();
-	}
+	Rollup();
+}
+
+void CNoteWnd::OnUnroll(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	Unroll();
 }
 
 
@@ -716,4 +714,9 @@ void CNoteWnd::Refresh()
 	cf.dwEffects = 0;
 	lstrcpy(cf.szFaceName, _T("MS Shell Dlg"));
 	m_edit.SetDefaultCharFormat(cf);
+}
+
+BOOL CNoteWnd::IsMinimized()
+{
+	return m_bMinimized;
 }

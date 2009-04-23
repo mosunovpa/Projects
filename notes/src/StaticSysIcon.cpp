@@ -51,6 +51,8 @@ void CStaticSysIcon::ShowMenu( CPoint pt )
 	{
 		menuPopup.DeleteMenu(ID_RESTORE, MF_BYCOMMAND);
 	}
+	menuPopup.DeleteMenu(m_pNoteWnd->IsMinimized() ? ID_ROLLUP : ID_UNROLL, MF_BYCOMMAND);
+	
 	if (!menuPopup.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
 		pt.x, pt.y, GetParent()))
 	{
