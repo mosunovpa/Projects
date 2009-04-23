@@ -135,6 +135,7 @@ public:
 	CNoteEdit& GetEditor();
 	CRect GetRealNoteRect();
 	void Refresh();
+	BOOL IsMinimized();
 
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
@@ -166,6 +167,7 @@ public:
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
 			COMMAND_ID_HANDLER_EX(ID_DELETE, OnNoteDelete)
 			COMMAND_ID_HANDLER_EX(ID_ROLLUP, OnRollUp);
+			COMMAND_ID_HANDLER_EX(ID_UNROLL, OnUnroll);
 			NOTIFY_CODE_HANDLER_EX(EN_LINK, OnLink)
 			CHAIN_COMMANDS_MEMBER(m_edit)
 		} 
@@ -200,6 +202,7 @@ public:
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnRollUp(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnUnroll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	LRESULT OnLink(LPNMHDR pnmh);
 
 private:

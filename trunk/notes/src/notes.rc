@@ -90,7 +90,8 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Delete \tCtrl+D",            ID_DELETE
         MENUITEM SEPARATOR
-        MENUITEM "Roll up / &Unroll",           ID_ROLLUP
+        MENUITEM "Roll &up",                    ID_ROLLUP
+        MENUITEM "&Unroll",                     ID_UNROLL
         MENUITEM SEPARATOR
         MENUITEM "&Close\tEsc",                 ID_CLOSE
         MENUITEM "Close &All",                  ID_CLOSEALL
