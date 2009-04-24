@@ -136,6 +136,8 @@ public:
 	CRect GetRealNoteRect();
 	void Refresh();
 	BOOL IsMinimized();
+	void Rollup();
+	void Unroll();
 
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
@@ -222,8 +224,6 @@ private:
 	CMenuHandle AdjustSystemMenu();
 	void StoreNote();
 	void DrawStatusBar(CDC& dc);
-	void Rollup();
-	void Unroll();
 
 	static CBrush m_hBgBrush;
 	static CIcon m_hIcon;

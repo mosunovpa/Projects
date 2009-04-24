@@ -370,6 +370,7 @@ void CApplication::ShowNote(int nNoteId)
 	CNoteWnd* pNoteWnd = FindNote(nNoteId);
 	if (pNoteWnd)
 	{
+		pNoteWnd->Unroll();
 		pNoteWnd->SetFocus();
 	}
 	else
