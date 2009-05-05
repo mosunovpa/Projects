@@ -53,7 +53,7 @@ void CApplication::GetAllNotesPositions(CNote::List& notes)
 /**/
 void CApplication::GetSomePossiblePositions(CRect const& center, std::vector<CRect>& poss)
 {
-	const int nRadius = 150;
+	const int nRadius = 100;
 	for (int i = 0; i < 10; ++i) // 10 possible positions
 	{
 		CRect rc(center);
@@ -73,6 +73,15 @@ CRect CApplication::GetOptimumPosition(std::vector<CRect> const& vPossiblePositi
 									   CNote::List const& notes)
 {
 	CRect rc;
+
+	if (vPossiblePositions.size() > 0)
+	{
+		int pos = floor(((double) rand() / 
+			(double) RAND_MAX) * vPossiblePositions.size());
+		if (pos < vPossiblePositions.size())
+			return vPossiblePositions[pos];
+	}
+
 	int nUnderTopLeftMin = 100000; // notes under top left corner on the new note
 	int nOverlappedTopLeftMin = 100000; // top left corners under new note area
 	for (int i = 0; i < vPossiblePositions.size(); ++i)
@@ -102,6 +111,8 @@ CRect CApplication::GetOptimumPosition(std::vector<CRect> const& vPossiblePositi
 			rc = vPossiblePositions[i];
 		}
 	}
+
+
 	return rc;
 }
 
@@ -205,7 +216,7 @@ void CApplication::OnNoteClosed(CNoteWnd* pWnd)
 // 		{
 // 			m_TrayWnd.ShowWindow(SW_HIDE);
 // 		}
-		SetActiveWindow(NULL); // activate previous application in z-order
+//		SetActiveWindow(NULL); // activate previous application in z-order
 	}
 	else
 	{
