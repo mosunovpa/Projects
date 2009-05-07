@@ -584,6 +584,13 @@ void CTrayWnd::OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu)
 }
 
 /**/
+void CTrayWnd::OnEnterIdle(UINT nWhy, CWindow wndWho)
+{
+
+}
+
+
+/**/
 void CTrayWnd::OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (m_pSettingsDlg.get() != NULL && ::IsWindow(m_pSettingsDlg->m_hWnd))

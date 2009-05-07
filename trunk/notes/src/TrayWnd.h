@@ -47,6 +47,7 @@ public:
 		MSG_WM_SYSCOMMAND(OnSysCommand)
 		MSG_WM_MENURBUTTONUP(OnMenuRButtonUp)
 		MSG_WM_MENUSELECT(OnMenuSelect)
+//		MSG_WM_ENTERIDLE(OnEnterIdle)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWANDPASTE, OnNewAndPaste)
@@ -73,6 +74,7 @@ public:
 	void OnFocus(HWND hWnd);
 	void OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu);
 	void OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu);
+	void OnEnterIdle(UINT nWhy, CWindow wndWho);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
