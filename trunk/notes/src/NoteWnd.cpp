@@ -372,6 +372,15 @@ void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 	m_btnClose.SetImages(nState == 0 ? 3 : 0);
 	m_btnClose.Invalidate(FALSE);
    	m_btnClose.UpdateWindow();
+
+	m_btnRollUp.SetImages(nState == 0 ? 3 : 0);
+	m_btnRollUp.Invalidate(FALSE);
+	m_btnRollUp.UpdateWindow();
+
+	m_btnUnroll.SetImages(nState == 0 ? 3 : 0);
+	m_btnUnroll.Invalidate(FALSE);
+	m_btnUnroll.UpdateWindow();
+
 	Invalidate(FALSE);
 	UpdateWindow();
 
