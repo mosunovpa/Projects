@@ -148,9 +148,9 @@ END
 // Bitmap
 //
 
-IDB_CLOSE               BITMAP                  "res\\close.bmp"
-IDB_CLOSE_PRESS         BITMAP                  "res\\close_press.bmp"
 IDB_CLOSE_BTNS          BITMAP                  "res\\close_btns.bmp"
+IDB_UNROLL_BTNS         BITMAP                  "res\\unroll_btns.bmp"
+IDB_ROLLUP_BTNS         BITMAP                  "res\\rollup_btns.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

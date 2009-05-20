@@ -219,6 +219,7 @@ private:
 	CRect GetCaptionRect();
 	int GetMinimizedHeight();
 	CRect GetBottomRightRect();
+	CRect GetRollupButtonRect();
 	CRect GetCloseButtonRect();
 	CRect GetClientRect();
 	CMenuHandle AdjustSystemMenu();
@@ -235,6 +236,8 @@ private:
 	CNoteEdit m_edit;
 	CEdit m_editCreated;
 	CStaticSysIcon m_icon;
+	CBitmapButton m_btnRollUp;
+	CBitmapButton m_btnUnroll;
 	CBitmapButton m_btnClose;
 		
 	int m_nNoteId;

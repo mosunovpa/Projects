@@ -8,11 +8,9 @@
 #define IDS_CLOSE                       103
 #define IDI_NOTES_SM                    104
 #define IDS_DELETE_NOTE_CONFIRM         104
-#define IDB_CLOSE                       105
 #define IDS_CREATED_FRM                 105
 #define IDS_DELETE                      106
 #define IDS_SMALL                       106
-#define IDB_CLOSE_PRESS                 107
 #define IDS_MEDIUM                      107
 #define IDR_NOTEMENU                    108
 #define IDS_LARGE                       108
@@ -25,6 +23,8 @@
 #define IDR_TRAY_NOTE_MENU              114
 #define IDR_TRAY_NOTE_MENU1             115
 #define IDD_NOTE_SETTING_PAGE           116
+#define IDB_UNROLL_BTNS                 119
+#define IDB_ROLLUP_BTNS                 120
 #define IDICON                          1001
 #define IDC_COMBO_NOTE_FONT_SIZE        1002
 #define ID_POPUP_NEWNOTE                40001
@@ -99,9 +99,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        118
+#define _APS_NEXT_RESOURCE_VALUE        121
 #define _APS_NEXT_COMMAND_VALUE         40095
 #define _APS_NEXT_CONTROL_VALUE         1003
-#define _APS_NEXT_SYMED_VALUE           102
+#define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif
