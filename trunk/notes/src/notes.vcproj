@@ -328,6 +328,14 @@
 				RelativePath=".\notes.rc"
 				>
 			</File>
+			<File
+				RelativePath=".\res\rollup_btns.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\unroll_btns.bmp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="common"

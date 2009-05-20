@@ -66,7 +66,7 @@ CRect CNoteWnd::GetCaptionRect()
 	CClientRect rc(m_hWnd);
 	rc.left = s_nCaptionSize + 2;
 	rc.bottom = s_nCaptionSize;
-	rc.right -= (s_nCaptionSize + 3);
+	rc.right -= (s_nCaptionSize + s_nCaptionSize + 3);
 	return rc;
 }
 
@@ -95,6 +95,17 @@ CRect CNoteWnd::GetRealNoteRect()
 		rc.right = rc.left + m_rcRestored.Width();
 		rc.bottom = rc.top + m_rcRestored.Height();
 	}
+	return rc;
+}
+
+/**
+Returns rollup button rect
+*/
+CRect CNoteWnd::GetRollupButtonRect()
+{
+	CRect rc(GetCloseButtonRect());
+	rc.left -= s_nCaptionSize;
+	rc.right -= s_nCaptionSize; 
 	return rc;
 }
 
@@ -163,6 +174,24 @@ void CNoteWnd::DrawStatusBar(CDC& dc)
 	::DeleteObject(hPenLine);
 }
 
+/**/
+void CreateBitmapButton(CBitmapButton& btn, HWND hParent, int nCmdId, int nBmpId, int x, int y, int nTooltipId)
+{
+	btn.Create(hParent, NULL, NULL, WS_CHILD | WS_VISIBLE, 0, nCmdId);
+	btn.SetBitmapButtonExtendedStyle(BMPBTN_HOVER | BMPBTN_AUTOSIZE);
+	CImageList il;
+	CBitmap bmp;
+	bmp.LoadBitmap(nBmpId);
+	il.Create(x, y, ILC_COLOR24, 4, 0); //, RGB(0,0,0), IMAGE_BITMAP, 
+	il.Add(bmp, RGB(0,0,0));
+	btn.SetImageList(il); // il will be deleted in ~CBitmapButtonImpl()
+	btn.SetImages(0,1,2,3);
+	if (nTooltipId)
+	{
+		btn.SetToolTipText(RESSTR(nTooltipId));
+	}
+}
+
 /**
 WM_CREATE
 */
@@ -184,16 +213,10 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	m_tooltip.SetMaxTipWidth(300);
 */
 
-	m_btnClose.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE, 0, ID_CLOSE);
-	m_btnClose.SetBitmapButtonExtendedStyle(BMPBTN_HOVER | BMPBTN_AUTOSIZE);
-	CImageList il;
-	CBitmap bmpClose;
-	bmpClose.LoadBitmap(IDB_CLOSE_BTNS);
-	il.Create(16, 16, ILC_COLOR24, 4, 0); //, RGB(0,0,0), IMAGE_BITMAP, 
-	il.Add(bmpClose, RGB(0,0,0));
-	m_btnClose.SetImageList(il); // il will be deleted in ~CBitmapButtonImpl()
-	m_btnClose.SetImages(0,1,2,3);
-	m_btnClose.SetToolTipText(RESSTR(IDS_CLOSE));
+	CreateBitmapButton(m_btnClose, m_hWnd, ID_CLOSE, IDB_CLOSE_BTNS, 16, 16, IDS_CLOSE);
+	CreateBitmapButton(m_btnRollUp, m_hWnd, ID_ROLLUP, IDB_ROLLUP_BTNS, 16, 16, 0);
+	CreateBitmapButton(m_btnUnroll, m_hWnd, ID_UNROLL, IDB_UNROLL_BTNS, 16, 16, 0);
+	m_btnUnroll.ShowWindow(SW_HIDE);
 
 	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
  	m_editCreated.SetFont(m_hStatusFont);
@@ -380,6 +403,8 @@ void CNoteWnd::OnGetMinMaxInfo(LPMINMAXINFO lParam)
 void CNoteWnd::OnSize(UINT wParam, CSize sz)
 {
 	m_btnClose.MoveWindow(&GetCloseButtonRect(), TRUE);
+	m_btnRollUp.MoveWindow(&GetRollupButtonRect(), TRUE);
+	m_btnUnroll.MoveWindow(&GetRollupButtonRect(), TRUE);
 
 	CRect rc;
 	::GetClientRect(m_hWnd, &rc);
@@ -643,6 +668,8 @@ void CNoteWnd::Rollup()
 	{
 		m_editCreated.ShowWindow(SW_HIDE);
 		m_edit.ShowWindow(SW_HIDE);
+		m_btnRollUp.ShowWindow(SW_HIDE);
+		m_btnUnroll.ShowWindow(SW_SHOW);
 
 		GetWindowRect(m_rcRestored);
 		CRect rc(m_rcRestored);
@@ -670,6 +697,9 @@ void CNoteWnd::Unroll()
 
 		m_editCreated.ShowWindow(SW_SHOW);
 		m_edit.ShowWindow(SW_SHOW);
+		m_btnRollUp.ShowWindow(SW_SHOW);
+		m_btnUnroll.ShowWindow(SW_HIDE);
+
 
 		m_edit.PostMessage(WM_SETFOCUS);
 	}
