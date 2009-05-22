@@ -5,27 +5,11 @@
 #include "menuutils.h"
 #include "shlwapi.h"
 
-/////////////////////////////////////////////////////////////////////
-// helpers
-
-/**/
-CMenuHandle GetMenuNotes(CMenuHandle menuPopup)
-{
-	return menuPopup.GetSubMenu(0);
-}
-
-/**/
-CMenuHandle GetDeletedMenu(CMenuHandle menuNotes)
-{
-	int nCount = menuNotes.GetMenuItemCount();
-	return menuNotes.GetSubMenu(nCount - 9);
-}
-
 ///////////////////////////////////////////////////////////
 // CTrayWnd
 
 /* constructor*/
-CTrayWnd::CTrayWnd() : m_nSelectedMenuItemId(0)
+CTrayWnd::CTrayWnd() : m_nSelectedNoteCmd(0)//, m_nTimer(0)
 {
 
 }
@@ -37,6 +21,45 @@ CTrayWnd::~CTrayWnd()
 	if (m_menuPopup.m_hMenu)
 		m_menuPopup.DestroyMenu();
 }
+
+/**/
+CMenuHandle CTrayWnd::GetMenuNotes() const
+{
+	if (::IsMenu(m_menuPopup.m_hMenu) )
+	{
+		return m_menuPopup.GetSubMenu(0);
+	}
+	return 0;
+}
+
+/**/
+CMenuHandle CTrayWnd::GetDeletedMenu() const
+{
+	CMenuHandle menuNotes = GetMenuNotes();
+	if (menuNotes.m_hMenu)
+	{
+		int nCount = menuNotes.GetMenuItemCount();
+		return menuNotes.GetSubMenu(nCount - 9);
+	}
+	return 0;
+}
+
+/**/
+HMENU CTrayWnd::GetTooltipMenu() const
+{
+	return GetMenuNotes();
+}
+
+/**/
+_tstring CTrayWnd::GetTooltipText(int nSelectedMenuItemId) const
+{
+	if (IS_NOTE_CMD(nSelectedMenuItemId))
+	{
+		return CApplication::Get().FindNote(GET_NOTE_ID_FROM_CMD(nSelectedMenuItemId)).GetText();
+	}
+	return _tstring();
+}
+
 
 /* WM_CREATE */
 LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -76,9 +99,9 @@ LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 //	CreateBitmaps();
 
-	m_tooltip.Create(m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
-	m_tooltip.AddTool(&CToolInfo( TTF_IDISHWND | TTF_TRACK | TTF_ABSOLUTE/*TTF_SUBCLASS*/, m_hWnd, (UINT)m_hWnd));
-	m_tooltip.SetMaxTipWidth(300);
+// 	m_tooltip.Create(m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
+// 	m_tooltip.AddTool(&CToolInfo( TTF_IDISHWND | TTF_TRACK | TTF_ABSOLUTE | TTF_TRANSPARENT/*TTF_SUBCLASS*/, m_hWnd, (UINT)m_hWnd));
+// 	m_tooltip.SetMaxTipWidth(300);
 
 	return 0;
 }
@@ -165,13 +188,10 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 		ATLTRACE(_T("Menu was not loaded!\n"));
 		return 0;
 	}
-	// Get cursor's position
-	POINT pt;
-	::GetCursorPos(&pt);
 
 	// TrackPopupMenu cannot display the menu bar so get
 	// a handle to the first shortcut menu
-	CMenuHandle menuTrackPopup = GetMenuNotes(m_menuPopup.m_hMenu);
+	CMenuHandle menuTrackPopup = GetMenuNotes();
 	if (!menuTrackPopup.m_hMenu)
 	{
 		ATLTRACE(_T("Handle to the first shortcut menu was not retrieved!\n"));
@@ -180,27 +200,15 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 		return 0;
 	}
 
-	// set menu item states
-	menuTrackPopup.SetMenuDefaultItem(ID_POPUP_NEWNOTE);
-	
-//	BOOL bAlwaisOnTop = CApplication::Get().GetOptions().GetAlwaysOnTop();
-//	menuTrackPopup.CheckMenuItem(ID_POPUP_ALWAYS_ON_TOP, MF_BYCOMMAND | (bAlwaisOnTop ? MF_CHECKED : MF_UNCHECKED));
-
-	COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
-	UINT idCheck = ( fs == COptions::FS_SMALL ?  ID_FONTSIZE_SMALL : ( fs == COptions::FS_MEDIUM ? ID_FONTSIZE_MEDIUM : ID_FONTSIZE_LARGE ));
-	menuTrackPopup.CheckMenuRadioItem(ID_FONTSIZE_SMALL, ID_FONTSIZE_LARGE, idCheck, MF_BYCOMMAND);
-// 	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_SMALL, MF_BYCOMMAND | (fs == COptions::FS_SMALL ? MF_CHECKED : MF_UNCHECKED));
-// 	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_MEDIUM, MF_BYCOMMAND | (fs == COptions::FS_MEDIUM ? MF_CHECKED : MF_UNCHECKED));
-// 	menuTrackPopup.CheckMenuItem(ID_FONTSIZE_LARGE, MF_BYCOMMAND | (fs == COptions::FS_LARGE ? MF_CHECKED : MF_UNCHECKED));
-
-	m_listNotesMenuActions.clear();
-	ModifyNotesMenu(menuTrackPopup);
-
 	// Display the shortcut menu. Track the right mouse button
 
 	// Display a shortcut menu at the specified location
 	// See "PRB: Menus for Notification Icons Don't Work Correctly" in MSDN
 	::SetForegroundWindow(m_hWnd);
+
+	// Get cursor's position
+	POINT pt;
+	::GetCursorPos(&pt);
 	if (!menuTrackPopup.TrackPopupMenu(TPM_RIGHTALIGN | TPM_BOTTOMALIGN, pt.x, pt.y, m_hWnd, NULL))
 	{
 		ATLTRACE(_T("Shortcut menu was not displayed!\n"));
@@ -214,9 +222,32 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	m_menuPopup.DestroyMenu();
 	m_menuPopup.m_hMenu = NULL;
 
-	ProcessNotesMenuActions();
-	m_listNotesMenuActions.clear();
 	return 0;
+}
+
+/* WM_INITMENUPOPUP */
+void CTrayWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu)
+{
+	if (menuPopup.m_hMenu == GetMenuNotes().m_hMenu)
+	{
+		// set menu item states
+		menuPopup.SetMenuDefaultItem(ID_POPUP_NEWNOTE);
+
+		m_listNotesMenuActions.clear();
+		ModifyNotesMenu(menuPopup);
+	}
+	SetMsgHandled(FALSE);
+}
+
+/* WM_UNINITMENUPOPUP */
+void CTrayWnd::OnUnInitMenuPopup(UINT nID, CMenuHandle menu)
+{
+	if (menu.m_hMenu == GetMenuNotes().m_hMenu)
+	{
+		ProcessNotesMenuActions();
+		m_listNotesMenuActions.clear();
+	}
+	SetMsgHandled(FALSE);
 }
 
 /**/
@@ -283,10 +314,11 @@ void CTrayWnd::OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* WM_MENURBUTTONUP */
 void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 {
+	HideTooltip();
 	UINT state  = menu.GetMenuState(wParam, MF_BYPOSITION);
 	if ((state & MF_GRAYED == MF_GRAYED) ||
 		(::IsMenu(m_menuNoteActions)) ||
-		!IS_NOTE_CMD(m_nSelectedMenuItemId))
+		!IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
 		return;
 	}
@@ -294,7 +326,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 	POINT pt;
 	::GetCursorPos(&pt);
 
-	CNotesMenuActions::iterator it = m_listNotesMenuActions.find(GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId));
+	CNotesMenuActions::iterator it = m_listNotesMenuActions.find(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 	if (it != m_listNotesMenuActions.end())
 	{
 		m_menuNoteActions.LoadMenu(IDR_TRAY_NOTE_MENU);
@@ -323,9 +355,9 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 /* ID_TNM_OPEN_NOTE */
 void CTrayWnd::OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		CApplication::Get().ShowNote(GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId));
+		CApplication::Get().ShowNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 		EndMenu();
 	}
 }
@@ -333,9 +365,9 @@ void CTrayWnd::OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_TNM_COPYALLTOCLIPBOARD */
 void CTrayWnd::OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		CApplication::Get().NoteTextToClipboard(GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId));
+		CApplication::Get().NoteTextToClipboard(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 		EndMenu();
 	}
 }
@@ -343,14 +375,14 @@ void CTrayWnd::OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_TNM_CHECK */
 void CTrayWnd::OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId);
+		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd);
 		CNotesMenuActions::iterator it = m_listNotesMenuActions.find(nNoteId);
 		if (it != m_listNotesMenuActions.end())
 		{
 			CMenuHandle menu(it->m_hPpopupMenu);
-			menu.CheckMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_CHECKED);
+			menu.CheckMenuItem(m_nSelectedNoteCmd, MF_BYCOMMAND | MF_CHECKED);
 			it->SetState(CNotesMenuItem::stChecked, TRUE);
 		}
 	}
@@ -359,14 +391,14 @@ void CTrayWnd::OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_TNM_UNCHECK */
 void CTrayWnd::OnNoteUncheck(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId);
+		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd);
 		CNotesMenuActions::iterator it = m_listNotesMenuActions.find(nNoteId);
 		if (it != m_listNotesMenuActions.end())
 		{
 			CMenuHandle menu(it->m_hPpopupMenu);
-			menu.CheckMenuItem(m_nSelectedMenuItemId, MF_BYCOMMAND | MF_UNCHECKED);
+			menu.CheckMenuItem(m_nSelectedNoteCmd, MF_BYCOMMAND | MF_UNCHECKED);
 			it->SetState(CNotesMenuItem::stChecked, FALSE);
 		}
 	}
@@ -375,9 +407,9 @@ void CTrayWnd::OnNoteUncheck(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_TNM_DELETE */
 void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId);
+		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd);
 		CApplication::Get().DeleteNote(nNoteId);
 		EndMenu();
 	}
@@ -386,9 +418,9 @@ void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_TNM_RESTORE */
 void CTrayWnd::OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	if (IS_NOTE_CMD(m_nSelectedMenuItemId))
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedMenuItemId);
+		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd);
 		CApplication::Get().RestoreNote(nNoteId);
 		EndMenu();
 	}
@@ -413,7 +445,6 @@ void CTrayWnd::OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	HWND wnd = CApplication::Get().CreateNote();
 	CApplication::Get().Command(ID_PASTE, wnd);
-//	CApplication::Get().Command(ID_ROLLUP, wnd);
 
 	// set focus to the top window in z-order
 	TCHAR name[512];
@@ -433,6 +464,7 @@ void CTrayWnd::OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
 }
 
 /* Create bitmaps for menu*/
+/*
 void CTrayWnd::CreateBitmaps()
 {
 	HWND hwndDesktop = GetDesktopWindow(); 
@@ -452,7 +484,6 @@ void CTrayWnd::CreateBitmaps()
 	// Erase the background and call the drawing function. 
 
 	PatBlt(hdcMem, 0, 0, size.cx, size.cy, WHITENESS); 
-
 
 	HBRUSH hbrOld; 
 	hbrOld = (HBRUSH)SelectObject(hdcMem, GetStockObject(NULL_BRUSH)); 
@@ -478,8 +509,8 @@ void CTrayWnd::CreateBitmaps()
 	SelectObject(hdcMem, hbmOld); 
 	DeleteDC(hdcMem); 
 	::ReleaseDC(hwndDesktop, hdcDesktop); 
-
 }
+*/
 
 
 /**/
@@ -534,13 +565,12 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 			int nId = notes[i].GetId();
 			int nCmd = CREATE_NOTE_CMD(nId);
 			menuNotes.InsertMenu(0, MF_BYPOSITION, nCmd, sCaption.c_str());
-//			menuNotes.SetMenuItemBitmaps(nCmd, MF_BYCOMMAND, NULL, m_bmpDeleted); 
 			m_listNotesMenuActions.push_back(CNotesMenuItem(nId, menuNotes));
 		}
 	}
 
 	// show deleted notes
-	CMenuHandle menuDeleted = GetDeletedMenu(menuNotes);
+	CMenuHandle menuDeleted = GetDeletedMenu();
 	std::sort(notes.begin(), notes.end(), compare_by_deleted_date);
 	if (bIsDeletedNotesExists)
 	{
@@ -552,7 +582,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 		if (notes[i].GetDeletedDate() != 0)
 		{
 			if (nMaxDelCnt < 0 &&
-				(CApplication::Get().FindNote(notes[i].GetId()) == NULL) )// note is not opened
+				(CApplication::Get().FindNoteWnd(notes[i].GetId()) == NULL) )// note is not opened
 			{
 				CApplication::Get().DeleteFromStorage(notes[i].GetId());
 			}
@@ -562,8 +592,6 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 				int nId = notes[i].GetId();
 				int nCmd = CREATE_NOTE_CMD(nId);
 				menuDeleted.AppendMenu(MF_BYPOSITION, nCmd, sCaption.c_str());
-//				menuDeleted.SetMenuItemBitmaps(nCmd, MF_BYCOMMAND, NULL, m_bmpDeleted); 
-//				menuDeleted.CheckMenuItem(nCmd, MF_BYCOMMAND | MF_CHECKED);
 				CNotesMenuItem item(nId, menuDeleted);
 				item.SetState(CNotesMenuItem::stDeleted);
 				m_listNotesMenuActions.push_back(item);
@@ -574,20 +602,83 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	}
 }
 
-/**/
+/* WM_MENUSELECT */
 void CTrayWnd::OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu)
 {
+// 	if (::IsWindowVisible(m_tooltip))
+// 	{
+// 		ShowToolTip(FALSE);
+// 	}
+// 
+// 	if (nFlags & MF_POPUP || (nFlags == 0xFFFF && menu.m_hMenu == NULL)) 
+// 	{	// menu closing 
+// 		KillTimer(m_nTimer);
+// 	}
+
 	if (!::IsMenu(m_menuNoteActions))
 	{
-		m_nSelectedMenuItemId = nItemID;
+		m_nSelectedNoteCmd = IS_NOTE_CMD(nItemID) ? nItemID : 0;
 	}
+
+	SetMsgHandled(FALSE);
 }
 
-/**/
+/* WM_ENTERIDLE */
+/*
 void CTrayWnd::OnEnterIdle(UINT nWhy, CWindow wndWho)
 {
+	if (::IsMenu(m_menuNoteActions))
+	{
+		return;
+	}
+	if (::IsWindowVisible(m_tooltip))
+	{
+		return;
+	}
+
+	KillTimer(m_nTimer);
+	m_nTimer = SetTimer(1, 500, NULL);
 
 }
+*/
+
+/* WM_TIMER */
+/*
+void CTrayWnd::OnTimer(UINT_PTR nIDEvent)
+{
+	KillTimer(m_nTimer);
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd) && !::IsMenu(m_menuNoteActions))
+	{
+		CNote note = CApplication::Get().FindNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		_tstring sNoteText = note.GetText();
+
+		TOOLINFO    ti;
+		ti.cbSize = sizeof(TOOLINFO);
+		ti.uFlags = TTF_IDISHWND;
+		ti.hwnd   = m_hWnd;
+		ti.uId    = (UINT)m_hWnd;
+		ti.lpszText  =  &sNoteText[0];
+		m_tooltip.UpdateTipText(&ti);
+
+		POINT pt;
+		::GetCursorPos(&pt);
+		m_tooltip.TrackPosition(pt.x, pt.y + 20);
+		::SetWindowPos(m_tooltip, HWND_TOPMOST ,0,0,0,0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOMOVE);
+		ShowToolTip(TRUE);
+	}
+}
+*/
+/**/
+/*
+void CTrayWnd::ShowToolTip(BOOL bShow)
+{
+	TOOLINFO    ti;
+	ti.cbSize = sizeof(TOOLINFO);
+	ti.uFlags = TTF_IDISHWND;
+	ti.hwnd   = m_hWnd;
+	ti.uId    = (UINT)m_hWnd;
+	m_tooltip.TrackActivate(&ti, bShow);
+}*/
 
 
 /**/

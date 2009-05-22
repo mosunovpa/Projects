@@ -17,8 +17,12 @@
 #define IDR_ACCELERATOR1                109
 #define IDS_Settings                    109
 #define IDS_SETTINGS                    109
+#define IDS_Settings                    109
 #define IDR_EDIT                        110
+#define IDS_ROLLUP_UNROLL               110
+#define IDS_ROLLUP                      110
 #define IDD_DELETENOTECONFIRM           111
+#define IDS_UNROLL                      111
 #define IDB_CLOSE_BTNS                  112
 #define IDR_TRAY_NOTE_MENU              114
 #define IDR_TRAY_NOTE_MENU1             115

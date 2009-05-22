@@ -29,7 +29,8 @@ public:
 
 	void CreateAppWindow();
 	HWND CreateNote();
-	CNoteWnd* FindNote(int nNoteId) const;
+	CNoteWnd* FindNoteWnd(int nNoteId) const;
+	CNote FindNote(int nNoteId) const;
 	int SaveNote(CNoteWnd* pWnd, UINT nMask);
 	void DeleteFromStorage(int nNoteId);
 	void DeleteNote(int nNoteId);

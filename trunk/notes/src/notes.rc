@@ -238,6 +238,8 @@ BEGIN
     IDS_MEDIUM              "Medium"
     IDS_LARGE               "Large"
     IDS_Settings            "Settings"
+    IDS_ROLLUP              "RollUp"
+    IDS_UNROLL              "Unroll"
 END
 
 #endif    // Russian resources
