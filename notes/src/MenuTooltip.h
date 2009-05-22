@@ -35,7 +35,8 @@ public:
 	{
 		if (!::IsWindowVisible(m_tooltip.m_hWnd))
 		{
-			_tstring sNoteText = GetTooltipText(m_nSelectedMenuItemId);
+			T* pT = static_cast<T*>(this);
+			_tstring sNoteText = pT->GetTooltipText(m_nSelectedMenuItemId);
 			if (!sNoteText.empty())
 			{
 				m_nShownMenuItemId = m_nSelectedMenuItemId;
@@ -46,6 +47,11 @@ public:
 				m_tooltip.TrackActivate(&ti, TRUE);
 			}
 		}
+	}
+
+	BOOL BeforeTooltipShowing()
+	{
+		return TRUE;
 	}
 
 	BEGIN_MSG_MAP_EX(CMenuTooltip)
@@ -102,7 +108,11 @@ private:
 				{
 					m_ptLastCursorPos = ptCursorPos;
 					m_tmLastTime = nTime;
-					ShowTooltip();
+					T* pT = static_cast<T*>(this);
+					if (pT->BeforeTooltipShowing())
+					{
+						ShowTooltip();
+					}
 				}
 			}
 		}
@@ -114,7 +124,7 @@ private:
 		for(int nItem = 0; nItem < ::GetMenuItemCount(menu); nItem++) {
 			UINT cmd = ::GetMenuItemID(menu, nItem);
 			if(cmd == nItemID) {
-				::GetMenuItemRect(m_hParent, menu, nItem, &m_rcSelected);
+				::GetMenuItemRect(NULL/*m_hParent*/, menu, nItem, &m_rcSelected);
 			}
 		}
 //		::GetMenuItemRect(NULL/*m_hParent*/, menu, nItemID, &m_rcSelected);
