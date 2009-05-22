@@ -214,8 +214,8 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 */
 
 	CreateBitmapButton(m_btnClose, m_hWnd, ID_CLOSE, IDB_CLOSE_BTNS, 16, 16, IDS_CLOSE);
-	CreateBitmapButton(m_btnRollUp, m_hWnd, ID_ROLLUP, IDB_ROLLUP_BTNS, 16, 16, 0);
-	CreateBitmapButton(m_btnUnroll, m_hWnd, ID_UNROLL, IDB_UNROLL_BTNS, 16, 16, 0);
+	CreateBitmapButton(m_btnRollUp, m_hWnd, ID_ROLLUP, IDB_ROLLUP_BTNS, 16, 16, IDS_ROLLUP);
+	CreateBitmapButton(m_btnUnroll, m_hWnd, ID_UNROLL, IDB_UNROLL_BTNS, 16, 16, IDS_UNROLL);
 	m_btnUnroll.ShowWindow(SW_HIDE);
 
 	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);

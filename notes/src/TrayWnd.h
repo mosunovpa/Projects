@@ -5,6 +5,7 @@
 #include "resource.h"
 #include "NotesMenuActions.h"
 #include "SettingsSheet.h"
+#include "MenuTooltip.h"
 
 #define NOTE_CMD_FIRST 50000
 #define NOTE_CMD_RANGE 10000
@@ -13,18 +14,16 @@
 #define GET_NOTE_ID_FROM_CMD(cmd) ((cmd) - NOTE_CMD_FIRST)
 #define IS_NOTE_CMD(cmd) (cmd > NOTE_CMD_FIRST && cmd <= NOTE_CMD_LAST)
 
-/*
-#define DELETED_CMD_FIRST NOTE_CMD_LAST
-#define DELETED_CMD_LAST (DELETED_CMD_FIRST + NOTE_CMD_RANGE)
-#define CREATE_DELETED_CMD(id) ((id) + DELETED_CMD_FIRST)
-#define GET_DELETED_ID_FROM_CMD(cmd) ((cmd) - DELETED_CMD_FIRST)
-*/
-
-class CTrayWnd : public CWindowImpl<CTrayWnd> 
+/* CTrayWnd */
+class CTrayWnd : 
+	public CWindowImpl<CTrayWnd>,
+	public CMenuTooltip<CTrayWnd>
 {
 public:
 	CTrayWnd();
 	~CTrayWnd();
+	HMENU GetTooltipMenu() const;
+	_tstring GetTooltipText(int nSelectedMenuItemId) const;
 
 private:
 	CTrayIcon m_TrayIcon;
@@ -45,9 +44,12 @@ public:
 		MSG_WM_QUERYENDSESSION(OnQueryEndSession)
 		MSG_WM_SETFOCUS(OnFocus)
 		MSG_WM_SYSCOMMAND(OnSysCommand)
+//		MSG_WM_TIMER(OnTimer)
 		MSG_WM_MENURBUTTONUP(OnMenuRButtonUp)
 		MSG_WM_MENUSELECT(OnMenuSelect)
 //		MSG_WM_ENTERIDLE(OnEnterIdle)
+		MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
+		MSG_WM_UNINITMENUPOPUP(OnUnInitMenuPopup)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWANDPASTE, OnNewAndPaste)
@@ -64,6 +66,8 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKED_OPEN, OnCheckedOpen);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKED_DELETE, OnCheckedDelete);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
+
+		CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
 	}
 	CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()
@@ -74,7 +78,9 @@ public:
 	void OnFocus(HWND hWnd);
 	void OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu);
 	void OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu);
-	void OnEnterIdle(UINT nWhy, CWindow wndWho);
+//	void OnEnterIdle(UINT nWhy, CWindow wndWho);
+	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
+	void OnUnInitMenuPopup(UINT nID, CMenuHandle menu);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -82,6 +88,7 @@ public:
 	void OnPopupAbout(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSysCommand(UINT nID, CPoint pt);
+//	void OnTimer(UINT_PTR nIDEvent);
 	void OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -96,18 +103,24 @@ public:
 
 private:
 	LRESULT DisplayShortcutMenu();
-	void CreateBitmaps();
+//	void CreateBitmaps();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
 	void SetNotesMenuActions(CNotesMenuItem::Actions action);
 	void ProcessNotesMenuActions();
+//	void ShowToolTip(BOOL bShow);
 
-	int m_nSelectedMenuItemId;
+	CMenuHandle GetDeletedMenu() const;
+	CMenuHandle GetMenuNotes() const;
+
+
+	int m_nSelectedNoteCmd;
 	CMenu m_menuNoteActions;
 
-	CToolTipCtrl m_tooltip;
+//	CToolTipCtrl m_tooltip;
 	CNotesMenuActions m_listNotesMenuActions;
 
 	std::auto_ptr<CSettingsSheet> m_pSettingsDlg;
 
+//	UINT_PTR m_nTimer;
 
 };

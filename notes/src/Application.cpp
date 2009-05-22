@@ -193,7 +193,7 @@ void CApplication::ShowAllNotes()
 	m_storage.GetAllNotes(list, CApplication::NM_ALL);
 	for (int i = 0; i < list.size(); ++i)
 	{
-		CNoteWnd* pNoteWnd = FindNote(list[i].GetId());
+		CNoteWnd* pNoteWnd = FindNoteWnd(list[i].GetId());
 		if (pNoteWnd)
 		{
 			
@@ -265,7 +265,7 @@ int CApplication::GetHiddenNotesCount() const
 	int nCount = 0;
 	for (int i = 0; i < notes.size(); ++i)
 	{
-		if (!FindNote(notes[i].GetId()))
+		if (!FindNoteWnd(notes[i].GetId()))
 		{
 			++nCount;
 		}
@@ -309,7 +309,8 @@ LPCTSTR CApplication::GetDataFileName()
 	return m_sDataFile.c_str();
 }
 
-CNoteWnd* CApplication::FindNote(int nNoteId) const
+/**/
+CNoteWnd* CApplication::FindNoteWnd(int nNoteId) const
 {
 	for (std::list<CNoteWnd*>::const_iterator it = m_listNotes.begin();
 		it != m_listNotes.end(); ++it)
@@ -322,6 +323,13 @@ CNoteWnd* CApplication::FindNote(int nNoteId) const
 	return NULL;
 }
 
+/**/
+CNote CApplication::FindNote(int nNoteId) const
+{
+	return m_storage.GetNote(nNoteId);
+}
+
+/**/
 CNoteWnd* CApplication::OpenNote( CNote const& note )
 {
 	CNoteWnd* pWnd = CreateNoteWnd(note.GetPos());
@@ -378,7 +386,7 @@ void CApplication::SaveOptions()
 /**/
 void CApplication::ShowNote(int nNoteId)
 {
-	CNoteWnd* pNoteWnd = FindNote(nNoteId);
+	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
 	if (pNoteWnd)
 	{
 		pNoteWnd->Unroll();
@@ -393,7 +401,7 @@ void CApplication::ShowNote(int nNoteId)
 /**/
 void CApplication::NoteTextToClipboard(int nNoteId)
 {
-	CNoteWnd* pNoteWnd = FindNote(nNoteId);
+	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
 	if (pNoteWnd)
 	{
 		pNoteWnd->PostMessage(WM_COMMAND, ID_CLIPBRD_COPY);
@@ -408,7 +416,7 @@ void CApplication::NoteTextToClipboard(int nNoteId)
 /**/
 void CApplication::DeleteNote(int nNoteId)
 {
-	CNoteWnd* pNoteWnd = FindNote(nNoteId);
+	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
 	if (pNoteWnd)
 	{
 		pNoteWnd->PostMessage(WM_COMMAND, ID_DELETE);
@@ -440,7 +448,7 @@ void CApplication::ReleaseStorage()
 /**/
 void CApplication::Command(int nCmd, int nNoteId)
 {
-	CNoteWnd* pNoteWnd = FindNote(nNoteId);
+	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
 	if (!pNoteWnd)
 	{
 		pNoteWnd = OpenNote(m_storage.GetNote(nNoteId));
