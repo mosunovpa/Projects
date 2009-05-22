@@ -24,6 +24,7 @@ public:
 	~CTrayWnd();
 	HMENU GetTooltipMenu() const;
 	_tstring GetTooltipText(int nSelectedMenuItemId) const;
+	BOOL BeforeTooltipShowing() const;
 
 private:
 	CTrayIcon m_TrayIcon;

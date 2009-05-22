@@ -60,6 +60,12 @@ _tstring CTrayWnd::GetTooltipText(int nSelectedMenuItemId) const
 	return _tstring();
 }
 
+/**/
+BOOL CTrayWnd::BeforeTooltipShowing() const
+{
+	return !::IsMenu(m_menuNoteActions);
+}
+
 
 /* WM_CREATE */
 LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
