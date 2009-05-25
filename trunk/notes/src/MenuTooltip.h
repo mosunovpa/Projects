@@ -1,17 +1,24 @@
 #pragma once
 
+#include "atlwinmisc.h"
+#include "winutils.h"
+
+/**/
 template <class T>
 class CMenuTooltip
 {
 public:
+	/**/
 	CMenuTooltip() : 
 		m_nTimer(0), 
 		m_tmLastTime(0), 
 		m_nSelectedMenuItemId(0), 
-		m_hParent(NULL)
+		m_hParent(NULL),
+		m_nShownMenuItemId(0)
 	{
 	}
 
+	/**/
 	HMENU GetTooltipMenu() const
 	{
 		return NULL;
@@ -22,6 +29,7 @@ public:
 		return _tstring();
 	}
 
+	/**/
 	void HideTooltip()
 	{
 		if (::IsWindowVisible(m_tooltip.m_hWnd))
@@ -31,6 +39,7 @@ public:
 		}
 	}
 
+	/**/
 	void ShowTooltip()
 	{
 		if (!::IsWindowVisible(m_tooltip.m_hWnd))
@@ -43,27 +52,30 @@ public:
 				CToolInfo ti(TTF_IDISHWND, m_hParent, (UINT)m_hParent, NULL, &sNoteText[0]);
 				m_tooltip.UpdateTipText(&ti);
 				m_tooltip.TrackPosition(m_ptLastCursorPos.x, m_ptLastCursorPos.y + 22);
-				::SetWindowPos(m_tooltip, HWND_TOPMOST ,0,0,0,0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOMOVE);
 				m_tooltip.TrackActivate(&ti, TRUE);
 			}
 		}
 	}
 
+	/**/
 	BOOL BeforeTooltipShowing()
 	{
 		return TRUE;
 	}
 
+	/**/
 	BEGIN_MSG_MAP_EX(CMenuTooltip)
 		m_hParent = hWnd;
 		MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 		MSG_WM_UNINITMENUPOPUP(OnUnInitMenuPopup)
 		MSG_WM_TIMER(OnTimer)
 		MSG_WM_MENUSELECT(OnMenuSelect)
+		NOTIFY_CODE_HANDLER_EX(TTN_SHOW, OnNotifyCodeHandlerEX)
 	END_MSG_MAP_EX()
 
 private:
 
+	/**/
 	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu)
 	{
 		T* pT = static_cast<T*>(this);
@@ -77,6 +89,7 @@ private:
 		}
 	}
 
+	/**/
 	void OnUnInitMenuPopup(UINT nID, CMenuHandle menuPopup)
 	{
 		T* pT = static_cast<T*>(this);
@@ -88,6 +101,44 @@ private:
 		}
 	}
 
+	/* TTN_SHOW */
+	LRESULT OnNotifyCodeHandlerEX(LPNMHDR pnmh)
+	{
+		if (m_tooltip.m_hWnd == pnmh->hwndFrom)
+		{
+			CWindowRect rc(m_tooltip);
+			CRect rcDesc;
+			::GetWindowRect(GetDesktopWindow(), &rcDesc);
+
+			if (rc.right > rcDesc.right)
+			{
+				int d = rc.right - rcDesc.right;
+				if (d > rc.left)
+				{
+					d = rc.left;
+				}
+				rc.left -= d;
+			}
+			if (rc.bottom > rcDesc.bottom)
+			{
+				rc.top = m_ptLastCursorPos.y - rc.Height() - 2;
+				if (rc.top < 0)
+				{
+					rc.top = 0;
+				}
+			}
+ 			SetWindowPos(m_tooltip,
+ 				HWND_TOPMOST,
+ 				rc.left, rc.top,
+ 				0, 0,
+ 				SWP_NOSIZE|SWP_NOOWNERZORDER|/*SWP_NOZORDER|*/SWP_NOACTIVATE);
+
+			return 1;
+		}
+		return 0;
+	}
+
+	/**/
 	void OnTimer(UINT_PTR nIDEvent)
 	{
 		if (nIDEvent == 654 && m_nSelectedMenuItemId)
@@ -118,16 +169,19 @@ private:
 		}
 	}
 
+	/**/
 	void OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu)
 	{
+		m_nShownMenuItemId = 0;
 		m_nSelectedMenuItemId = nItemID;
-		for(int nItem = 0; nItem < ::GetMenuItemCount(menu); nItem++) {
+		for(int nItem = 0; nItem < ::GetMenuItemCount(menu); nItem++) 
+		{
 			UINT cmd = ::GetMenuItemID(menu, nItem);
-			if(cmd == nItemID) {
-				::GetMenuItemRect(NULL/*m_hParent*/, menu, nItem, &m_rcSelected);
+			if(cmd == nItemID) 
+			{
+				::GetMenuItemRect(NULL, menu, nItem, &m_rcSelected);
 			}
 		}
-//		::GetMenuItemRect(NULL/*m_hParent*/, menu, nItemID, &m_rcSelected);
 	}
 
 	UINT_PTR m_nTimer;
