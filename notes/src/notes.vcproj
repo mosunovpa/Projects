@@ -169,10 +169,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MenuTooltip.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Note.cpp"
 				>
 			</File>

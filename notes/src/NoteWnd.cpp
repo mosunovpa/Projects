@@ -26,6 +26,7 @@ CIcon CNoteWnd::m_hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKE
 CIcon CNoteWnd::m_hIconSm = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_NOTES_SM),
 								  IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 CPen CNoteWnd::m_hPen = ::CreatePen(PS_SOLID, 1, RGB(0,0,0));
+CPen CNoteWnd::m_hGrayPen = ::CreatePen(PS_SOLID, 1, RGB(128, 128, 128));
 CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell Dlg"));
 
 /**
@@ -39,7 +40,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_dtDeleted(0),
 	m_bMinimized(FALSE),
 	m_icon(this),
-	m_bInitialized(FALSE)
+	m_bInitialized(FALSE),
+	m_bActive(FALSE)
 {
 }
 
@@ -142,17 +144,11 @@ void CNoteWnd::OnFinalMessage(HWND hWnd)
 /* draw status bar */
 void CNoteWnd::DrawStatusBar(CDC& dc)
 {
-	HPEN hOldPen, hPenLine;
-
 	CRect rectDlg;
 	::GetClientRect(m_hWnd,&rectDlg);
 
-	// Create a grey pen
-	hPenLine = ::CreatePen(PS_SOLID, 1, RGB(125,125,125));
-	ATLASSERT(hPenLine);	
-
 	// Select the new pen into the device context
-	hOldPen = (HPEN)::SelectObject(dc, hPenLine);
+	HPEN hOldPen = dc.SelectPen(m_bActive ? m_hPen : m_hGrayPen);
 	ATLASSERT(hOldPen);
 	ATLASSERT(hOldPen != HGDI_ERROR);
 
@@ -165,13 +161,8 @@ void CNoteWnd::DrawStatusBar(CDC& dc)
 		offset -= 4;
 	}
 
-	// Draw the horizontal line
-// 	dc.MoveTo(0, rectDlg.Height() - s_nStatusBarSize);
-// 	dc.LineTo(rectDlg.Width(), rectDlg.Height() - s_nStatusBarSize);
-
 	// Clean up
-	::SelectObject(dc, hOldPen);
-	::DeleteObject(hPenLine);
+	dc.SelectPen(hOldPen);
 }
 
 /**/
@@ -197,21 +188,10 @@ WM_CREATE
 */
 LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 {
-//	SetIcon(m_hIcon, TRUE);
-//	SetIcon(m_hIconSm, FALSE);
-
 	m_icon.Create(m_hWnd, GetIconRect(), NULL, WS_CHILD|WS_VISIBLE|SS_ICON|SS_CENTERIMAGE|SS_NOTIFY);
 	m_icon.SetIcon(m_hIconSm);
 
-
 	AdjustSystemMenu();
-
-	/*
-	_tstring sTooltip = RESSTR(IDS_CLOSE);
-	m_tooltip.Create(m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
-	m_tooltip.AddTool(&CToolInfo( TTF_SUBCLASS, m_hWnd, 1, &(GetCloseButtonRect()), &sTooltip[0]));
-	m_tooltip.SetMaxTipWidth(300);
-*/
 
 	CreateBitmapButton(m_btnClose, m_hWnd, ID_CLOSE, IDB_CLOSE_BTNS, 16, 16, IDS_CLOSE);
 	CreateBitmapButton(m_btnRollUp, m_hWnd, ID_ROLLUP, IDB_ROLLUP_BTNS, 16, 16, IDS_ROLLUP);
@@ -327,7 +307,7 @@ void CNoteWnd::OnNcPaint(HRGN wParam)
 	{
 		CMemoryDC memDc(hdc, rcWindow);
 		HBRUSH hOldBrush = memDc.SelectBrush(m_hBgBrush);
-		HPEN hOldPen = memDc.SelectPen(m_hPen);
+		HPEN hOldPen = memDc.SelectPen(m_bActive ? m_hPen : m_hGrayPen);
 		memDc.Rectangle(&rcWindow);
 		memDc.SelectPen(hOldPen);
 		memDc.SelectBrush(hOldBrush);
@@ -369,6 +349,8 @@ void CNoteWnd::OnPaint(HDC hdc)
  */
 void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 {
+	m_bActive = nState;
+
 	m_btnClose.SetImages(nState == 0 ? 3 : 0);
 	m_btnClose.Invalidate(FALSE);
    	m_btnClose.UpdateWindow();
@@ -381,8 +363,10 @@ void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 	m_btnUnroll.Invalidate(FALSE);
 	m_btnUnroll.UpdateWindow();
 
+	SendMessage(WM_NCPAINT, 1);
 	Invalidate(FALSE);
 	UpdateWindow();
+
 
 	if (nState == WA_INACTIVE && m_bInitialized)
 	{
@@ -420,7 +404,6 @@ void CNoteWnd::OnSize(UINT wParam, CSize sz)
 	CRect rcCreated(0, rc.bottom - s_nStatusBarSize + 1, 135, rc.bottom);
 	m_editCreated.MoveWindow(&rcCreated, TRUE);
 
-//	m_tooltip.SetToolRect(m_hWnd, 1, &(GetCloseButtonRect()));
 	m_edit.MoveWindow(&(GetClientRect()), TRUE);
 
 	m_bPosChanged = TRUE;

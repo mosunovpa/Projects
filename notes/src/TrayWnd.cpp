@@ -9,7 +9,7 @@
 // CTrayWnd
 
 /* constructor*/
-CTrayWnd::CTrayWnd() : m_nSelectedNoteCmd(0)//, m_nTimer(0)
+CTrayWnd::CTrayWnd() : m_nSelectedNoteCmd(0)
 {
 
 }
@@ -102,12 +102,6 @@ LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	BOOL bAlwaisOnTop = TRUE; //CApplication::Get().GetOptions().GetAlwaysOnTop();
 	SetWindowPos(bAlwaisOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, CRect(0,0,0,0), SWP_NOSIZE | SWP_NOMOVE);
-
-//	CreateBitmaps();
-
-// 	m_tooltip.Create(m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
-// 	m_tooltip.AddTool(&CToolInfo( TTF_IDISHWND | TTF_TRACK | TTF_ABSOLUTE | TTF_TRANSPARENT/*TTF_SUBCLASS*/, m_hWnd, (UINT)m_hWnd));
-// 	m_tooltip.SetMaxTipWidth(300);
 
 	return 0;
 }
@@ -469,56 +463,6 @@ void CTrayWnd::OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
 	::SetForegroundWindow(next_wnd);
 }
 
-/* Create bitmaps for menu*/
-/*
-void CTrayWnd::CreateBitmaps()
-{
-	HWND hwndDesktop = GetDesktopWindow(); 
-	HDC hdcDesktop = ::GetDC(hwndDesktop); 
-	HDC hdcMem = CreateCompatibleDC(hdcDesktop); 
-
-	// Determine the required bitmap size. 
-
-	SIZE size = { GetSystemMetrics(SM_CXMENUCHECK), 
-		GetSystemMetrics(SM_CYMENUCHECK) }; 
-
-	// Create a monochrome bitmap and select it. 
-
-	m_bmpDeleted.CreateBitmap(size.cx, size.cy, 1, 1, NULL); 
-	HBITMAP hbmOld = (HBITMAP)SelectObject(hdcMem, m_bmpDeleted); 
-
-	// Erase the background and call the drawing function. 
-
-	PatBlt(hdcMem, 0, 0, size.cx, size.cy, WHITENESS); 
-
-	HBRUSH hbrOld; 
-	hbrOld = (HBRUSH)SelectObject(hdcMem, GetStockObject(NULL_BRUSH)); 
-
-	MoveToEx(hdcMem, 3, 3, NULL); 
-	LineTo(hdcMem, 10, 10); 
-	MoveToEx(hdcMem, 4, 3, NULL); 
-	LineTo(hdcMem, 10, 9); 
-	MoveToEx(hdcMem, 3, 4, NULL); 
-	LineTo(hdcMem, 9, 10); 
-
-	MoveToEx(hdcMem, 3, 8, NULL); 
-	LineTo(hdcMem, 9, 2); 
-	MoveToEx(hdcMem, 3, 9, NULL); 
-	LineTo(hdcMem, 10, 2); 
-	MoveToEx(hdcMem, 4, 9, NULL); 
-	LineTo(hdcMem, 10, 3); 
-
-	SelectObject(hdcMem, hbrOld); 
-
-	// Clean up. 
-
-	SelectObject(hdcMem, hbmOld); 
-	DeleteDC(hdcMem); 
-	::ReleaseDC(hwndDesktop, hdcDesktop); 
-}
-*/
-
-
 /**/
 bool compare_by_modify_date(CNote const& left, CNote const& right)
 {
@@ -611,16 +555,6 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 /* WM_MENUSELECT */
 void CTrayWnd::OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu)
 {
-// 	if (::IsWindowVisible(m_tooltip))
-// 	{
-// 		ShowToolTip(FALSE);
-// 	}
-// 
-// 	if (nFlags & MF_POPUP || (nFlags == 0xFFFF && menu.m_hMenu == NULL)) 
-// 	{	// menu closing 
-// 		KillTimer(m_nTimer);
-// 	}
-
 	if (!::IsMenu(m_menuNoteActions))
 	{
 		m_nSelectedNoteCmd = IS_NOTE_CMD(nItemID) ? nItemID : 0;
@@ -628,64 +562,6 @@ void CTrayWnd::OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu)
 
 	SetMsgHandled(FALSE);
 }
-
-/* WM_ENTERIDLE */
-/*
-void CTrayWnd::OnEnterIdle(UINT nWhy, CWindow wndWho)
-{
-	if (::IsMenu(m_menuNoteActions))
-	{
-		return;
-	}
-	if (::IsWindowVisible(m_tooltip))
-	{
-		return;
-	}
-
-	KillTimer(m_nTimer);
-	m_nTimer = SetTimer(1, 500, NULL);
-
-}
-*/
-
-/* WM_TIMER */
-/*
-void CTrayWnd::OnTimer(UINT_PTR nIDEvent)
-{
-	KillTimer(m_nTimer);
-	if (IS_NOTE_CMD(m_nSelectedNoteCmd) && !::IsMenu(m_menuNoteActions))
-	{
-		CNote note = CApplication::Get().FindNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
-		_tstring sNoteText = note.GetText();
-
-		TOOLINFO    ti;
-		ti.cbSize = sizeof(TOOLINFO);
-		ti.uFlags = TTF_IDISHWND;
-		ti.hwnd   = m_hWnd;
-		ti.uId    = (UINT)m_hWnd;
-		ti.lpszText  =  &sNoteText[0];
-		m_tooltip.UpdateTipText(&ti);
-
-		POINT pt;
-		::GetCursorPos(&pt);
-		m_tooltip.TrackPosition(pt.x, pt.y + 20);
-		::SetWindowPos(m_tooltip, HWND_TOPMOST ,0,0,0,0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOMOVE);
-		ShowToolTip(TRUE);
-	}
-}
-*/
-/**/
-/*
-void CTrayWnd::ShowToolTip(BOOL bShow)
-{
-	TOOLINFO    ti;
-	ti.cbSize = sizeof(TOOLINFO);
-	ti.uFlags = TTF_IDISHWND;
-	ti.hwnd   = m_hWnd;
-	ti.uId    = (UINT)m_hWnd;
-	m_tooltip.TrackActivate(&ti, bShow);
-}*/
-
 
 /**/
 void CTrayWnd::OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl)

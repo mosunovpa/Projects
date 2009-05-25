@@ -45,10 +45,8 @@ public:
 		MSG_WM_QUERYENDSESSION(OnQueryEndSession)
 		MSG_WM_SETFOCUS(OnFocus)
 		MSG_WM_SYSCOMMAND(OnSysCommand)
-//		MSG_WM_TIMER(OnTimer)
 		MSG_WM_MENURBUTTONUP(OnMenuRButtonUp)
 		MSG_WM_MENUSELECT(OnMenuSelect)
-//		MSG_WM_ENTERIDLE(OnEnterIdle)
 		MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 		MSG_WM_UNINITMENUPOPUP(OnUnInitMenuPopup)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
@@ -79,7 +77,6 @@ public:
 	void OnFocus(HWND hWnd);
 	void OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu);
 	void OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu);
-//	void OnEnterIdle(UINT nWhy, CWindow wndWho);
 	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
 	void OnUnInitMenuPopup(UINT nID, CMenuHandle menu);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -89,7 +86,6 @@ public:
 	void OnPopupAbout(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSysCommand(UINT nID, CPoint pt);
-//	void OnTimer(UINT_PTR nIDEvent);
 	void OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -104,11 +100,9 @@ public:
 
 private:
 	LRESULT DisplayShortcutMenu();
-//	void CreateBitmaps();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
 	void SetNotesMenuActions(CNotesMenuItem::Actions action);
 	void ProcessNotesMenuActions();
-//	void ShowToolTip(BOOL bShow);
 
 	CMenuHandle GetDeletedMenu() const;
 	CMenuHandle GetMenuNotes() const;
@@ -117,11 +111,7 @@ private:
 	int m_nSelectedNoteCmd;
 	CMenu m_menuNoteActions;
 
-//	CToolTipCtrl m_tooltip;
 	CNotesMenuActions m_listNotesMenuActions;
 
 	std::auto_ptr<CSettingsSheet> m_pSettingsDlg;
-
-//	UINT_PTR m_nTimer;
-
 };

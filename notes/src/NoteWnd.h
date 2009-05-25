@@ -230,9 +230,9 @@ private:
 	static CIcon m_hIcon;
 	static CIcon m_hIconSm;
 	static CPen m_hPen;
+	static CPen m_hGrayPen;
 	static CFont m_hStatusFont;
 
-//	CToolTipCtrl m_tooltip;
 	CNoteEdit m_edit;
 	CEdit m_editCreated;
 	CStaticSysIcon m_icon;
@@ -249,4 +249,6 @@ private:
 	BOOL m_bMinimized;
 	CRect m_rcRestored;
 	BOOL m_bInitialized;
+
+	BOOL m_bActive;
 };
