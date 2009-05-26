@@ -175,6 +175,15 @@ static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 		}
 		note.SetDeletedDate(t);
 	}
+	if ((nMask & CApplication::NM_LABEL) == CApplication::NM_LABEL)
+	{
+		CHECK_HR(spElement->getAttribute(L"label", &val));
+		if (val.vt != VT_NULL && val.vt != VT_BSTR)
+		{
+			ThrowError(_T("Attribute label not found"));
+		}
+		note.SetLabel(val.bstrVal);
+	}
 	return note;
 }
 
@@ -248,6 +257,10 @@ static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& not
 	if ((nMask & CApplication::NM_DELETED) == CApplication::NM_DELETED)
 	{
 		CHECK_HR(spElement->setAttribute(L"deleted", CComVariant(note.GetDeletedDate())));
+	}
+	if ((nMask & CApplication::NM_LABEL) == CApplication::NM_LABEL)
+	{
+		CHECK_HR(spElement->setAttribute(L"label", CComVariant(note.GetLabel())));
 	}
 }
 

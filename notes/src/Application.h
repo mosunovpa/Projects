@@ -24,7 +24,8 @@ public:
 		NM_CREATED = 0x0008,
 		NM_MODIFIED = 0x0016,
 		NM_DELETED = 0x0032,
-		NM_ALL = NM_ID | NM_TEXT | NM_POS | NM_CREATED | NM_MODIFIED | NM_DELETED
+		NM_LABEL = 0x0064,
+		NM_ALL = NM_ID | NM_TEXT | NM_POS | NM_CREATED | NM_MODIFIED | NM_DELETED | NM_LABEL
 	};
 
 	void CreateAppWindow();
@@ -40,7 +41,6 @@ public:
 	void Command(int nCmd, HWND hWnd);
 	void ShowAllNotes();
 	void ShowNote(int nNoteId);
-	void UndeleteNote(int nNoteId);
 	void CloseAllNotes(CNoteWnd* pExceptWnd = NULL);
 	int GetOpenedNotesCount() const;
 	int GetAllNotes(CNote::List& notes, UINT nMask) const;

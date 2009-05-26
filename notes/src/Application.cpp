@@ -240,6 +240,7 @@ int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 	note.SetCreatedDate(pWnd->GetCreatedDate());
 	note.SetModifiedDate(pWnd->GetModifiedDate());
 	note.SetDeletedDate(pWnd->GetDeletedDate());
+	note.SetLabel(pWnd->GetLabel().c_str());
 	m_storage.SaveNote(note, nMask);
 	return note.GetId();
 }
@@ -340,6 +341,7 @@ CNoteWnd* CApplication::OpenNote( CNote const& note )
 		pWnd->SetCreatedDate(note.GetCreatedDate());
 		pWnd->SetModifiedDate(note.GetModifiedDate());
 		pWnd->SetDeletedDate(note.GetDeletedDate());
+		pWnd->SetLabel(note.GetLabel());
 	}
 	return pWnd;
 }
@@ -460,26 +462,6 @@ void CApplication::Command(int nCmd, int nNoteId)
 void CApplication::Command(int nCmd, HWND hWnd)
 {
 	::PostMessage(hWnd, WM_COMMAND, nCmd, 0);
-}
-
-/**/
-void CApplication::UndeleteNote( int nNoteId )
-{
-/*
-	for(std::list<CNote>::iterator it = m_listDeleted.begin(); it != m_listDeleted.end(); ++it)
-	{
-		if (it->GetId() == nNoteId)
-		{
-			CNote& note = *it;
-			note.SetId(0); // Clear id for restored note. New id will be generated.
-			CNoteWnd* pWnd = OpenNote(note);
-			pWnd->GetEditor().PostMessage(EM_SETMODIFY, TRUE);
-
-			m_listDeleted.erase(it);
-			return;
-		}
-	}
-*/
 }
 
 /**/

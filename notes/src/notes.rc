@@ -85,8 +85,14 @@ IDR_NOTEMENU MENU
 BEGIN
     POPUP "NoteMenu"
     BEGIN
-        MENUITEM "C&opy To Clipboard",          ID_CLIPBRD_COPY
         MENUITEM "&Restore",                    ID_RESTORE
+        MENUITEM "C&opy To Clipboard",          ID_CLIPBRD_COPY
+        POPUP "&Label"
+        BEGIN
+            MENUITEM "&None",                       ID_LABEL_NONE
+            MENUITEM SEPARATOR
+            MENUITEM "New &Label...",               ID_LABEL_NEWLABEL
+        END
         MENUITEM SEPARATOR
         MENUITEM "&Delete \tCtrl+D",            ID_DELETE
         MENUITEM SEPARATOR

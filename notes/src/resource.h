@@ -19,7 +19,6 @@
 #define IDS_SETTINGS                    109
 #define IDS_Settings                    109
 #define IDR_EDIT                        110
-#define IDS_ROLLUP_UNROLL               110
 #define IDS_ROLLUP                      110
 #define IDD_DELETENOTECONFIRM           111
 #define IDS_UNROLL                      111
@@ -98,13 +97,17 @@
 #define ID_SETTINGS                     40092
 #define ID_TNM_UNCHECK                  40093
 #define ID_UNROLL                       40094
+#define ID_NOTEMENU_LABEL               40095
+#define ID_LABEL_NOLABEL                40096
+#define ID_LABEL_NEWLABEL               40097
+#define ID_LABEL_NONE                   40098
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        121
-#define _APS_NEXT_COMMAND_VALUE         40095
+#define _APS_NEXT_COMMAND_VALUE         40099
 #define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

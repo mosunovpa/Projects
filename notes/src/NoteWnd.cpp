@@ -529,6 +529,19 @@ void CNoteWnd::SetModifiedDate(time_t dt)
 	m_dtModified = dt;
 }
 
+/**/
+_tstring CNoteWnd::GetLabel() const
+{
+	return m_label;
+}
+
+/**/
+void CNoteWnd::SetLabel(LPCTSTR text)
+{
+	m_label = text;
+}
+
+/**/
 CNoteEdit& CNoteWnd::GetEditor()
 {
 	return m_edit;

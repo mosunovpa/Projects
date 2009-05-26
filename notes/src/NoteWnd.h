@@ -132,6 +132,9 @@ public:
 	void SetModifiedDate(time_t dt);
 	time_t GetDeletedDate() const;
 	void SetDeletedDate(time_t dt);
+	_tstring GetLabel() const;
+	void SetLabel(LPCTSTR text);
+
 	CNoteEdit& GetEditor();
 	CRect GetRealNoteRect();
 	void Refresh();
@@ -245,6 +248,7 @@ private:
 	time_t m_dtCreated;
 	time_t m_dtModified;
 	time_t m_dtDeleted;
+	_tstring m_label;
 
 	BOOL m_bMinimized;
 	CRect m_rcRestored;

@@ -15,6 +15,7 @@ public:
 	time_t GetCreatedDate() const;
 	time_t GetModifiedDate() const;
 	time_t GetDeletedDate() const;
+	LPCTSTR GetLabel() const;
 
 	void SetId(int id);
 	void SetText(LPCTSTR text);
@@ -22,6 +23,7 @@ public:
 	void SetCreatedDate(time_t dt);
 	void SetModifiedDate(time_t dt);
 	void SetDeletedDate(time_t dt);
+	void SetLabel(LPCTSTR text);
 private:
 	int m_id;
 	_tstring m_text;
@@ -29,4 +31,5 @@ private:
 	time_t m_dtCreated;
 	time_t m_dtModified;
 	time_t m_dtDeleted;
+	_tstring m_label;
 };
