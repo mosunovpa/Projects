@@ -29,29 +29,14 @@ CRect CNote::GetPos() const
 	return m_pos;
 }
 
-void CNote::SetId( int id )
-{
-	m_id = id;
-}
-
-void CNote::SetText(LPCTSTR text)
-{
-	m_text = text;
-}
-
-void CNote::SetPos( CRect const& pos )
-{
-	m_pos = pos;
-}
-
 time_t CNote::GetCreatedDate() const
 {
 	return m_dtCreated;
 }
 
-void CNote::SetCreatedDate(time_t dt)
+time_t CNote::GetDeletedDate() const
 {
-	m_dtCreated = dt;
+	return m_dtDeleted;
 }
 
 time_t CNote::GetModifiedDate() const
@@ -59,14 +44,39 @@ time_t CNote::GetModifiedDate() const
 	return m_dtModified;
 }
 
+LPCTSTR CNote::GetLabel() const
+{
+	return m_label.c_str();
+}
+
+void CNote::SetId( int id )
+{
+	m_id = id;
+}
+
+void CNote::SetText(LPCTSTR text)
+{
+	m_text = (text == NULL) ? _tstring().c_str() : text;
+}
+
+void CNote::SetPos( CRect const& pos )
+{
+	m_pos = pos;
+}
+
+void CNote::SetCreatedDate(time_t dt)
+{
+	m_dtCreated = dt;
+}
+
 void CNote::SetModifiedDate(time_t dt)
 {
 	m_dtModified = dt;
 }
 
-time_t CNote::GetDeletedDate() const
+void CNote::SetLabel(LPCTSTR text)
 {
-	return m_dtDeleted;
+	m_label = (text == NULL) ? _tstring().c_str() : text;
 }
 
 void CNote::SetDeletedDate( time_t dt )

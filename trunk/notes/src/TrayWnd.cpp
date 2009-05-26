@@ -481,7 +481,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	menuutils::SetMenuItemEnable(menuNotes, ID_POPUP_SHOWALLNOTES, nHiddenNotes > 0);
 	CNote::List notes;
 	CApplication::Get().GetAllNotes(notes, 
-		CApplication::NM_ID | CApplication::NM_TEXT | CApplication::NM_MODIFIED | CApplication::NM_DELETED);
+		CApplication::NM_ID | CApplication::NM_TEXT | CApplication::NM_MODIFIED | CApplication::NM_DELETED | CApplication::NM_LABEL);
 	std::sort(notes.begin(), notes.end(), compare_by_modify_date);
 
 	// check notes list
