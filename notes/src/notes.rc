@@ -89,15 +89,14 @@ BEGIN
         MENUITEM "C&opy To Clipboard",          ID_CLIPBRD_COPY
         POPUP "&Label"
         BEGIN
-            MENUITEM "&None",                       ID_LABEL_NONE
             MENUITEM SEPARATOR
             MENUITEM "New &Label...",               ID_LABEL_NEWLABEL
         END
         MENUITEM SEPARATOR
         MENUITEM "&Delete \tCtrl+D",            ID_DELETE
         MENUITEM SEPARATOR
-        MENUITEM "Roll &up",                    ID_ROLLUP
-        MENUITEM "&Unroll",                     ID_UNROLL
+        MENUITEM "Roll &Up",                    ID_ROLLUP
+        MENUITEM "U&nroll",                     ID_UNROLL
         MENUITEM SEPARATOR
         MENUITEM "&Close\tEsc",                 ID_CLOSE
         MENUITEM "Close &All",                  ID_CLOSEALL
@@ -126,16 +125,16 @@ BEGIN
     POPUP "TrayNoteMenu"
     BEGIN
         MENUITEM "&Open",                       40056
-        MENUITEM "C&heck",                      ID_TNM_CHECK
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
+        MENUITEM "C&heck",                      ID_TNM_CHECK
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
     END
     POPUP "TrayDeletedNoteMenu"
     BEGIN
+        MENUITEM "&Restore",                    ID_TNM_RESTORE
         MENUITEM "&Open",                       40056
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
-        MENUITEM "&Restore",                    ID_TNM_RESTORE
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
     END
@@ -243,9 +242,14 @@ BEGIN
     IDS_SMALL               "Small"
     IDS_MEDIUM              "Medium"
     IDS_LARGE               "Large"
-    IDS_Settings            "Settings"
-    IDS_ROLLUP              "RollUp"
+    109                     "Settings"
+    IDS_ROLLUP              "Roll Up"
     IDS_UNROLL              "Unroll"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_NONE                "None"
 END
 
 #endif    // Russian resources

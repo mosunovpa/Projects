@@ -60,6 +60,57 @@ CRect CNoteWnd::GetIconRect()
 	return CRect(0, 0, s_nCaptionSize, s_nCaptionSize);
 }
 
+/**/
+
+void CNoteWnd::ShowSystemMenu(CPoint pt)
+{
+	CMenu menuNotes;
+
+	// Load the menu resource 
+	if (!menuNotes.LoadMenu(IDR_NOTEMENU))
+	{
+		return;
+	}
+	CMenuHandle menuPopup = menuNotes.GetSubMenu(0);
+	if (menuPopup.m_hMenu == NULL)
+	{
+		return;
+	}
+
+	CMenuHandle menuLabels = menuPopup.GetSubMenu(2);
+
+	m_listLabels.clear();
+	CApplication::Get().GetLabels(m_listLabels);
+	int pos = m_listLabels.size();
+	for (std::list<_tstring>::reverse_iterator it = m_listLabels.rbegin();
+		it != m_listLabels.rend(); ++it)
+	{
+		int nCmd = CREATE_LABEL_CMD(pos);
+		menuLabels.InsertMenu(0, MF_BYPOSITION, nCmd, it->c_str());
+		--pos;
+	}
+	menuLabels.InsertMenu(0, MF_BYPOSITION, LABEL_CMD_FIRST, resutils::resstring(IDS_NONE).c_str());
+
+	menuPopup.SetMenuDefaultItem(ID_CLOSE);
+
+	if (CApplication::Get().GetOpenedNotesCount() == 1)
+	{
+		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALL, CApplication::Get().GetOpenedNotesCount() > 1);
+		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALLBUTTHIS, CApplication::Get().GetOpenedNotesCount() > 1);
+	}
+	if (GetDeletedDate() == 0)
+	{
+		menuPopup.DeleteMenu(ID_RESTORE, MF_BYCOMMAND);
+	}
+	menuPopup.DeleteMenu(IsMinimized() ? ID_ROLLUP : ID_UNROLL, MF_BYCOMMAND);
+
+	if (!menuPopup.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
+		pt.x, pt.y, m_hWnd))
+	{
+		return;
+	}
+}
+
 /**
  Returns caption coordinates
  */
@@ -629,6 +680,10 @@ void CNoteWnd::OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl)
 void CNoteWnd::OnPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	m_edit.Paste();
+	if (m_bInitialized)
+	{
+		StoreNote();
+	}
 }
 
 /**/
@@ -755,3 +810,9 @@ BOOL CNoteWnd::IsMinimized()
 {
 	return m_bMinimized;
 }
+
+void CNoteWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+
+}
+

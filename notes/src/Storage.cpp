@@ -416,3 +416,8 @@ void CStorage::Release()
 {
 	s_spDoc.Release();
 }
+
+void CStorage::GetLabels(std::list<_tstring>& list) const
+{
+
+}

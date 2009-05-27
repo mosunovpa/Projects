@@ -492,3 +492,9 @@ void CApplication::OptionsUpdated()
 		(*it)->Refresh();
 	}
 }
+
+/**/
+void CApplication::GetLabels(std::list<_tstring>& list) const
+{
+	m_storage.GetLabels(list);
+}
