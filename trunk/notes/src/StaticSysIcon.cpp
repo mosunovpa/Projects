@@ -27,35 +27,5 @@ void CStaticSysIcon::OnLButtonDblClk( UINT nFlags, CPoint point )
 
 void CStaticSysIcon::ShowMenu( CPoint pt )
 {
-	CMenu menuNotes;
-
-	// Load the menu resource 
-	if (!menuNotes.LoadMenu(IDR_NOTEMENU))
-	{
-		return;
-	}
-	CMenuHandle menuPopup = menuNotes.GetSubMenu(0);
-	if (menuPopup.m_hMenu == NULL)
-	{
-		return;
-	}
-
-	menuPopup.SetMenuDefaultItem(ID_CLOSE);
-
-	if (CApplication::Get().GetOpenedNotesCount() == 1)
-	{
-		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALL, CApplication::Get().GetOpenedNotesCount() > 1);
-		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALLBUTTHIS, CApplication::Get().GetOpenedNotesCount() > 1);
-	}
-	if (m_pNoteWnd->GetDeletedDate() == 0)
-	{
-		menuPopup.DeleteMenu(ID_RESTORE, MF_BYCOMMAND);
-	}
-	menuPopup.DeleteMenu(m_pNoteWnd->IsMinimized() ? ID_ROLLUP : ID_UNROLL, MF_BYCOMMAND);
-	
-	if (!menuPopup.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
-		pt.x, pt.y, GetParent()))
-	{
-		return;
-	}
+	m_pNoteWnd->ShowSystemMenu(pt);
 }

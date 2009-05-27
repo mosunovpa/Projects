@@ -54,6 +54,7 @@ public:
 	void NoteTextToClipboard(int nNoteId);
 	_tstring GetNoteCaption(_tstring text);
 	void OptionsUpdated();
+	void GetLabels(std::list<_tstring>& list) const;
 protected:
 	CApplication();
 	virtual ~CApplication();

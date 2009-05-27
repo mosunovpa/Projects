@@ -288,12 +288,6 @@ void CTrayWnd::OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl)
 	CApplication::Get().CreateNote();
 }
 
-/* ID_POPUP_SHOWALLNOTES */
-void CTrayWnd::OnPopupShowAllnotes(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	CApplication::Get().ShowAllNotes();
-}
-
 /* ID_POPUP_ABOUT */
 void CTrayWnd::OnPopupAbout(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
@@ -478,7 +472,6 @@ bool compare_by_deleted_date(CNote const& left, CNote const& right)
 void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 {
 	int nHiddenNotes = CApplication::Get().GetHiddenNotesCount();
-	menuutils::SetMenuItemEnable(menuNotes, ID_POPUP_SHOWALLNOTES, nHiddenNotes > 0);
 	CNote::List notes;
 	CApplication::Get().GetAllNotes(notes, 
 		CApplication::NM_ID | CApplication::NM_TEXT | CApplication::NM_MODIFIED | CApplication::NM_DELETED | CApplication::NM_LABEL);

@@ -8,7 +8,7 @@
 #include "MenuTooltip.h"
 
 #define NOTE_CMD_FIRST 50000
-#define NOTE_CMD_RANGE 10000
+#define NOTE_CMD_RANGE 9999
 #define NOTE_CMD_LAST (NOTE_CMD_FIRST + NOTE_CMD_RANGE)
 #define CREATE_NOTE_CMD(id) ((id) + NOTE_CMD_FIRST)
 #define GET_NOTE_ID_FROM_CMD(cmd) ((cmd) - NOTE_CMD_FIRST)
@@ -52,7 +52,6 @@ public:
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWANDPASTE, OnNewAndPaste)
-		COMMAND_ID_HANDLER_EX(ID_POPUP_SHOWALLNOTES, OnPopupShowAllnotes)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_EXIT, OnPopupExit)
 		COMMAND_ID_HANDLER_EX(ID_SETTINGS, OnSettings)
@@ -82,7 +81,6 @@ public:
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnPopupShowAllnotes(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPopupAbout(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSysCommand(UINT nID, CPoint pt);
