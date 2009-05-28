@@ -132,7 +132,7 @@ public:
 	int GetId() const;
 	void SetId(int id);
 	_tstring GetText() const;
-	void SetText(LPCTSTR text);
+	void SetText(_tstring const& text);
 	time_t GetCreatedDate() const;
 	void SetCreatedDate(time_t dt);
 	time_t GetModifiedDate() const;
@@ -140,7 +140,7 @@ public:
 	time_t GetDeletedDate() const;
 	void SetDeletedDate(time_t dt);
 	_tstring GetLabel() const;
-	void SetLabel(LPCTSTR text);
+	void SetLabel(_tstring const& text);
 
 	CNoteEdit& GetEditor();
 	CRect GetRealNoteRect();
@@ -172,16 +172,17 @@ public:
 			MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 			MSG_WM_NCLBUTTONDBLCLK(OnNcLButtonDblClk)
 			MSG_WM_NCRBUTTONUP(OnNcRButtonUp)
-			COMMAND_ID_HANDLER_EX(ID_CLIPBRD_COPY, OnCopyToClipboard);
-			COMMAND_ID_HANDLER_EX(ID_RESTORE, OnRestore);
+			COMMAND_ID_HANDLER_EX(ID_CLIPBRD_COPY, OnCopyToClipboard)
+			COMMAND_ID_HANDLER_EX(ID_RESTORE, OnRestore)
 			COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
-			COMMAND_ID_HANDLER_EX(ID_PASTE, OnPaste);
+			COMMAND_ID_HANDLER_EX(ID_LABEL_NEWLABEL, OnNewLabel);
+			COMMAND_ID_HANDLER_EX(ID_PASTE, OnPaste)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALL, OnNoteCloseAll)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
 			COMMAND_ID_HANDLER_EX(ID_DELETE, OnNoteDelete)
-			COMMAND_ID_HANDLER_EX(ID_ROLLUP, OnRollUp);
-			COMMAND_ID_HANDLER_EX(ID_UNROLL, OnUnroll);
+			COMMAND_ID_HANDLER_EX(ID_ROLLUP, OnRollUp)
+			COMMAND_ID_HANDLER_EX(ID_UNROLL, OnUnroll)
 			NOTIFY_CODE_HANDLER_EX(EN_LINK, OnLink)
 			CHAIN_COMMANDS_MEMBER(m_edit)
 		} 
@@ -211,6 +212,7 @@ public:
 	void OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -254,7 +256,10 @@ private:
 	CBitmapButton m_btnClose;
 		
 	int m_nNoteId;
-	BOOL m_bPosChanged;
+	
+//	BOOL m_bPosChanged;
+	DWORD m_flagSave;
+
 	time_t m_dtCreated;
 	time_t m_dtModified;
 	time_t m_dtDeleted;

@@ -29,8 +29,11 @@
 #define IDD_NOTE_SETTING_PAGE           116
 #define IDB_UNROLL_BTNS                 119
 #define IDB_ROLLUP_BTNS                 120
+#define IDD_NEW_LABEL                   121
 #define IDICON                          1001
 #define IDC_COMBO_NOTE_FONT_SIZE        1002
+#define IDC_EDIT1                       1003
+#define IDC_EDIT_LABEL                  1003
 #define ID_POPUP_NEWNOTE                40001
 #define ID_POPUP_ABOUT                  40003
 #define ID_POPUP_EXIT                   40004
@@ -85,9 +88,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        121
+#define _APS_NEXT_RESOURCE_VALUE        122
 #define _APS_NEXT_COMMAND_VALUE         40099
-#define _APS_NEXT_CONTROL_VALUE         1003
+#define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

@@ -182,7 +182,7 @@ static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 		{
 			ThrowError(_T("Attribute label not found"));
 		}
-		note.SetLabel(val.bstrVal);
+		note.SetLabel(val.bstrVal == 0 ? _tstring() : val.bstrVal);
 	}
 	return note;
 }
@@ -244,7 +244,7 @@ static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& not
 	}
 	if ((nMask & CApplication::NM_TEXT) == CApplication::NM_TEXT)
 	{
-		CHECK_HR(spElement->put_text(CComBSTR(note.GetText())));
+		CHECK_HR(spElement->put_text(CComBSTR(note.GetText().c_str())));
 	}
 	if ((nMask & CApplication::NM_CREATED) == CApplication::NM_CREATED)
 	{
@@ -260,7 +260,7 @@ static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& not
 	}
 	if ((nMask & CApplication::NM_LABEL) == CApplication::NM_LABEL)
 	{
-		CHECK_HR(spElement->setAttribute(L"label", CComVariant(note.GetLabel())));
+		CHECK_HR(spElement->setAttribute(L"label", CComVariant(note.GetLabel().c_str())));
 	}
 }
 
@@ -419,5 +419,22 @@ void CStorage::Release()
 
 void CStorage::GetLabels(std::list<_tstring>& list) const
 {
+	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
+	long len = 0;
+	CComPtr<IXMLDOMNodeList> spNotes;
 
+	CHECK_HR(spDoc->selectNodes(L"notes/note[@label!=\"\"]", &spNotes));
+	CHECK_HR(spNotes->get_length(&len));
+	for (int i = 0; i < len; ++i)
+	{
+		CComPtr<IXMLDOMNode> spNode;
+		CHECK_HR(spNotes->get_item(i, &spNode));
+		CNote note = _GetNote(spNode, CApplication::NM_DELETED | CApplication::NM_LABEL);
+		if (!note.GetLabel().empty() && note.GetDeletedDate() == 0)
+		{
+			list.push_back(note.GetLabel());
+		}
+	}
+	list.sort();
+	list.unique();
 }

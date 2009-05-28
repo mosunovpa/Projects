@@ -9,21 +9,21 @@ public:
 	~CNote(void);
 
 	int GetId() const;
-	LPCTSTR GetText() const;
+	_tstring GetText() const;
 	int GetTextLen() const;
 	CRect GetPos() const;
 	time_t GetCreatedDate() const;
 	time_t GetModifiedDate() const;
 	time_t GetDeletedDate() const;
-	LPCTSTR GetLabel() const;
+	_tstring GetLabel() const;
 
 	void SetId(int id);
-	void SetText(LPCTSTR text);
+	void SetText(_tstring const& text);
 	void SetPos(CRect const& pos);
 	void SetCreatedDate(time_t dt);
 	void SetModifiedDate(time_t dt);
 	void SetDeletedDate(time_t dt);
-	void SetLabel(LPCTSTR text);
+	void SetLabel(_tstring const& text);
 private:
 	int m_id;
 	_tstring m_text;

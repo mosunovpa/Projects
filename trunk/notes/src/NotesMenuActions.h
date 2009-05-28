@@ -7,7 +7,7 @@ public:
 	enum Actions { acNone = 0, acDelete, acOpen };
 
 	CNotesMenuItem(int nNoteId = 0, HMENU hPpopupMenu = NULL) 
-		: m_nNoteId(nNoteId), m_hPpopupMenu(hPpopupMenu), m_action(acNone), m_state(stNone)
+		: m_nNoteId(nNoteId), m_hPopupMenu(hPpopupMenu), m_action(acNone), m_state(stNone)
 	{
 	}
 
@@ -29,7 +29,7 @@ public:
 	}
 
 	int m_nNoteId;
-	HMENU m_hPpopupMenu;
+	HMENU m_hPopupMenu;
 	Actions m_action;
 
 private:
