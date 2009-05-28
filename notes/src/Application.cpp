@@ -235,12 +235,12 @@ int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 {
 	CNote note;
 	note.SetId(pWnd->GetId());
-	note.SetText(pWnd->GetText().c_str());
+	note.SetText(pWnd->GetText());
 	note.SetPos(pWnd->GetRealNoteRect() /*CWindowRect(pWnd->m_hWnd)*/);
 	note.SetCreatedDate(pWnd->GetCreatedDate());
 	note.SetModifiedDate(pWnd->GetModifiedDate());
 	note.SetDeletedDate(pWnd->GetDeletedDate());
-	note.SetLabel(pWnd->GetLabel().c_str());
+	note.SetLabel(pWnd->GetLabel());
 	m_storage.SaveNote(note, nMask);
 	return note.GetId();
 }
@@ -411,7 +411,7 @@ void CApplication::NoteTextToClipboard(int nNoteId)
 	else
 	{
 		CNote note = m_storage.GetNote(nNoteId);
-		CClipboard::SetText(note.GetText(), m_TrayWnd);
+		CClipboard::SetText(note.GetText().c_str(), m_TrayWnd);
 	}
 }
 

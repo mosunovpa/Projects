@@ -18,13 +18,14 @@ public:
 	// GetAllNotes mask
 	enum NoteMask
 	{
-		NM_ID = 0x0001,
-		NM_TEXT = 0x0002,
-		NM_POS = 0x0004,
-		NM_CREATED = 0x0008,
-		NM_MODIFIED = 0x0016,
-		NM_DELETED = 0x0032,
-		NM_LABEL = 0x0064,
+		NM_NONE = 0,
+		NM_ID = 1,
+		NM_TEXT = 2,
+		NM_POS = 4,
+		NM_CREATED = 8,
+		NM_MODIFIED = 16,
+		NM_DELETED = 32,
+		NM_LABEL = 64,
 		NM_ALL = NM_ID | NM_TEXT | NM_POS | NM_CREATED | NM_MODIFIED | NM_DELETED | NM_LABEL
 	};
 

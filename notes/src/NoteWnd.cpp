@@ -7,14 +7,15 @@
 
 #include "stdafx.h"
 #include <boost/algorithm/string/trim.hpp>
+#include "Application.h"
 #include "NoteWnd.h"
 #include "resource.h"
 #include "atlwinmisc.h"
 #include "resutils.h"
-#include "Application.h"
 #include "guiutils.h"
 #include "dateutils.h"
 #include "Clipboard.h"
+#include "NewLabelDialog.h"
 
 const INT s_nCaptionSize = 16;
 const INT s_nCornerSize = 14;
@@ -34,14 +35,15 @@ CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell D
  */
 CNoteWnd::CNoteWnd(int nNoteId /*= 0*/) 
 :	m_nNoteId(nNoteId),
-	m_bPosChanged(FALSE),
+//	m_bPosChanged(FALSE),
 	m_dtCreated(0),
 	m_dtModified(0),
 	m_dtDeleted(0),
 	m_bMinimized(FALSE),
 	m_icon(this),
 	m_bInitialized(FALSE),
-	m_bActive(FALSE)
+	m_bActive(FALSE),
+	m_flagSave(CApplication::NM_NONE)
 {
 }
 
@@ -77,20 +79,6 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 		return;
 	}
 
-	CMenuHandle menuLabels = menuPopup.GetSubMenu(2);
-
-	m_listLabels.clear();
-	CApplication::Get().GetLabels(m_listLabels);
-	int pos = m_listLabels.size();
-	for (std::list<_tstring>::reverse_iterator it = m_listLabels.rbegin();
-		it != m_listLabels.rend(); ++it)
-	{
-		int nCmd = CREATE_LABEL_CMD(pos);
-		menuLabels.InsertMenu(0, MF_BYPOSITION, nCmd, it->c_str());
-		--pos;
-	}
-	menuLabels.InsertMenu(0, MF_BYPOSITION, LABEL_CMD_FIRST, resutils::resstring(IDS_NONE).c_str());
-
 	menuPopup.SetMenuDefaultItem(ID_CLOSE);
 
 	if (CApplication::Get().GetOpenedNotesCount() == 1)
@@ -100,7 +88,38 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 	}
 	if (GetDeletedDate() == 0)
 	{
+		CMenuHandle menuLabels = menuPopup.GetSubMenu(2);
+
+		m_listLabels.clear();
+		CApplication::Get().GetLabels(m_listLabels);
+		if (!m_label.empty() && (m_flagSave & CApplication::NM_LABEL))
+		{
+			m_listLabels.push_back(m_label);
+			m_listLabels.sort();
+			m_listLabels.unique();
+		}
+
+		int nSelCmd = LABEL_CMD_FIRST;
+		int pos = m_listLabels.size();
+		for (std::list<_tstring>::reverse_iterator it = m_listLabels.rbegin();
+			it != m_listLabels.rend(); ++it)
+		{
+			int nCmd = CREATE_LABEL_CMD(pos);
+			menuLabels.InsertMenu(0, MF_BYPOSITION, nCmd, it->c_str());
+			if (*it == GetLabel())
+			{
+				nSelCmd = nCmd;
+			}
+			--pos;
+		}
+		menuLabels.InsertMenu(0, MF_BYPOSITION, LABEL_CMD_FIRST, resutils::resstring(IDS_NONE).c_str());
+		menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
+
 		menuPopup.DeleteMenu(ID_RESTORE, MF_BYCOMMAND);
+	}
+	else
+	{
+		menuPopup.DeleteMenu(2, MF_BYPOSITION);
 	}
 	menuPopup.DeleteMenu(IsMinimized() ? ID_ROLLUP : ID_UNROLL, MF_BYCOMMAND);
 
@@ -305,7 +324,7 @@ void CNoteWnd::OnDestroy()
 /* WM_INITNOTE */
 LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	m_bPosChanged = FALSE;
+	m_flagSave = CApplication::NM_NONE;
 	m_edit.SetModify(FALSE);
 	m_edit.EmptyUndoBuffer();
 	m_bInitialized = TRUE;
@@ -419,7 +438,7 @@ void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 	UpdateWindow();
 
 
-	if (nState == WA_INACTIVE && m_bInitialized)
+	if (nState == WA_INACTIVE)
 	{
 		StoreNote();
 	}
@@ -457,7 +476,7 @@ void CNoteWnd::OnSize(UINT wParam, CSize sz)
 
 	m_edit.MoveWindow(&(GetClientRect()), TRUE);
 
-	m_bPosChanged = TRUE;
+	m_flagSave |= CApplication::NM_POS;
 }
 
 /*
@@ -474,7 +493,7 @@ WM_MOVE
 */
 void CNoteWnd::OnMove(CPoint pt)
 {
-	m_bPosChanged = TRUE;
+	m_flagSave |= CApplication::NM_POS;
 }
 
 /*
@@ -502,19 +521,19 @@ Store note if text is not empty
 */
 void CNoteWnd::StoreNote()
 {
-	if (!GetText().empty())
+	if (!GetText().empty() && m_bInitialized)
 	{
 		if (m_edit.GetModify()) // save all if note content has been changed
 		{
 			m_dtModified = dateutils::GetCurrentDate();
 			m_nNoteId = CApplication::Get().SaveNote(this, CApplication::NM_ALL);
+			m_edit.SetModify(FALSE);
 		}
-		else if (m_bPosChanged) // only position changed
+		else if (m_flagSave != CApplication::NM_NONE)
 		{
-			CApplication::Get().SaveNote(this, CApplication::NM_POS);
+			CApplication::Get().SaveNote(this, m_flagSave);
+			m_flagSave = CApplication::NM_NONE;
 		}
-		m_edit.SetModify(FALSE);
-		m_bPosChanged = FALSE;
 	}
 }
 
@@ -546,9 +565,9 @@ void CNoteWnd::SetId( int id )
 }
 
 /**/
-void CNoteWnd::SetText(LPCTSTR text)
+void CNoteWnd::SetText(_tstring const& text)
 {
-	m_edit.SetWindowText(text);
+	m_edit.SetWindowText(text.c_str());
 }
 
 /**/
@@ -587,9 +606,13 @@ _tstring CNoteWnd::GetLabel() const
 }
 
 /**/
-void CNoteWnd::SetLabel(LPCTSTR text)
+void CNoteWnd::SetLabel(_tstring const& text)
 {
-	m_label = text;
+	if (m_label != text)
+	{
+		m_label = text;
+		m_flagSave |= CApplication::NM_LABEL;
+	}
 }
 
 /**/
@@ -680,10 +703,7 @@ void CNoteWnd::OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl)
 void CNoteWnd::OnPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	m_edit.Paste();
-	if (m_bInitialized)
-	{
-		StoreNote();
-	}
+	StoreNote();
 }
 
 /**/
@@ -813,6 +833,33 @@ BOOL CNoteWnd::IsMinimized()
 
 void CNoteWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-
+	if (nID == LABEL_CMD_FIRST)
+	{
+		SetLabel(_T(""));
+	}
+	else if (IS_LABEL_CMD(nID))
+	{
+		int pos = GET_LABEL_ID_FROM_CMD(nID);
+		int i = 1;
+		for (std::list<_tstring>::iterator it = m_listLabels.begin();
+			it != m_listLabels.end(); ++it)
+		{
+			if (pos == i)
+			{
+				SetLabel(it->c_str());
+				return;
+			}
+			++i;
+		}
+	}
 }
 
+void CNoteWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CNewLabelDialog	dlg;
+	dlg.m_sLabel = GetLabel();
+	if (dlg.DoModal() == IDOK)
+	{
+		SetLabel(dlg.m_sLabel.c_str());
+	}
+}

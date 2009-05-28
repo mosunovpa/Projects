@@ -375,9 +375,11 @@ void CTrayWnd::OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl)
 		CNotesMenuActions::iterator it = m_listNotesMenuActions.find(nNoteId);
 		if (it != m_listNotesMenuActions.end())
 		{
-			CMenuHandle menu(it->m_hPpopupMenu);
+			CMenuHandle menu(it->m_hPopupMenu);
 			menu.CheckMenuItem(m_nSelectedNoteCmd, MF_BYCOMMAND | MF_CHECKED);
 			it->SetState(CNotesMenuItem::stChecked, TRUE);
+
+			menuutils::UpdateMenuWindow(menu);
 		}
 	}
 }
@@ -391,9 +393,11 @@ void CTrayWnd::OnNoteUncheck(UINT uNotifyCode, int nID, CWindow wndCtl)
 		CNotesMenuActions::iterator it = m_listNotesMenuActions.find(nNoteId);
 		if (it != m_listNotesMenuActions.end())
 		{
-			CMenuHandle menu(it->m_hPpopupMenu);
+			CMenuHandle menu(it->m_hPopupMenu);
 			menu.CheckMenuItem(m_nSelectedNoteCmd, MF_BYCOMMAND | MF_UNCHECKED);
 			it->SetState(CNotesMenuItem::stChecked, FALSE);
+
+			menuutils::UpdateMenuWindow(menu);
 		}
 	}
 }
@@ -500,9 +504,31 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	}
 
 	// show all notes
+	std::list<_tstring> listLabels;
+	CApplication::Get().GetLabels(listLabels);
+	for (std::list<_tstring>::reverse_iterator it = listLabels.rbegin();
+		it != listLabels.rend(); ++it)
+	{
+		_tstring sLabel = it->c_str();
+		CMenuHandle menuLabel;
+		menuLabel.CreatePopupMenu();
+		for (int i = 0; i < notes.size(); ++i)
+		{
+			if (notes[i].GetDeletedDate() == 0 && notes[i].GetLabel() == sLabel)
+			{
+				_tstring sCaption = CApplication::Get().GetNoteCaption(notes[i].GetText());
+				int nId = notes[i].GetId();
+				int nCmd = CREATE_NOTE_CMD(nId);
+				menuLabel.InsertMenu(0, MF_BYPOSITION, nCmd, sCaption.c_str());
+				m_listNotesMenuActions.push_back(CNotesMenuItem(nId, menuLabel));
+			}
+		}
+		menuNotes.InsertMenu(0, MF_BYPOSITION | MF_POPUP, menuLabel, sLabel.c_str());
+	}
+
 	for (int i = 0; i < notes.size(); ++i)
 	{
-		if (notes[i].GetDeletedDate() == 0)
+		if (notes[i].GetDeletedDate() == 0 && notes[i].GetLabel().empty())
 		{
 			_tstring sCaption = CApplication::Get().GetNoteCaption(notes[i].GetText());
 			int nId = notes[i].GetId();
