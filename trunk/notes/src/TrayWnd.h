@@ -6,13 +6,7 @@
 #include "NotesMenuActions.h"
 #include "SettingsSheet.h"
 #include "MenuTooltip.h"
-
-#define NOTE_CMD_FIRST 50000
-#define NOTE_CMD_RANGE 9999
-#define NOTE_CMD_LAST (NOTE_CMD_FIRST + NOTE_CMD_RANGE)
-#define CREATE_NOTE_CMD(id) ((id) + NOTE_CMD_FIRST)
-#define GET_NOTE_ID_FROM_CMD(cmd) ((cmd) - NOTE_CMD_FIRST)
-#define IS_NOTE_CMD(cmd) (cmd > NOTE_CMD_FIRST && cmd <= NOTE_CMD_LAST)
+#include "defines.h"
 
 /* CTrayWnd */
 class CTrayWnd : 
@@ -57,12 +51,12 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_SETTINGS, OnSettings)
 		COMMAND_ID_HANDLER_EX(ID_TNM_OPEN_NOTE, OnOpenNote);
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
+		COMMAND_ID_HANDLER_EX(ID_TNM_NEWLABEL, OnNewLabel)
+		COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECK, OnNoteCheck);
 		COMMAND_ID_HANDLER_EX(ID_TNM_UNCHECK, OnNoteUncheck);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
 		COMMAND_ID_HANDLER_EX(ID_TNM_RESTORE, OnNoteRestore);
-		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKED_OPEN, OnCheckedOpen);
-		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKED_DELETE, OnCheckedDelete);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
 
 		CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
@@ -87,13 +81,13 @@ public:
 	void OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteUncheck(UINT uNotifyCode, int nID, CWindow wndCtl);
 
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnCheckedOpen(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnCheckedDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl);
 
 private:
@@ -101,6 +95,8 @@ private:
 	void ModifyNotesMenu(CMenuHandle menuNotes);
 	void SetNotesMenuActions(CNotesMenuItem::Actions action);
 	void ProcessNotesMenuActions();
+	void PopulateLabelMenu(CMenuHandle menu, _tstring const& sLabel);
+	BOOL IsMenuState(int id, CNotesMenuItem::States nState) ;
 
 	CMenuHandle GetDeletedMenu() const;
 	CMenuHandle GetMenuNotes() const;
@@ -110,6 +106,7 @@ private:
 	CMenu m_menuNoteActions;
 
 	CNotesMenuActions m_listNotesMenuActions;
+	std::list<_tstring> m_listLabels;
 
 	std::auto_ptr<CSettingsSheet> m_pSettingsDlg;
 };

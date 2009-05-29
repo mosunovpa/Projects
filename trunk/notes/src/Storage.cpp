@@ -264,8 +264,9 @@ static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& not
 	}
 }
 
-static void _NewNote(CNote& note)
+static void _NewNote(CNote const& nt)
 {
+	CNote note = nt;
 	if (note.GetId() > 0)
 	{
 		ThrowError(_T("Can not add note with not null id"));
@@ -317,7 +318,7 @@ CStorage::~CStorage(void)
 }
 
 /**/
-void CStorage::SaveNote(CNote& note, UINT nMask)
+void CStorage::SaveNote(CNote const& note, UINT nMask)
 {
 	if (note.GetId() == 0) // new note
 	{

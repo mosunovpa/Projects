@@ -15,6 +15,7 @@ class CApplication : public CSimpleSinglton<CApplication>
 	friend class CSimpleSinglton<CApplication>;
 
 public:
+
 	// GetAllNotes mask
 	enum NoteMask
 	{
@@ -26,14 +27,21 @@ public:
 		NM_MODIFIED = 16,
 		NM_DELETED = 32,
 		NM_LABEL = 64,
-		NM_ALL = NM_ID | NM_TEXT | NM_POS | NM_CREATED | NM_MODIFIED | NM_DELETED | NM_LABEL
+		NM_ALL = NM_ID 
+					| NM_TEXT 
+					| NM_POS 
+					| NM_CREATED 
+					| NM_MODIFIED 
+					| NM_DELETED 
+					| NM_LABEL
 	};
 
 	void CreateAppWindow();
 	HWND CreateNote();
-	CNoteWnd* FindNoteWnd(int nNoteId) const;
+	BOOL IsNoteVisible(int nNoteId) const;
 	CNote FindNote(int nNoteId) const;
 	int SaveNote(CNoteWnd* pWnd, UINT nMask);
+	int SaveNote(CNote const& note, UINT nMask);
 	void DeleteFromStorage(int nNoteId);
 	void DeleteNote(int nNoteId);
 	void RestoreNote(int nNoteId);
@@ -55,6 +63,7 @@ public:
 	void NoteTextToClipboard(int nNoteId);
 	_tstring GetNoteCaption(_tstring text);
 	void OptionsUpdated();
+	void NotesUpdated(UINT nMask);
 	void GetLabels(std::list<_tstring>& list) const;
 protected:
 	CApplication();
@@ -64,6 +73,7 @@ protected:
 private:
 	CNoteWnd* OpenNote(CNote const& note);
 	CNoteWnd* CreateNoteWnd(CRect& rc);
+	CNoteWnd* FindNoteWnd(int nNoteId) const;
 	void DeleteNoteWnd(CNoteWnd* pNoteWnd);
 	CRect CalcNewNoteRect();
 	void GetAllNotesPositions(CNote::List& notes);

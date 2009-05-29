@@ -35,7 +35,6 @@ CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell D
  */
 CNoteWnd::CNoteWnd(int nNoteId /*= 0*/) 
 :	m_nNoteId(nNoteId),
-//	m_bPosChanged(FALSE),
 	m_dtCreated(0),
 	m_dtModified(0),
 	m_dtDeleted(0),
@@ -812,7 +811,7 @@ void CNoteWnd::SetDeletedDate( time_t dt )
 	m_dtDeleted = dt;
 }
 
-void CNoteWnd::Refresh()
+void CNoteWnd::OptionsUpdated()
 {
 	COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
 	CHARFORMAT cf;
