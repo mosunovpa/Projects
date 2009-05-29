@@ -4,7 +4,7 @@ class CNotesMenuItem
 {
 public:
 	enum States { stNone = 0, stChecked = 1, stDeleted = 2 };
-	enum Actions { acNone = 0, acDelete, acOpen };
+	enum Actions { acNone = 0, acDelete, acOpen, acLabel };
 
 	CNotesMenuItem(int nNoteId = 0, HMENU hPpopupMenu = NULL) 
 		: m_nNoteId(nNoteId), m_hPopupMenu(hPpopupMenu), m_action(acNone), m_state(stNone)
@@ -43,6 +43,8 @@ private:
 class CNotesMenuActions : public std::list<CNotesMenuItem>
 {
 public:
+	_tstring m_sLabel;
+
 	CNotesMenuActions::iterator find(int nNoteId);
 	int GetMarkedCount() const;
 };
