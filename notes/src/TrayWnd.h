@@ -101,7 +101,6 @@ private:
 	CMenuHandle GetDeletedMenu() const;
 	CMenuHandle GetMenuNotes() const;
 
-
 	int m_nSelectedNoteCmd;
 	CMenu m_menuNoteActions;
 
