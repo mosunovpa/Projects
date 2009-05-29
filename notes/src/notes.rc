@@ -124,8 +124,13 @@ IDR_TRAY_NOTE_MENU MENU
 BEGIN
     POPUP "TrayNoteMenu"
     BEGIN
-        MENUITEM "&Open",                       40056
+        MENUITEM "&Open",                       ID_TNM_OPEN_NOTE
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
+        POPUP "&Label"
+        BEGIN
+            MENUITEM SEPARATOR
+            MENUITEM "&New Label...",               ID_TNM_NEWLABEL
+        END
         MENUITEM "C&heck",                      ID_TNM_CHECK
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
@@ -133,17 +138,22 @@ BEGIN
     POPUP "TrayDeletedNoteMenu"
     BEGIN
         MENUITEM "&Restore",                    ID_TNM_RESTORE
-        MENUITEM "&Open",                       40056
+        MENUITEM "&Open",                       ID_TNM_OPEN_NOTE
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
     END
     POPUP "TrayCheckedNoteMenu"
     BEGIN
-        MENUITEM "&Open Checked",               ID_TNM_CHECKED_OPEN
+        MENUITEM "&Open Checked",               ID_TNM_OPEN_NOTE
+        POPUP "&Label Checked"
+        BEGIN
+            MENUITEM SEPARATOR
+            MENUITEM "&New Label...",               ID_TNM_NEWLABEL
+        END
         MENUITEM "&Uncheck",                    ID_TNM_UNCHECK
         MENUITEM SEPARATOR
-        MENUITEM "&Delete Checked",             ID_TNM_CHECKED_DELETE
+        MENUITEM "&Delete Checked",             ID_TNM_DELETE
     END
 END
 

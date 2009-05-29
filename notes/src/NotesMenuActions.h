@@ -3,7 +3,7 @@
 class CNotesMenuItem
 {
 public:
-	enum States { stNone = 0x00, stChecked = 0x01, stDeleted = 0x02 };
+	enum States { stNone = 0, stChecked = 1, stDeleted = 2 };
 	enum Actions { acNone = 0, acDelete, acOpen };
 
 	CNotesMenuItem(int nNoteId = 0, HMENU hPpopupMenu = NULL) 

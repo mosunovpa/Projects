@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "menuutils.h"
 #include "shlwapi.h"
+#include "NewLabelDialog.h"
 
 ///////////////////////////////////////////////////////////
 // CTrayWnd
@@ -305,6 +306,30 @@ void CTrayWnd::OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 	CApplication::Get().ShowNote(GET_NOTE_ID_FROM_CMD(nID));
 }
 
+/**/
+void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel)
+{
+	m_listLabels.clear();
+	CApplication::Get().GetLabels(m_listLabels);
+
+	int nSelCmd = LABEL_CMD_FIRST;
+	int pos = m_listLabels.size();
+	for (std::list<_tstring>::reverse_iterator it = m_listLabels.rbegin();
+		it != m_listLabels.rend(); ++it)
+	{
+		int nCmd = CREATE_LABEL_CMD(pos);
+		menuLabels.InsertMenu(0, MF_BYPOSITION, nCmd, it->c_str());
+		if (*it == sLabel)
+		{
+			nSelCmd = nCmd;
+		}
+		--pos;
+	}
+	menuLabels.InsertMenu(0, MF_BYPOSITION, LABEL_CMD_FIRST, resutils::resstring(IDS_NONE).c_str());
+	menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
+
+}
+
 /* WM_MENURBUTTONUP */
 void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 {
@@ -323,12 +348,15 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 	CNotesMenuActions::iterator it = m_listNotesMenuActions.find(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 	if (it != m_listNotesMenuActions.end())
 	{
+		CNote note = CApplication::Get().FindNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+
 		m_menuNoteActions.LoadMenu(IDR_TRAY_NOTE_MENU);
 		CMenuHandle submenu;
 
 		if (it->IsState(CNotesMenuItem::stChecked))
 		{
 			submenu = m_menuNoteActions.GetSubMenu(2);
+			PopulateLabelMenu(submenu.GetSubMenu(1), note.GetLabel());
 		}
 		else if (it->IsState(CNotesMenuItem::stDeleted))
 		{
@@ -339,6 +367,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		{
 			submenu = m_menuNoteActions.GetSubMenu(0);
 			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
+			PopulateLabelMenu(submenu.GetSubMenu(2), note.GetLabel());
 		}
 
 		submenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RECURSE, pt.x, pt.y, m_hWnd, NULL);
@@ -346,12 +375,33 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 	}
 }
 
+/**/
+BOOL CTrayWnd::IsMenuState(int id, CNotesMenuItem::States nState) 
+{
+	CNotesMenuActions::iterator it = m_listNotesMenuActions.find(id);
+	if (it != m_listNotesMenuActions.end())
+	{
+		if (it->IsState(nState))
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 /* ID_TNM_OPEN_NOTE */
 void CTrayWnd::OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		CApplication::Get().ShowNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		if (IsMenuState(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), CNotesMenuItem::stChecked))
+		{
+			SetNotesMenuActions(CNotesMenuItem::acOpen);
+		}
+		else
+		{
+			CApplication::Get().ShowNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		}
 		EndMenu();
 	}
 }
@@ -362,6 +412,56 @@ void CTrayWnd::OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
 		CApplication::Get().NoteTextToClipboard(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		EndMenu();
+	}
+}
+
+/* ID_TNM_NEWLABEL */
+void CTrayWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
+	{
+		CNote note = CApplication::Get().FindNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		CNewLabelDialog	dlg;
+		dlg.m_sLabel = note.GetLabel();
+		if (dlg.DoModal() == IDOK)
+		{
+			note.SetLabel(dlg.m_sLabel.c_str());
+			CApplication::Get().SaveNote(note, CApplication::NM_LABEL);
+			CApplication::Get().NotesUpdated(CApplication::NM_LABEL);
+		}
+	}
+}
+
+/* LABEL_CMD_FIRST, LABEL_CMD_LAST*/
+void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
+	{
+		_tstring sLabel;
+		if (nID == LABEL_CMD_FIRST)
+		{
+			sLabel = _T("");
+		}
+		else if (IS_LABEL_CMD(nID))
+		{
+			int pos = GET_LABEL_ID_FROM_CMD(nID);
+			int i = 1;
+			for (std::list<_tstring>::iterator it = m_listLabels.begin();
+				it != m_listLabels.end(); ++it)
+			{
+				if (pos == i)
+				{
+					sLabel = it->c_str();
+					break;
+				}
+				++i;
+			}
+		}
+		CNote note = CApplication::Get().FindNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		note.SetLabel(sLabel);
+		CApplication::Get().SaveNote(note, CApplication::NM_LABEL);
+		CApplication::Get().NotesUpdated(CApplication::NM_LABEL);
 		EndMenu();
 	}
 }
@@ -407,8 +507,14 @@ void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd);
-		CApplication::Get().DeleteNote(nNoteId);
+		if (IsMenuState(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), CNotesMenuItem::stChecked))
+		{
+			SetNotesMenuActions(CNotesMenuItem::acDelete);
+		}
+		else
+		{
+			CApplication::Get().DeleteNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		}
 		EndMenu();
 	}
 }
@@ -422,20 +528,6 @@ void CTrayWnd::OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 		CApplication::Get().RestoreNote(nNoteId);
 		EndMenu();
 	}
-}
-
-/* ID_TNM_CHECKED_OPEN */
-void CTrayWnd::OnCheckedOpen(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	SetNotesMenuActions(CNotesMenuItem::acOpen);
-	EndMenu();
-}
-
-/* ID_TNM_CHECKED_DELETE */
-void CTrayWnd::OnCheckedDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	SetNotesMenuActions(CNotesMenuItem::acDelete);
-	EndMenu();
 }
 
 /* ID_POPUP_NEWANDPASTE */
@@ -550,8 +642,8 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	{
 		if (notes[i].GetDeletedDate() != 0)
 		{
-			if (nMaxDelCnt < 0 &&
-				(CApplication::Get().FindNoteWnd(notes[i].GetId()) == NULL) )// note is not opened
+			if (nMaxDelCnt < 0 && 
+				(CApplication::Get().IsNoteVisible(notes[i].GetId()) == FALSE) )// note is not opened
 			{
 				CApplication::Get().DeleteFromStorage(notes[i].GetId());
 			}
@@ -596,3 +688,4 @@ void CTrayWnd::OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl)
 		m_pSettingsDlg.reset();
 	}
 }
+

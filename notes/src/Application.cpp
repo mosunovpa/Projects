@@ -246,6 +246,13 @@ int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 }
 
 /**/
+int CApplication::SaveNote(CNote const& note, UINT nMask)
+{
+	m_storage.SaveNote(note, nMask);
+	return note.GetId();
+}
+
+/**/
 int CApplication::GetOpenedNotesCount() const
 {
 	return m_listNotes.size();
@@ -489,7 +496,25 @@ void CApplication::OptionsUpdated()
 	for (std::list<CNoteWnd*>::const_iterator it = m_listNotes.begin();
 		it != m_listNotes.end(); ++it)
 	{
-		(*it)->Refresh();
+		(*it)->OptionsUpdated();
+	}
+}
+
+/* */
+void CApplication::NotesUpdated(UINT nMask)
+{
+	for (std::list<CNoteWnd*>::const_iterator it = m_listNotes.begin();
+		it != m_listNotes.end(); ++it)
+	{
+		int id = (*it)->GetId();
+		if (id)
+		{
+			CNote note = FindNote(id);
+			if (nMask == CApplication::NM_LABEL)
+			{
+				(*it)->SetLabel(note.GetLabel());
+			}
+		}
 	}
 }
 
@@ -497,4 +522,10 @@ void CApplication::OptionsUpdated()
 void CApplication::GetLabels(std::list<_tstring>& list) const
 {
 	m_storage.GetLabels(list);
+}
+
+/**/
+BOOL CApplication::IsNoteVisible(int nNoteId) const
+{
+	return FindNoteWnd(nNoteId) != NULL;
 }
