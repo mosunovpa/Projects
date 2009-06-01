@@ -36,7 +36,7 @@ CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell D
 CNoteWnd::CNoteWnd(int nNoteId /*= 0*/) 
 :	m_nNoteId(nNoteId),
 	m_dtCreated(0),
-	m_dtModified(0),
+//	m_dtModified(0),
 	m_dtDeleted(0),
 	m_bMinimized(FALSE),
 	m_icon(this),
@@ -524,13 +524,13 @@ void CNoteWnd::StoreNote()
 	{
 		if (m_edit.GetModify()) // save all if note content has been changed
 		{
-			m_dtModified = dateutils::GetCurrentDate();
+//			m_dtModified = dateutils::GetCurrentDate();
 			m_nNoteId = CApplication::Get().SaveNote(this, CApplication::NM_ALL);
 			m_edit.SetModify(FALSE);
 		}
 		else if (m_flagSave != CApplication::NM_NONE)
 		{
-			CApplication::Get().SaveNote(this, m_flagSave);
+			m_nNoteId = CApplication::Get().SaveNote(this, m_flagSave);
 			m_flagSave = CApplication::NM_NONE;
 		}
 	}
@@ -586,17 +586,17 @@ void CNoteWnd::SetCreatedDate(time_t dt)
 	}
 }
 
-/**/
-time_t CNoteWnd::GetModifiedDate() const
-{
-	return m_dtModified;
-}
-
-/**/
-void CNoteWnd::SetModifiedDate(time_t dt)
-{
-	m_dtModified = dt;
-}
+// /**/
+// time_t CNoteWnd::GetModifiedDate() const
+// {
+// 	return m_dtModified;
+// }
+// 
+// /**/
+// void CNoteWnd::SetModifiedDate(time_t dt)
+// {
+// 	m_dtModified = dt;
+// }
 
 /**/
 _tstring CNoteWnd::GetLabel() const

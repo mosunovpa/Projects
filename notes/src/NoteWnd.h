@@ -125,8 +125,8 @@ public:
 	void SetText(_tstring const& text);
 	time_t GetCreatedDate() const;
 	void SetCreatedDate(time_t dt);
-	time_t GetModifiedDate() const;
-	void SetModifiedDate(time_t dt);
+// 	time_t GetModifiedDate() const;
+// 	void SetModifiedDate(time_t dt);
 	time_t GetDeletedDate() const;
 	void SetDeletedDate(time_t dt);
 	_tstring GetLabel() const;
@@ -250,7 +250,7 @@ private:
 	DWORD m_flagSave;
 
 	time_t m_dtCreated;
-	time_t m_dtModified;
+//	time_t m_dtModified;
 	time_t m_dtDeleted;
 	_tstring m_label;
 

@@ -39,7 +39,6 @@ public:
 	void CreateAppWindow();
 	HWND CreateNote();
 	BOOL IsNoteVisible(int nNoteId) const;
-	CNote FindNote(int nNoteId) const;
 	int SaveNote(CNoteWnd* pWnd, UINT nMask);
 	int SaveNote(CNote const& note, UINT nMask);
 	void DeleteFromStorage(int nNoteId);
@@ -63,8 +62,10 @@ public:
 	void NoteTextToClipboard(int nNoteId);
 	_tstring GetNoteCaption(_tstring text);
 	void OptionsUpdated();
-	void NotesUpdated(UINT nMask);
 	void GetLabels(std::list<_tstring>& list) const;
+	_tstring GetNoteLabel(int nNoteId) const;
+	void SetNoteLabel(int nNoteId, _tstring const& sLabel);
+	_tstring GetNoteText(int nNoteId) const;
 protected:
 	CApplication();
 	virtual ~CApplication();
@@ -80,6 +81,8 @@ private:
 	void GetSomePossiblePositions(CRect const& center, std::vector<CRect>& poss);
 	CRect GetOptimumPosition(std::vector<CRect> const& vPossiblePositions, 
 		CNote::List const& notes);
+	CNote FindNote(int nNoteId) const;
+
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;
 	CStorage m_storage;

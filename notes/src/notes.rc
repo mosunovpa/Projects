@@ -131,6 +131,7 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "&New Label...",               ID_TNM_NEWLABEL
         END
+        MENUITEM SEPARATOR
         MENUITEM "C&heck",                      ID_TNM_CHECK
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
@@ -151,6 +152,7 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "&New Label...",               ID_TNM_NEWLABEL
         END
+        MENUITEM SEPARATOR
         MENUITEM "&Uncheck",                    ID_TNM_UNCHECK
         MENUITEM SEPARATOR
         MENUITEM "&Delete Checked",             ID_TNM_DELETE

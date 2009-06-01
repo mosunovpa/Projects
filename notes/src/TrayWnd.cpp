@@ -56,7 +56,7 @@ _tstring CTrayWnd::GetTooltipText(int nSelectedMenuItemId) const
 {
 	if (IS_NOTE_CMD(nSelectedMenuItemId))
 	{
-		return CApplication::Get().FindNote(GET_NOTE_ID_FROM_CMD(nSelectedMenuItemId)).GetText();
+		return CApplication::Get().GetNoteText(GET_NOTE_ID_FROM_CMD(nSelectedMenuItemId));
 	}
 	return _tstring();
 }
@@ -243,56 +243,33 @@ void CTrayWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu
 /* WM_UNINITMENUPOPUP */
 void CTrayWnd::OnUnInitMenuPopup(UINT nID, CMenuHandle menu)
 {
-	if (menu.m_hMenu == GetMenuNotes().m_hMenu)
-	{
-		ProcessNotesMenuActions();
-		m_listNotesMenuActions.clear();
-	}
 	SetMsgHandled(FALSE);
 }
 
 /**/
-void CTrayWnd::SetNotesMenuActions(CNotesMenuItem::Actions action)
+void CTrayWnd::ProcessCheckedMenu(CNotesMenuItem::Actions action)
 {
-	for (CNotesMenuActions::iterator it = m_listNotesMenuActions.begin();
-		 it != m_listNotesMenuActions.end(); ++it)
-	{
-		if (it->IsState(CNotesMenuItem::stChecked))
-		{
-			it->m_action = action;
-		}
-	}
-}
-
-/**/
-void CTrayWnd::ProcessNotesMenuActions()
-{
-	BOOL bUpdateNotes = FALSE;
 	for (CNotesMenuActions::iterator it = m_listNotesMenuActions.begin();
 		it != m_listNotesMenuActions.end(); ++it)
 	{
-		switch (it->m_action)
+		if (it->IsState(CNotesMenuItem::stChecked))
 		{
-		case CNotesMenuItem::acOpen:
-			CApplication::Get().ShowNote(it->m_nNoteId);
-			break;
-		case CNotesMenuItem::acDelete:
-			CApplication::Get().DeleteNote(it->m_nNoteId);
-			break;
-		case CNotesMenuItem::acLabel:
-			CNote note = CApplication::Get().FindNote(it->m_nNoteId);
-			note.SetLabel(m_listNotesMenuActions.m_sLabel);
-			CApplication::Get().SaveNote(note, CApplication::NM_LABEL);
-			bUpdateNotes = TRUE;
-			break;
+			switch (action)
+			{
+			case CNotesMenuItem::acOpen:
+				CApplication::Get().ShowNote(it->m_nNoteId);
+				break;
+			case CNotesMenuItem::acDelete:
+				CApplication::Get().DeleteNote(it->m_nNoteId);
+				break;
+			case CNotesMenuItem::acLabel:
+				CApplication::Get().SetNoteLabel(it->m_nNoteId, m_listNotesMenuActions.m_sLabel);
+				break;
+			}
 		}
 	}
-	if (bUpdateNotes)
-	{
-		CApplication::Get().NotesUpdated(CApplication::NM_LABEL);
-	}
+	m_listNotesMenuActions.clear();
 }
-
 
 /* ID_POPUP_NEWNOTE */
 void CTrayWnd::OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl)
@@ -359,7 +336,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 	CNotesMenuActions::iterator it = m_listNotesMenuActions.find(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 	if (it != m_listNotesMenuActions.end())
 	{
-		CNote note = CApplication::Get().FindNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		_tstring sLabel = CApplication::Get().GetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 
 		m_menuNoteActions.LoadMenu(IDR_TRAY_NOTE_MENU);
 		CMenuHandle submenu;
@@ -367,7 +344,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		if (it->IsState(CNotesMenuItem::stChecked))
 		{
 			submenu = m_menuNoteActions.GetSubMenu(2);
-			PopulateLabelMenu(submenu.GetSubMenu(1), note.GetLabel());
+			PopulateLabelMenu(submenu.GetSubMenu(1), sLabel);
 		}
 		else if (it->IsState(CNotesMenuItem::stDeleted))
 		{
@@ -378,7 +355,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		{
 			submenu = m_menuNoteActions.GetSubMenu(0);
 			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
-			PopulateLabelMenu(submenu.GetSubMenu(2), note.GetLabel());
+			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel);
 		}
 
 		submenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RECURSE, pt.x, pt.y, m_hWnd, NULL);
@@ -407,7 +384,7 @@ void CTrayWnd::OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl)
 	{
 		if (IsMenuState(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), CNotesMenuItem::stChecked))
 		{
-			SetNotesMenuActions(CNotesMenuItem::acOpen);
+			ProcessCheckedMenu(CNotesMenuItem::acOpen);
 		}
 		else
 		{
@@ -432,14 +409,11 @@ void CTrayWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		CNote note = CApplication::Get().FindNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 		CNewLabelDialog	dlg;
-		dlg.m_sLabel = note.GetLabel();
+		dlg.m_sLabel = CApplication::Get().GetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));;
 		if (dlg.DoModal() == IDOK)
 		{
-			note.SetLabel(dlg.m_sLabel.c_str());
-			CApplication::Get().SaveNote(note, CApplication::NM_LABEL);
-			CApplication::Get().NotesUpdated(CApplication::NM_LABEL);
+			CApplication::Get().SetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), dlg.m_sLabel);
 		}
 	}
 }
@@ -473,14 +447,11 @@ void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 		if (IsMenuState(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), CNotesMenuItem::stChecked))
 		{
 			m_listNotesMenuActions.m_sLabel = sLabel;
-			SetNotesMenuActions(CNotesMenuItem::acLabel);
+			ProcessCheckedMenu(CNotesMenuItem::acLabel);
 		}
 		else
 		{
-			CNote note = CApplication::Get().FindNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
-			note.SetLabel(sLabel);
-			CApplication::Get().SaveNote(note, CApplication::NM_LABEL);
-			CApplication::Get().NotesUpdated(CApplication::NM_LABEL);
+			CApplication::Get().SetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), sLabel);
 		}
 		EndMenu();
 	}
@@ -529,7 +500,7 @@ void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 	{
 		if (IsMenuState(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), CNotesMenuItem::stChecked))
 		{
-			SetNotesMenuActions(CNotesMenuItem::acDelete);
+			ProcessCheckedMenu(CNotesMenuItem::acDelete);
 		}
 		else
 		{
@@ -544,8 +515,7 @@ void CTrayWnd::OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd);
-		CApplication::Get().RestoreNote(nNoteId);
+		CApplication::Get().RestoreNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 		EndMenu();
 	}
 }
