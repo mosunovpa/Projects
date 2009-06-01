@@ -93,8 +93,7 @@ public:
 private:
 	LRESULT DisplayShortcutMenu();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
-	void SetNotesMenuActions(CNotesMenuItem::Actions action);
-	void ProcessNotesMenuActions();
+	void ProcessCheckedMenu(CNotesMenuItem::Actions action);
 	void PopulateLabelMenu(CMenuHandle menu, _tstring const& sLabel);
 	BOOL IsMenuState(int id, CNotesMenuItem::States nState) ;
 

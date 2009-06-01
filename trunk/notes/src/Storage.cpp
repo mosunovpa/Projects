@@ -264,7 +264,7 @@ static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& not
 	}
 }
 
-static void _NewNote(CNote const& nt)
+static int _NewNote(CNote const& nt)
 {
 	CNote note = nt;
 	if (note.GetId() > 0)
@@ -273,7 +273,8 @@ static void _NewNote(CNote const& nt)
 	}
 	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	CComPtr<IXMLDOMElement> spElement;
-	note.SetId(_GetNextId(spDoc));
+	int id = _GetNextId(spDoc);
+	note.SetId(id);
 	CHECK_HR(spDoc->createElement(L"note", &spElement));
 	_SetNoteContent(spElement, note, CApplication::NM_ALL);
 	CComPtr<IXMLDOMNode> spRoot = _GetRootNode(spDoc);
@@ -284,6 +285,7 @@ static void _NewNote(CNote const& nt)
 		ThrowError(_T("Append note error"));
 	}
 	CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
+	return id;
 }
 
 static void _UpdateNote(CNote const& note, UINT nMask)
@@ -318,16 +320,19 @@ CStorage::~CStorage(void)
 }
 
 /**/
-void CStorage::SaveNote(CNote const& note, UINT nMask)
+int CStorage::SaveNote(CNote const& note, UINT nMask)
 {
+	int id = 0;
 	if (note.GetId() == 0) // new note
 	{
-		_NewNote(note);
+		id = _NewNote(note);
 	}
 	else
 	{
 		_UpdateNote(note, nMask);
+		id = note.GetId();
 	}
+	return id;
 }
 
 /*
