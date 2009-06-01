@@ -23,3 +23,36 @@ _tstring menuutils::GetMenuString( HMENU hMenu, UINT nIDItem, UINT nFlags )
 	::GetMenuString(hMenu, nIDItem, &s[0], s.size(), nFlags);
 	return s;
 }
+
+/**/
+HWND menuutils::FindMenuWindow(HMENU hMenu)
+{
+	HWND hCurWnd = NULL;
+
+	do 
+	{
+		hCurWnd = ::FindWindowEx(NULL, hCurWnd, _T("#32768"), NULL);
+		if(hCurWnd)
+		{
+			HMENU hCurMenu = (HMENU)::SendMessage(hCurWnd, MN_GETHMENU, 0, 0);
+			if(hCurMenu == hMenu)
+				return hCurWnd;
+		}
+	} 
+	while(hCurWnd);
+
+	return NULL;
+}
+
+/**/
+BOOL menuutils::UpdateMenuWindow(CMenuHandle const& menu)
+{
+	CWindow wndMenu = menuutils::FindMenuWindow(menu);
+	if (::IsWindow(wndMenu))
+	{
+		wndMenu.Invalidate(FALSE);
+		wndMenu.UpdateWindow();
+		return TRUE;
+	}
+	return FALSE;
+}
