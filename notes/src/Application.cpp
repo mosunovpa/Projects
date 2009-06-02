@@ -155,34 +155,13 @@ HWND CApplication::CreateNote(_tstring const& sText /*= _tstring()*/, DWORD nFla
 	CNoteWnd* pWnd = CreateNoteWnd(CalcNewNoteRect());
 	if (pWnd)
 	{
+		pWnd->SetInitFlags(nFlag);
 		pWnd->SetCreatedDate(dateutils::GetCurrentDate());
 		pWnd->SetFocus();
 
 		if (!sText.empty())
 		{
 			pWnd->SetText(sText);
-		}
-		if (nFlag & NF_ROLLUP)
-		{
-			pWnd->Rollup();
-		}
-		if (nFlag & NF_NOACTIVATE)
-		{
-			// set focus to the top window in z-order
-			TCHAR name[512];
-			HWND next_wnd = ::GetWindow(pWnd->m_hWnd, GW_HWNDFIRST);
-			::GetClassName(next_wnd, name, 512);
-			HWND parent_wnd = ::GetParent(next_wnd);
-			while (next_wnd && 
-				(!::IsWindowVisible(next_wnd) 
-				|| parent_wnd == m_TrayWnd
-				|| lstrcmp(name, _T("Shell_TrayWnd")) == 0))
-			{
-				next_wnd = ::GetWindow(next_wnd, GW_HWNDNEXT);
-				::GetClassName(next_wnd, name, 512);
-				parent_wnd = ::GetParent(next_wnd);
-			}
-			::SetForegroundWindow(next_wnd);
 		}
 	}
 	return pWnd != NULL ? pWnd->m_hWnd : NULL;

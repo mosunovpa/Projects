@@ -131,6 +131,7 @@ public:
 	void SetDeletedDate(time_t dt);
 	_tstring GetLabel() const;
 	void SetLabel(_tstring const& text);
+	void SetInitFlags(DWORD nFlags);
 
 	CNoteEdit& GetEditor();
 	CRect GetRealNoteRect();
@@ -260,4 +261,5 @@ private:
 
 	BOOL m_bActive;
 	std::list<_tstring> m_listLabels;
+	DWORD m_flagInit;
 };

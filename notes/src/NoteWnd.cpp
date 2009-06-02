@@ -42,7 +42,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_icon(this),
 	m_bInitialized(FALSE),
 	m_bActive(FALSE),
-	m_flagSave(CApplication::NM_NONE)
+	m_flagSave(CApplication::NM_NONE),
+	m_flagInit(CApplication::NF_NONE)
 {
 }
 
@@ -98,20 +99,20 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 			m_listLabels.unique();
 		}
 
+		menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
 		int nSelCmd = LABEL_CMD_FIRST;
 		int pos = m_listLabels.size();
-		for (std::list<_tstring>::reverse_iterator it = m_listLabels.rbegin();
-			it != m_listLabels.rend(); ++it)
+		for (std::list<_tstring>::iterator it = m_listLabels.begin();
+			it != m_listLabels.end(); ++it)
 		{
 			int nCmd = CREATE_LABEL_CMD(pos);
-			menuLabels.InsertMenu(0, MF_BYPOSITION, nCmd, it->c_str());
+			menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
 			if (*it == GetLabel())
 			{
 				nSelCmd = nCmd;
 			}
 			--pos;
 		}
-		menuLabels.InsertMenu(0, MF_BYPOSITION, LABEL_CMD_FIRST, resutils::resstring(IDS_NONE).c_str());
 		menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
 
 		menuPopup.DeleteMenu(ID_RESTORE, MF_BYCOMMAND);
@@ -324,9 +325,33 @@ void CNoteWnd::OnDestroy()
 LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	m_flagSave = CApplication::NM_NONE;
-	m_edit.SetModify(FALSE);
+	m_edit.SetModify(GetId() == 0);
 	m_edit.EmptyUndoBuffer();
 	m_bInitialized = TRUE;
+
+	if (m_flagInit & CApplication::NF_ROLLUP)
+	{
+		Rollup();
+	}
+	if (m_flagInit & CApplication::NF_NOACTIVATE)
+	{
+		// set focus to the top window in z-order
+		TCHAR name[512];
+		HWND next_wnd = ::GetWindow(m_hWnd, GW_HWNDFIRST);
+		::GetClassName(next_wnd, name, 512);
+		HWND parent_wnd = ::GetParent(next_wnd);
+		while (next_wnd && 
+			(!::IsWindowVisible(next_wnd) 
+			|| parent_wnd == ::GetParent(m_hWnd)
+			|| lstrcmp(name, _T("Shell_TrayWnd")) == 0))
+		{
+			next_wnd = ::GetWindow(next_wnd, GW_HWNDNEXT);
+			::GetClassName(next_wnd, name, 512);
+			parent_wnd = ::GetParent(next_wnd);
+		}
+		::SetForegroundWindow(next_wnd);
+	}
+
 	return 0;
 }
 /**
@@ -524,7 +549,6 @@ void CNoteWnd::StoreNote()
 	{
 		if (m_edit.GetModify()) // save all if note content has been changed
 		{
-//			m_dtModified = dateutils::GetCurrentDate();
 			m_nNoteId = CApplication::Get().SaveNote(this, CApplication::NM_ALL);
 			m_edit.SetModify(FALSE);
 		}
@@ -545,8 +569,8 @@ int CNoteWnd::GetId() const
 /**/
 _tstring CNoteWnd::GetText() const
 {
-	int len = m_edit.GetWindowTextLength() + 1;
 	_tstring s;
+	int len = m_edit.GetWindowTextLength() + 1;
 	s.resize(len);
 	m_edit.GetWindowText(&s[0],len);
 	boost::trim(s);
@@ -566,7 +590,7 @@ void CNoteWnd::SetId( int id )
 /**/
 void CNoteWnd::SetText(_tstring const& text)
 {
-	m_edit.SetWindowText(text.c_str());
+		m_edit.SetWindowText(text.c_str());
 }
 
 /**/
@@ -861,4 +885,9 @@ void CNoteWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
 	{
 		SetLabel(dlg.m_sLabel.c_str());
 	}
+}
+
+void CNoteWnd::SetInitFlags(DWORD nFlags)
+{
+	m_flagInit = nFlags;
 }

@@ -87,10 +87,10 @@ BEGIN
     BEGIN
         MENUITEM "&Restore",                    ID_RESTORE
         MENUITEM "C&opy To Clipboard",          ID_CLIPBRD_COPY
-        POPUP "&Label"
+        POPUP "Set &Label"
         BEGIN
+            MENUITEM "&New Label...",               ID_LABEL_NEWLABEL
             MENUITEM SEPARATOR
-            MENUITEM "New &Label...",               ID_LABEL_NEWLABEL
         END
         MENUITEM SEPARATOR
         MENUITEM "&Delete \tCtrl+D",            ID_DELETE
@@ -126,10 +126,9 @@ BEGIN
     BEGIN
         MENUITEM "&Open",                       ID_TNM_OPEN_NOTE
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
-        POPUP "&Label"
+        POPUP "Set &Label"
         BEGIN
-            MENUITEM SEPARATOR
-            MENUITEM "&New Label...",               ID_TNM_NEWLABEL
+            MENUITEM "dummy",                       ID_DUMMY
         END
         MENUITEM SEPARATOR
         MENUITEM "C&heck",                      ID_TNM_CHECK
@@ -147,10 +146,9 @@ BEGIN
     POPUP "TrayCheckedNoteMenu"
     BEGIN
         MENUITEM "&Open Checked",               ID_TNM_OPEN_NOTE
-        POPUP "&Label Checked"
+        POPUP "Set &Label for Checked"
         BEGIN
-            MENUITEM SEPARATOR
-            MENUITEM "&New Label...",               ID_TNM_NEWLABEL
+            MENUITEM "dummy",                       ID_DUMMY
         END
         MENUITEM SEPARATOR
         MENUITEM "&Uncheck",                    ID_TNM_UNCHECK
@@ -281,6 +279,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_NONE                "None"
+    IDS_NO_LABEL            "No Label"
 END
 
 #endif    // Russian resources
