@@ -94,7 +94,7 @@ private:
 	LRESULT DisplayShortcutMenu();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
 	void ProcessCheckedMenu(CNotesMenuItem::Actions action);
-	void PopulateLabelMenu(CMenuHandle menu, _tstring const& sLabel);
+	void PopulateLabelMenu(CMenuHandle menu, _tstring const& sLabel, BOOL bCheckPadio = TRUE);
 	BOOL IsMenuState(int id, CNotesMenuItem::States nState) ;
 
 	CMenuHandle GetDeletedMenu() const;

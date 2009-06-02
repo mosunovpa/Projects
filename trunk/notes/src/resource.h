@@ -24,6 +24,7 @@
 #define IDB_CLOSE_BTNS                  112
 #define IDS_STRING112                   112
 #define IDS_NONE                        112
+#define IDS_NO_LABEL                    113
 #define IDR_TRAY_NOTE_MENU              114
 #define IDR_TRAY_NOTE_MENU1             115
 #define IDD_NOTE_SETTING_PAGE           116
@@ -86,13 +87,16 @@
 #define ID_LABEL_NEWLABEL40100          40100
 #define ID_TNM_NEWLABEL                 40101
 #define ID_TNM_NEWLABEL_CHECKED         40102
+#define ID_LABEL_NEW                    40103
+#define ID_TRAYCHECKEDNOTEMENU_LABELCHECKED 40104
+#define ID_DUMMY                        40106
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        122
-#define _APS_NEXT_COMMAND_VALUE         40103
+#define _APS_NEXT_COMMAND_VALUE         40107
 #define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

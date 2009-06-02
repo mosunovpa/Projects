@@ -296,27 +296,33 @@ void CTrayWnd::OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 }
 
 /**/
-void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel)
+void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel, BOOL bCheckPadio /*= TRUE*/)
 {
+	menuLabels.DeleteMenu(ID_DUMMY, MF_BYCOMMAND);
+
 	m_listLabels.clear();
 	CApplication::Get().GetLabels(m_listLabels);
 
+	menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
+
 	int nSelCmd = LABEL_CMD_FIRST;
 	int pos = m_listLabels.size();
-	for (std::list<_tstring>::reverse_iterator it = m_listLabels.rbegin();
-		it != m_listLabels.rend(); ++it)
+	for (std::list<_tstring>::iterator it = m_listLabels.begin();
+		it != m_listLabels.end(); ++it)
 	{
 		int nCmd = CREATE_LABEL_CMD(pos);
-		menuLabels.InsertMenu(0, MF_BYPOSITION, nCmd, it->c_str());
-		if (*it == sLabel)
+		menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
+		if (bCheckPadio && *it == sLabel)
 		{
 			nSelCmd = nCmd;
 		}
 		--pos;
 	}
-	menuLabels.InsertMenu(0, MF_BYPOSITION, LABEL_CMD_FIRST, resutils::resstring(IDS_NONE).c_str());
-	menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
-
+	if (bCheckPadio)
+	{
+		menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
+	}
+	
 }
 
 /* WM_MENURBUTTONUP */
@@ -345,7 +351,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		if (it->IsState(CNotesMenuItem::stChecked))
 		{
 			submenu = m_menuNoteActions.GetSubMenu(2);
-			PopulateLabelMenu(submenu.GetSubMenu(1), sLabel);
+			PopulateLabelMenu(submenu.GetSubMenu(1), sLabel, FALSE);
 		}
 		else if (it->IsState(CNotesMenuItem::stDeleted))
 		{
