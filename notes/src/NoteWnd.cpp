@@ -101,7 +101,7 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 
 		menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
 		int nSelCmd = LABEL_CMD_FIRST;
-		int pos = m_listLabels.size();
+		int pos = 1;
 		for (std::list<_tstring>::iterator it = m_listLabels.begin();
 			it != m_listLabels.end(); ++it)
 		{
@@ -111,7 +111,7 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 			{
 				nSelCmd = nCmd;
 			}
-			--pos;
+			++pos;
 		}
 		menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
 
