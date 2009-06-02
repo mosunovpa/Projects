@@ -36,8 +36,15 @@ public:
 					| NM_LABEL
 	};
 
+	enum NoteFlags
+	{
+		NF_NONE = 0,
+		NF_ROLLUP = 1,
+		NF_NOACTIVATE = 2
+	};
+
 	void CreateAppWindow();
-	HWND CreateNote();
+	HWND CreateNote(_tstring const& sText = _tstring(), DWORD nFlag = NF_NONE);
 	BOOL IsNoteVisible(int nNoteId) const;
 	int SaveNote(CNoteWnd* pWnd, UINT nMask);
 	int SaveNote(CNote const& note, UINT nMask);

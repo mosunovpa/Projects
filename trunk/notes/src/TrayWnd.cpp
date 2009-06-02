@@ -5,6 +5,7 @@
 #include "menuutils.h"
 #include "shlwapi.h"
 #include "NewLabelDialog.h"
+#include "Clipboard.h"
 
 ///////////////////////////////////////////////////////////
 // CTrayWnd
@@ -523,24 +524,9 @@ void CTrayWnd::OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_POPUP_NEWANDPASTE */
 void CTrayWnd::OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	HWND wnd = CApplication::Get().CreateNote();
-	CApplication::Get().Command(ID_PASTE, wnd);
-
-	// set focus to the top window in z-order
-	TCHAR name[512];
-	HWND next_wnd = ::GetWindow(wnd, GW_HWNDFIRST);
-	::GetClassName(next_wnd, name, 512);
-	HWND parent_wnd = ::GetParent(next_wnd);
-	while (next_wnd && 
-		(!::IsWindowVisible(next_wnd) 
-		|| parent_wnd == m_hWnd
-		|| lstrcmp(name, _T("Shell_TrayWnd")) == 0))
-	{
-		next_wnd = ::GetWindow(next_wnd, GW_HWNDNEXT);
-		::GetClassName(next_wnd, name, 512);
-		parent_wnd = ::GetParent(next_wnd);
-	}
-	::SetForegroundWindow(next_wnd);
+	TCHAR buf[65536];
+	CClipboard::GetText(buf, 65536);
+	CApplication::Get().CreateNote(buf, CApplication::NF_NOACTIVATE | CApplication::NF_ROLLUP);
 }
 
 /**/
