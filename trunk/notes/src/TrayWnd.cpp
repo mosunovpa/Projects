@@ -306,7 +306,7 @@ void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel,
 	menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
 
 	int nSelCmd = LABEL_CMD_FIRST;
-	int pos = m_listLabels.size();
+	int pos = 1;
 	for (std::list<_tstring>::iterator it = m_listLabels.begin();
 		it != m_listLabels.end(); ++it)
 	{
@@ -316,7 +316,7 @@ void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel,
 		{
 			nSelCmd = nCmd;
 		}
-		--pos;
+		++pos;
 	}
 	if (bCheckPadio)
 	{
