@@ -51,7 +51,18 @@ public:
 				m_nShownMenuItemId = m_nSelectedMenuItemId;
 				CToolInfo ti(TTF_IDISHWND, m_hParent, (UINT)m_hParent, NULL, &sNoteText[0]);
 				m_tooltip.UpdateTipText(&ti);
-				m_tooltip.TrackPosition(m_ptLastCursorPos.x, m_ptLastCursorPos.y + 22);
+				CPoint pt;
+				if (m_rcSelected.PtInRect(m_ptLastCursorPos))
+				{
+					pt = m_ptLastCursorPos;
+					pt.y += 22;
+				}
+				else
+				{
+					pt.x = m_rcSelected.left + m_rcSelected.Width() / 2;
+					pt.y = m_rcSelected.bottom + 2;
+				}
+				m_tooltip.TrackPosition(pt.x, pt.y);
 				m_tooltip.TrackActivate(&ti, TRUE);
 			}
 		}
@@ -121,7 +132,12 @@ private:
 			}
 			if (rc.bottom > rcDesc.bottom)
 			{
-				rc.top = m_ptLastCursorPos.y - rc.Height() - 2;
+				int y = m_ptLastCursorPos.y;
+				if (!m_rcSelected.PtInRect(m_ptLastCursorPos))
+				{
+					y = m_rcSelected.top;
+				}
+				rc.top = y - rc.Height() - 2;
 				if (rc.top < 0)
 				{
 					rc.top = 0;
@@ -154,8 +170,7 @@ private:
 			}
 			else if (nTime - m_tmLastTime >= 500)
 			{
-				if (m_nShownMenuItemId != m_nSelectedMenuItemId &&
-					m_rcSelected.PtInRect(m_ptLastCursorPos))
+				if (m_nShownMenuItemId != m_nSelectedMenuItemId)
 				{
 					m_ptLastCursorPos = ptCursorPos;
 					m_tmLastTime = nTime;
@@ -172,6 +187,7 @@ private:
 	/**/
 	void OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu)
 	{
+		HideTooltip();
 		m_nShownMenuItemId = 0;
 		m_nSelectedMenuItemId = nItemID;
 		for(int nItem = 0; nItem < ::GetMenuItemCount(menu); nItem++) 
