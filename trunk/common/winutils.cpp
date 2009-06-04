@@ -24,3 +24,26 @@ HWND winutils::GetTopWnd( LPCTSTR szClassName )
 	}
 	return 0;
 }
+
+void winutils::AdjustScreenRect(CRect& rc)
+{
+	CRect rcDesk;
+	::GetWindowRect(GetDesktopWindow(), &rcDesk);
+	if (rc.right > rcDesk.right)
+	{
+		rc.MoveToX(rcDesk.right - rc.Width());
+	}
+	if (rc.bottom > rcDesk.bottom)
+	{
+		rc.MoveToY(rcDesk.bottom - rc.Height());
+	}
+	if (rc.left < rcDesk.left)
+	{
+		rc.MoveToX(0);
+	}
+	if (rc.top < rcDesk.top)
+	{
+		rc.MoveToY(0);
+	}
+}
+
