@@ -136,9 +136,11 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 CRect CNoteWnd::GetCaptionRect()
 {
 	CClientRect rc(m_hWnd);
-	rc.left = s_nCaptionSize + 2;
+// 	rc.left = s_nCaptionSize + 2;
+// 	rc.right -= (s_nCaptionSize + s_nCaptionSize + 3);
+	rc.left = s_nCaptionSize + s_nCaptionSize + 2;
+	rc.right -= (s_nCaptionSize + 3);
 	rc.bottom = s_nCaptionSize;
-	rc.right -= (s_nCaptionSize + s_nCaptionSize + 3);
 	return rc;
 }
 
@@ -175,9 +177,15 @@ Returns rollup button rect
 */
 CRect CNoteWnd::GetRollupButtonRect()
 {
-	CRect rc(GetCloseButtonRect());
-	rc.left -= s_nCaptionSize;
-	rc.right -= s_nCaptionSize; 
+// 	CRect rc(GetCloseButtonRect());
+// 	rc.left -= s_nCaptionSize;
+// 	rc.right -= s_nCaptionSize; 
+
+	CClientRect rc(m_hWnd);
+	rc.left = s_nCaptionSize + 2;
+	rc.right = rc.left + s_nCaptionSize;
+	rc.bottom = s_nCaptionSize;
+
 	return rc;
 }
 
