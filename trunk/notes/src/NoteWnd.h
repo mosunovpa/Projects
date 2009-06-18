@@ -140,6 +140,7 @@ public:
 	void Rollup();
 	void Unroll();
 	void ShowSystemMenu(CPoint pt);
+	void EscapeFocus();
 
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
@@ -251,7 +252,6 @@ private:
 	DWORD m_flagSave;
 
 	time_t m_dtCreated;
-//	time_t m_dtModified;
 	time_t m_dtDeleted;
 	_tstring m_label;
 

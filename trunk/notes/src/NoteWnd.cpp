@@ -343,25 +343,12 @@ LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	if (m_flagInit & CApplication::NF_NOACTIVATE)
 	{
-		// set focus to the top window in z-order
-		TCHAR name[512];
-		HWND next_wnd = ::GetWindow(m_hWnd, GW_HWNDFIRST);
-		::GetClassName(next_wnd, name, 512);
-		HWND parent_wnd = ::GetParent(next_wnd);
-		while (next_wnd && 
-			(!::IsWindowVisible(next_wnd) 
-			|| parent_wnd == ::GetParent(m_hWnd)
-			|| lstrcmp(name, _T("Shell_TrayWnd")) == 0))
-		{
-			next_wnd = ::GetWindow(next_wnd, GW_HWNDNEXT);
-			::GetClassName(next_wnd, name, 512);
-			parent_wnd = ::GetParent(next_wnd);
-		}
-		::SetForegroundWindow(next_wnd);
+//		EscapeFocus();
 	}
 
 	return 0;
 }
+
 /**
 WM_NCHITTEST
 */
@@ -379,10 +366,6 @@ LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 			return HTBOTTOMRIGHT;
 		}
 		SetMsgHandled(FALSE);
-	}
-	else
-	{
-		SetMsgHandled(TRUE);
 	}
 	return 0;
 }
@@ -682,6 +665,8 @@ void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 		m_edit.SetSel(0, -1);
 		m_edit.Copy();
 		m_edit.SetSel(nStart, nEnd);
+
+		EscapeFocus();
 	}
 }
 
@@ -790,6 +775,8 @@ void CNoteWnd::Rollup()
 		MoveWindow(rc);
 		Invalidate(FALSE);
 		UpdateWindow();
+
+		EscapeFocus();
 	}
 }
 
@@ -898,4 +885,23 @@ void CNoteWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
 void CNoteWnd::SetInitFlags(DWORD nFlags)
 {
 	m_flagInit = nFlags;
+}
+
+void CNoteWnd::EscapeFocus()
+{
+	// set focus to the top window in z-order
+	TCHAR name[512];
+	HWND next_wnd = ::GetWindow(m_hWnd, GW_HWNDFIRST);
+	::GetClassName(next_wnd, name, 512);
+	HWND parent_wnd = ::GetParent(next_wnd);
+	while (next_wnd && 
+		(!::IsWindowVisible(next_wnd) 
+		|| parent_wnd == ::GetParent(m_hWnd)
+		|| lstrcmp(name, _T("Shell_TrayWnd")) == 0))
+	{
+		next_wnd = ::GetWindow(next_wnd, GW_HWNDNEXT);
+		::GetClassName(next_wnd, name, 512);
+		parent_wnd = ::GetParent(next_wnd);
+	}
+	::SetForegroundWindow(next_wnd);
 }
