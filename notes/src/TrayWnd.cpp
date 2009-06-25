@@ -670,4 +670,3 @@ void CTrayWnd::OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl)
 		m_pSettingsDlg.reset();
 	}
 }
-
