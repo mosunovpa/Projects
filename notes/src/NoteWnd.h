@@ -164,6 +164,14 @@ public:
 			MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 			MSG_WM_NCLBUTTONDBLCLK(OnNcLButtonDblClk)
 			MSG_WM_NCRBUTTONUP(OnNcRButtonUp)
+
+			MSG_WM_MOUSEACTIVATE(OnMouseActivate)
+			MSG_WM_LBUTTONUP(OnLButtonUp)
+			MSG_WM_ENTERSIZEMOVE(OnEnterSizeMove)
+			MSG_WM_EXITSIZEMOVE(OnExitSizeMove)
+			MSG_WM_NCLBUTTONDOWN(OnNcLButtonDown)
+
+
 			COMMAND_ID_HANDLER_EX(ID_CLIPBRD_COPY, OnCopyToClipboard)
 			COMMAND_ID_HANDLER_EX(ID_RESTORE, OnRestore)
 			COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
@@ -201,6 +209,13 @@ public:
 	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
 	void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
 	void OnNcRButtonUp(UINT nHitTest, CPoint point);
+
+	int OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message);
+	void OnLButtonUp(UINT nFlags, CPoint point);
+	void OnEnterSizeMove();
+	void OnExitSizeMove();
+	void OnNcLButtonDown(UINT nHitTest, CPoint point);
+
 	void OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -255,5 +270,7 @@ private:
 	BOOL m_bActive;
 	std::list<_tstring> m_listLabels;
 	DWORD m_flagInit;
+
+	BOOL m_bPrevActive;
 
 };

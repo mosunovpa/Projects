@@ -43,7 +43,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_bInitialized(FALSE),
 	m_bActive(FALSE),
 	m_flagSave(CApplication::NM_NONE),
-	m_flagInit(CApplication::NF_NONE)
+	m_flagInit(CApplication::NF_NONE),
+	m_bPrevActive(FALSE)
 {
 }
 
@@ -367,7 +368,7 @@ LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 		}
 		SetMsgHandled(FALSE);
 	}
-	return 0;
+	return HTCLIENT;
 }
 
 /**
@@ -756,6 +757,39 @@ void CNoteWnd::OnNcRButtonUp(UINT nHitTest, CPoint point)
 {
 	m_icon.ShowMenu(point);
 }
+
+int CNoteWnd::OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message)
+{
+	SetMsgHandled(FALSE);
+	return MA_ACTIVATE;
+}
+void CNoteWnd::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	SetMsgHandled(FALSE);
+
+}
+
+void CNoteWnd::OnEnterSizeMove()
+{
+	SetMsgHandled(FALSE);
+
+}
+
+void CNoteWnd::OnExitSizeMove()
+{
+	if (m_bPrevActive == FALSE && (m_flagSave & CApplication::NM_POS) && m_bMinimized)
+	{
+		EscapeFocus();
+	}
+	SetMsgHandled(FALSE);
+}
+
+void CNoteWnd::OnNcLButtonDown(UINT nHitTest, CPoint point)
+{
+	m_bPrevActive = m_bActive;
+	SetMsgHandled(FALSE);
+}
+
 
 /**/
 void CNoteWnd::Rollup()
