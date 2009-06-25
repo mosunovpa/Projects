@@ -215,13 +215,6 @@ public:
 	LRESULT OnLink(LPNMHDR pnmh);
 
 private:
-	enum DownRegion
-	{
-		drNoWhere,
-		drOnCloseButton,
-		drOnCaption,
-	};
-
 	CRect GetIconRect();
 	CRect GetCaptionRect();
 	int GetMinimizedHeight();
@@ -262,4 +255,5 @@ private:
 	BOOL m_bActive;
 	std::list<_tstring> m_listLabels;
 	DWORD m_flagInit;
+
 };
