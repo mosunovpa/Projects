@@ -44,7 +44,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_bActive(FALSE),
 	m_flagSave(CApplication::NM_NONE),
 	m_flagInit(CApplication::NF_NONE),
-	m_bPrevActive(FALSE)
+	m_bPrevActive(FALSE),
+	m_hPrevActiveWindow(NULL)
 {
 }
 
@@ -500,6 +501,11 @@ WM_SETFOCUS
 */
 void CNoteWnd::OnFocus(HWND hWnd)
 {
+// 	HWND h = winutils::GetPopupParent(hWnd);
+// 	if (h != m_hWnd)
+// 	{
+// 		m_hPrevActiveWindow = h;
+// 	}
 	m_edit.SetFocus();
 	SetMsgHandled(FALSE);
 }
@@ -923,6 +929,13 @@ void CNoteWnd::SetInitFlags(DWORD nFlags)
 
 void CNoteWnd::EscapeFocus()
 {
+/*
+if (::IsWindow(m_hPrevActiveWindow))
+	{
+		::SetForegroundWindow(m_hPrevActiveWindow);
+	}
+	*/
+
 	// set focus to the top window in z-order
 	TCHAR name[512];
 	HWND next_wnd = ::GetWindow(m_hWnd, GW_HWNDFIRST);
