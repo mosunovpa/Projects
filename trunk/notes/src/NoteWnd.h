@@ -272,5 +272,5 @@ private:
 	DWORD m_flagInit;
 
 	BOOL m_bPrevActive;
-
+	HWND m_hPrevActiveWindow;
 };
