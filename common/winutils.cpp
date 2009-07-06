@@ -47,3 +47,17 @@ void winutils::AdjustScreenRect(CRect& rc)
 	}
 }
 
+HWND winutils::GetPopupParent(HWND hwnd)
+{
+	HWND hParent = GetParent(hwnd);
+	while (hParent)
+	{
+		LONG lStyle = ::GetWindowLong(hParent, GWL_STYLE);
+		if ((lStyle & WS_POPUP) == WS_POPUP)
+		{
+			return hParent;
+		}
+		hParent = GetParent(hParent);
+	}
+	return 0;
+}
