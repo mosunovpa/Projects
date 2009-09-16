@@ -17,6 +17,8 @@
 #include "Clipboard.h"
 #include "NewLabelDialog.h"
 
+#define RIGHT_ROLLUP_BTN
+
 const INT s_nCaptionSize = 16;
 const INT s_nCornerSize = 14;
 const INT s_nStatusBarSize = 15;
@@ -136,10 +138,13 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 CRect CNoteWnd::GetCaptionRect()
 {
 	CClientRect rc(m_hWnd);
-// 	rc.left = s_nCaptionSize + 2;
-// 	rc.right -= (s_nCaptionSize + s_nCaptionSize + 3);
+#ifdef RIGHT_ROLLUP_BTN
+ 	rc.left = s_nCaptionSize + 2;
+ 	rc.right -= (s_nCaptionSize + s_nCaptionSize + 3);
+#else
 	rc.left = s_nCaptionSize + s_nCaptionSize + 2;
 	rc.right -= (s_nCaptionSize + 3);
+#endif
 	rc.bottom = s_nCaptionSize;
 	return rc;
 }
@@ -177,13 +182,15 @@ Returns rollup button rect
 */
 CRect CNoteWnd::GetRollupButtonRect()
 {
-// 	CRect rc(GetCloseButtonRect());
-// 	rc.left -= s_nCaptionSize;
-// 	rc.right -= s_nCaptionSize; 
-
+#ifdef RIGHT_ROLLUP_BTN
+ 	CRect rc(GetCloseButtonRect());
+ 	rc.left -= s_nCaptionSize;
+ 	rc.right -= s_nCaptionSize; 
+#else
 	CClientRect rc(m_hWnd);
 	rc.left = s_nCaptionSize + 2;
 	rc.right = rc.left + s_nCaptionSize;
+#endif
 	rc.bottom = s_nCaptionSize;
 
 	return rc;
