@@ -189,13 +189,20 @@ private:
 	{
 		HideTooltip();
 		m_nShownMenuItemId = 0;
-		m_nSelectedMenuItemId = nItemID;
-		for(int nItem = 0; nItem < ::GetMenuItemCount(menu); nItem++) 
+		if (nFlags & MF_POPUP)
 		{
-			UINT cmd = ::GetMenuItemID(menu, nItem);
-			if(cmd == nItemID) 
+			m_nSelectedMenuItemId = 0;
+		}
+		else
+		{
+			m_nSelectedMenuItemId = nItemID;
+			for(int nItem = 0; nItem < ::GetMenuItemCount(menu); nItem++) 
 			{
-				::GetMenuItemRect(NULL, menu, nItem, &m_rcSelected);
+				UINT cmd = ::GetMenuItemID(menu, nItem);
+				if(cmd == nItemID) 
+				{
+					::GetMenuItemRect(NULL, menu, nItem, &m_rcSelected);
+				}
 			}
 		}
 	}
