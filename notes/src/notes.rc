@@ -56,6 +56,7 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\notes.ico"
 IDI_NOTES_SM            ICON                    "res\\note_sm.ico"
+IDI_TRASH_SM            ICON                    "res\\trash_sm.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -87,7 +88,7 @@ BEGIN
     BEGIN
         MENUITEM "&Restore",                    ID_RESTORE
         MENUITEM "C&opy To Clipboard",          ID_CLIPBRD_COPY
-        POPUP "Set &Label"
+        POPUP "&Label"
         BEGIN
             MENUITEM "&New Label...",               ID_LABEL_NEWLABEL
             MENUITEM SEPARATOR
@@ -126,7 +127,7 @@ BEGIN
     BEGIN
         MENUITEM "&Open",                       ID_TNM_OPEN_NOTE
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
-        POPUP "Set &Label"
+        POPUP "&Label"
         BEGIN
             MENUITEM "dummy",                       ID_DUMMY
         END
@@ -146,7 +147,7 @@ BEGIN
     POPUP "TrayCheckedNoteMenu"
     BEGIN
         MENUITEM "&Open Checked",               ID_TNM_OPEN_NOTE
-        POPUP "Set &Label for Checked"
+        POPUP "&Label for Checked"
         BEGIN
             MENUITEM "dummy",                       ID_DUMMY
         END

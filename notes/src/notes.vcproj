@@ -325,6 +325,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\icon1.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\note_sm.ico"
 				>
 			</File>
@@ -338,6 +342,10 @@
 			</File>
 			<File
 				RelativePath=".\res\rollup_btns.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\trash_sm.ico"
 				>
 			</File>
 			<File

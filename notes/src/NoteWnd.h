@@ -141,6 +141,7 @@ public:
 	void Unroll();
 	void ShowSystemMenu(CPoint pt);
 	void EscapeFocus();
+	void Refresh();
 
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
@@ -244,6 +245,7 @@ private:
 	static CBrush m_hBgBrush;
 	static CIcon m_hIcon;
 	static CIcon m_hIconSm;
+	static CIcon m_hIconTrash;
 	static CPen m_hPen;
 	static CPen m_hGrayPen;
 	static CFont m_hStatusFont;
