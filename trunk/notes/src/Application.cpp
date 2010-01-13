@@ -163,6 +163,10 @@ HWND CApplication::CreateNote(_tstring const& sText /*= _tstring()*/, DWORD nFla
 		{
 			pWnd->SetText(sText);
 		}
+		if ( nFlag & CApplication::NF_ROLLUP )
+		{
+			pWnd->Rollup();
+		}
 	}
 	return pWnd != NULL ? pWnd->m_hWnd : NULL;
 }
@@ -352,16 +356,23 @@ CNote CApplication::FindNote(int nNoteId) const
 }
 
 /**/
+void CApplication::UpdateNoteWnd( CNoteWnd* pWnd, CNote const& note )
+{
+	pWnd->SetId(note.GetId());
+	pWnd->SetText(note.GetText());
+	pWnd->SetCreatedDate(note.GetCreatedDate());
+	pWnd->SetDeletedDate(note.GetDeletedDate());
+	pWnd->SetLabel(note.GetLabel());
+	pWnd->Refresh();
+}
+
+/**/
 CNoteWnd* CApplication::OpenNote( CNote const& note )
 {
 	CNoteWnd* pWnd = CreateNoteWnd(note.GetPos());
 	if (pWnd)
 	{
-		pWnd->SetId(note.GetId());
-		pWnd->SetText(note.GetText());
-		pWnd->SetCreatedDate(note.GetCreatedDate());
-		pWnd->SetDeletedDate(note.GetDeletedDate());
-		pWnd->SetLabel(note.GetLabel());
+		UpdateNoteWnd(pWnd, note);
 	}
 	return pWnd;
 }
@@ -411,6 +422,8 @@ void CApplication::ShowNote(int nNoteId)
 	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
 	if (pNoteWnd)
 	{
+		CNote note = m_storage.GetNote(nNoteId);
+		UpdateNoteWnd(pNoteWnd, note);
 		pNoteWnd->Unroll();
 		pNoteWnd->SetFocus();
 	}
@@ -461,7 +474,6 @@ void CApplication::RestoreNote(int nNoteId)
 		m_storage.SaveNote(note, CApplication::NM_DELETED | CApplication::NM_MODIFIED 
 			| CApplication::NM_LABEL);
 		ShowNote(nNoteId);
-
 	}
 }
 

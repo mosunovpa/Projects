@@ -89,6 +89,7 @@ private:
 	CRect GetOptimumPosition(std::vector<CRect> const& vPossiblePositions, 
 		CNote::List const& notes);
 	CNote FindNote(int nNoteId) const;
+	void UpdateNoteWnd( CNoteWnd* pWnd, CNote const& note );
 
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;

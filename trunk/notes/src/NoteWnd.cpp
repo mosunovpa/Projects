@@ -28,6 +28,9 @@ CIcon CNoteWnd::m_hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKE
 								  IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
 CIcon CNoteWnd::m_hIconSm = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_NOTES_SM),
 								  IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
+CIcon CNoteWnd::m_hIconTrash = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_TRASH_SM),
+											   IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
+
 CPen CNoteWnd::m_hPen = ::CreatePen(PS_SOLID, 1, RGB(0,0,0));
 CPen CNoteWnd::m_hGrayPen = ::CreatePen(PS_SOLID, 1, RGB(128, 128, 128));
 CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell Dlg"));
@@ -344,15 +347,14 @@ LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	m_edit.EmptyUndoBuffer();
 	m_bInitialized = TRUE;
 
-	if (m_flagInit & CApplication::NF_ROLLUP)
-	{
-		Rollup();
-	}
-	if (m_flagInit & CApplication::NF_NOACTIVATE)
-	{
+//	if (m_flagInit & CApplication::NF_ROLLUP)
+//	{
+//		Rollup();
+//	}
+//	if (m_flagInit & CApplication::NF_NOACTIVATE)
+//	{
 //		EscapeFocus();
-	}
-
+//	}
 	return 0;
 }
 
@@ -632,7 +634,7 @@ void CNoteWnd::SetLabel(_tstring const& text)
 	if (m_label != text)
 	{
 		m_label = text;
-		m_flagSave |= CApplication::NM_LABEL;
+		m_flagSave |= (CApplication::NM_LABEL | CApplication::NM_MODIFIED);
 	}
 }
 
@@ -681,7 +683,6 @@ void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 void CNoteWnd::OnRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CApplication::Get().RestoreNote(GetId());
-	SetDeletedDate(0);
 }
 
 /* ID_DELETE */
@@ -859,17 +860,20 @@ LRESULT CNoteWnd::OnLink(LPNMHDR pnmh)
 }
 
 
+/**/
 time_t CNoteWnd::GetDeletedDate() const
 {
 	return m_dtDeleted;
 
 }
 
+/**/
 void CNoteWnd::SetDeletedDate( time_t dt )
 {
 	m_dtDeleted = dt;
 }
 
+/**/
 void CNoteWnd::OptionsUpdated()
 {
 	COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
@@ -884,11 +888,13 @@ void CNoteWnd::OptionsUpdated()
 	m_edit.SetDefaultCharFormat(cf);
 }
 
+/**/
 BOOL CNoteWnd::IsMinimized()
 {
 	return m_bMinimized;
 }
 
+/**/
 void CNoteWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (nID == LABEL_CMD_FIRST)
@@ -912,6 +918,7 @@ void CNoteWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 }
 
+/**/
 void CNoteWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CNewLabelDialog	dlg;
@@ -922,11 +929,13 @@ void CNoteWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 }
 
+/**/
 void CNoteWnd::SetInitFlags(DWORD nFlags)
 {
 	m_flagInit = nFlags;
 }
 
+/**/
 void CNoteWnd::EscapeFocus()
 {
 	// set focus to the top window in z-order
@@ -944,4 +953,17 @@ void CNoteWnd::EscapeFocus()
 		parent_wnd = ::GetParent(next_wnd);
 	}
 	::SetForegroundWindow(next_wnd);
+}
+
+/**/
+void CNoteWnd::Refresh()
+{
+	if (GetDeletedDate() == 0)
+	{
+		m_icon.SetIcon(m_hIconSm);
+	}
+	else
+	{
+		m_icon.SetIcon(m_hIconTrash);
+	}
 }
