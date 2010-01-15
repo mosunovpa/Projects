@@ -52,6 +52,7 @@ public:
 	void DeleteNote(int nNoteId);
 	void RestoreNote(int nNoteId);
 	BOOL IsNoteDeleted(int nNoteId);
+	BOOL IsNoteExists(int nNoteId);
 	void Command(int nCmd, int nNoteId);
 	void Command(int nCmd, HWND hWnd);
 	void ShowAllNotes();

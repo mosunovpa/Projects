@@ -8,20 +8,27 @@ CNewLabelDialog::CNewLabelDialog(void)
 {
 }
 
-LRESULT CNewLabelDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CNewLabelDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	CWindow wndParent(GetParent());
-	if (wndParent.IsWindow())
+	if (lParam)
 	{
-		CWindowRect rcParent(wndParent);
-		CWindowRect rc(*this);
-		rc.MoveToXY(rcParent.left + 40, rcParent.top + 40);
-		winutils::AdjustScreenRect(rc);
-		MoveWindow(rc);
+		CenterWindow();
 	}
 	else
 	{
-		CenterWindow();
+		CWindow wndParent(GetParent());
+		if (wndParent.IsWindow())
+		{
+			CWindowRect rcParent(wndParent);
+			CWindowRect rc(*this);
+			rc.MoveToXY(rcParent.left + 40, rcParent.top + 40);
+			winutils::AdjustScreenRect(rc);
+			MoveWindow(rc);
+		}
+		else
+		{
+			CenterWindow();
+		}
 	}
 	SetDlgItemText(IDC_EDIT_LABEL, m_sLabel.c_str());
 	return TRUE;
