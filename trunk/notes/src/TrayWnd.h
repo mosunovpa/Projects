@@ -44,6 +44,7 @@ public:
 		MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 		MSG_WM_UNINITMENUPOPUP(OnUnInitMenuPopup)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
+		MESSAGE_HANDLER_EX(WMU_NEW_LABEL, OnWMUNewLabel)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWANDPASTE, OnNewAndPaste)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
@@ -73,6 +74,7 @@ public:
 	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
 	void OnUnInitMenuPopup(UINT nID, CMenuHandle menu);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPopupAbout(UINT uNotifyCode, int nID, CWindow wndCtl);

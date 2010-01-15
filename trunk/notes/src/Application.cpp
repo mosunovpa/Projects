@@ -508,6 +508,21 @@ BOOL CApplication::IsNoteDeleted( int nNoteId )
 }
 
 /**/
+BOOL CApplication::IsNoteExists( int nNoteId )
+{
+	try
+	{
+		CNote note = m_storage.GetNote(nNoteId);
+		return TRUE;
+	}
+	catch(...)
+	{
+		return FALSE;
+	}
+}
+
+
+/**/
 _tstring CApplication::GetNoteCaption(_tstring text)
 {
 	_tstring sCaption = strutils::trim_string(text.c_str(), 64);

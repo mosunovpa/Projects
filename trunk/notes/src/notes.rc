@@ -129,7 +129,8 @@ BEGIN
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
         POPUP "&Label"
         BEGIN
-            MENUITEM "dummy",                       ID_DUMMY
+            MENUITEM "&New Label...",               ID_TNM_NEWLABEL
+            MENUITEM SEPARATOR
         END
         MENUITEM SEPARATOR
         MENUITEM "C&heck",                      ID_TNM_CHECK
@@ -149,7 +150,8 @@ BEGIN
         MENUITEM "&Open Checked",               ID_TNM_OPEN_NOTE
         POPUP "&Label for Checked"
         BEGIN
-            MENUITEM "dummy",                       ID_DUMMY
+            MENUITEM "&New Label...",               ID_TNM_NEWLABEL
+            MENUITEM SEPARATOR
         END
         MENUITEM SEPARATOR
         MENUITEM "&Uncheck",                    ID_TNM_UNCHECK
