@@ -8,6 +8,8 @@
 
 // Taskbar message
 #define WMU_NOTIFYICON		WM_APP + 1
+#define WMU_NEW_LABEL		WM_APP + 2
+
 
 // CTrayIcon class is responsible for adding and removing an icon to the taskbar 
 // status area.
