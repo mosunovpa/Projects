@@ -5,10 +5,7 @@
 #pragma once
 
 #include "stdafx.h"
-
-// Taskbar message
-#define WMU_NOTIFYICON		WM_APP + 1
-#define WMU_NEW_LABEL		WM_APP + 2
+#include "user_messages.h"
 
 
 // CTrayIcon class is responsible for adding and removing an icon to the taskbar 
