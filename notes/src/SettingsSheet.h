@@ -11,11 +11,13 @@ public:
 
 	BEGIN_MSG_MAP(CSettingsSheet)
 		MESSAGE_HANDLER_EX(UWM_CENTER_SHEET, OnInit)
+		MSG_WM_DESTROY(OnDestroy)
 		CHAIN_MSG_MAP(CPropertySheetImpl<CSettingsSheet>)
 	END_MSG_MAP()
 
 	void OnSheetInitialized();
 	LRESULT OnInit ( UINT uMsg, WPARAM wParam ,LPARAM lParam );
+	void OnDestroy();
 
 private:
 

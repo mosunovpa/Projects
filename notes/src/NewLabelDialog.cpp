@@ -4,15 +4,20 @@
 #include "atlwinmisc.h"
 #include "winutils.h"
 
-CNewLabelDialog::CNewLabelDialog(void)
+CNewLabelDialog::CNewLabelDialog(void) : m_nInitParam(ipNone)
 {
 }
 
-LRESULT CNewLabelDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CNewLabelDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	if (lParam)
+	if ((m_nInitParam & ipCursorPos) == ipCursorPos)
 	{
-		CenterWindow();
+		CPoint pt;
+		GetCursorPos(&pt);
+		CWindowRect rc(*this);
+		rc.MoveToXY(pt.x - rc.Width() / 2, pt.y - rc.Height() / 2);
+		winutils::AdjustScreenRect(rc);
+		MoveWindow(rc);
 	}
 	else
 	{
@@ -53,3 +58,18 @@ LRESULT CNewLabelDialog::OnCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	EndDialog(IDCANCEL);
 	return 0;
 }
+
+void CNewLabelDialog::OnActivate(UINT nState, BOOL bMinimized, CWindow wndOther)
+{
+	if ((nState == WA_INACTIVE) && ((m_nInitParam & ipPopup) == ipPopup))
+	{
+		PostMessage(WMU_CLOSE_FORM);
+	}
+}
+
+LRESULT CNewLabelDialog::OnCloseForm(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	EndDialog(IDCANCEL);
+	return 0;
+}
+

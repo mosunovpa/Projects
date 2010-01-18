@@ -415,7 +415,8 @@ void CTrayWnd::OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 LRESULT CTrayWnd::OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	CNewLabelDialog	dlg;
-	if (dlg.DoModal(m_hWnd, 1) == IDOK)
+	dlg.m_nInitParam = (CNewLabelDialog::ipCursorPos | CNewLabelDialog::ipPopup);
+	if (dlg.DoModal() == IDOK)
 	{
 		UINT nId = GET_NOTE_ID_FROM_CMD(wParam);
 		if (IsMenuState(nId, CNotesMenuItem::stChecked))
