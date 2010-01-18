@@ -20,4 +20,7 @@ LRESULT CSettingsSheet::OnInit ( UINT uMsg, WPARAM wParam ,LPARAM lParam )
 	return 0;
 }
 
+void CSettingsSheet::OnDestroy()
+{
 
+}

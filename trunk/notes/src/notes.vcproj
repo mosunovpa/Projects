@@ -298,6 +298,10 @@
 				RelativePath=".\TrayWnd.h"
 				>
 			</File>
+			<File
+				RelativePath=".\user_messages.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
