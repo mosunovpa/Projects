@@ -241,6 +241,7 @@ private:
 	CMenuHandle AdjustSystemMenu();
 	void StoreNote();
 	void DrawStatusBar(CDC& dc);
+	void DrawTextInCaption(CDC& dc, const _tstring& text, COLORREF color);
 
 	static CBrush m_hBgBrush;
 	static CIcon m_hIcon;

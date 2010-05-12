@@ -409,6 +409,21 @@ void CNoteWnd::OnNcPaint(HRGN wParam)
 	ReleaseDC(hdc);
 }
 
+/**/
+void CNoteWnd::DrawTextInCaption(CDC& dc, const _tstring& text, COLORREF color)
+{
+	CFontHandle hOldFont = dc.SelectFont(m_hStatusFont);
+	dc.SetBkColor(RGB(255, 255, 204));
+	dc.SetTextColor(color);
+
+	CRect rc = GetCaptionRect();
+	rc.top += 1;
+	rc.left += 2;
+	dc.DrawText(text.c_str(), -1, rc, DT_LEFT | DT_VCENTER| DT_END_ELLIPSIS);
+	dc.SelectFont(hOldFont);
+
+}
+
 /**
  WM_PAINT
  */
@@ -421,19 +436,16 @@ void CNoteWnd::OnPaint(HDC hdc)
 		memDc.FillRect(&rcClient, m_hBgBrush);
 		if (!m_bMinimized)
 		{
+			// show label in the caption
+			DrawTextInCaption(memDc, GetLabel(), RGB(125, 125, 125));
+
+			// draw status bar
 			DrawStatusBar(memDc);
 		}
 		else
 		{
-			// show caption in minimize mode
-			CFontHandle hOldFont = memDc.SelectFont(m_hStatusFont);
-			memDc.SetBkColor(RGB(255, 255, 204));
 			_tstring s = CApplication::Get().GetNoteCaption(GetText().c_str());
-			CRect rc = GetCaptionRect();
-			rc.top += 1;
-			rc.left += 2;
-			memDc.DrawText(s.c_str(), -1, rc, DT_LEFT | DT_VCENTER| DT_END_ELLIPSIS);
-			memDc.SelectFont(hOldFont);
+			DrawTextInCaption(memDc, s, RGB(0, 0, 0));
 		}
 	}
 }
@@ -635,6 +647,8 @@ void CNoteWnd::SetLabel(_tstring const& text)
 	{
 		m_label = text;
 		m_flagSave |= (CApplication::NM_LABEL | CApplication::NM_MODIFIED);
+		Invalidate(FALSE);
+		UpdateWindow();
 	}
 }
 
@@ -938,6 +952,8 @@ void CNoteWnd::SetInitFlags(DWORD nFlags)
 /**/
 void CNoteWnd::EscapeFocus()
 {
+	return;
+
 	// set focus to the top window in z-order
 	TCHAR name[512];
 	HWND next_wnd = ::GetWindow(m_hWnd, GW_HWNDFIRST);
