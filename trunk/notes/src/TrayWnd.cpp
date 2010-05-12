@@ -555,7 +555,13 @@ void CTrayWnd::OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
 /**/
 bool compare_by_modify_date(CNote const& left, CNote const& right)
 {
-	return left.GetModifiedDate() < right.GetModifiedDate();
+	time_t leftModifDate = left.GetModifiedDate();
+	time_t rigthModifDate = right.GetModifiedDate();
+	if (leftModifDate == rigthModifDate)
+	{
+		return left.GetCreatedDate() < right.GetCreatedDate();
+	}
+	return leftModifDate < rigthModifDate;
 }
 /**/
 bool compare_by_deleted_date(CNote const& left, CNote const& right)
