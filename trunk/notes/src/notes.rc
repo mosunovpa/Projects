@@ -93,6 +93,7 @@ BEGIN
             MENUITEM "&New Label...",               ID_LABEL_NEWLABEL
             MENUITEM SEPARATOR
         END
+        MENUITEM "D&uplicate",                  ID_DUPLICATE
         MENUITEM SEPARATOR
         MENUITEM "&Delete \tCtrl+D",            ID_DELETE
         MENUITEM SEPARATOR
@@ -132,6 +133,7 @@ BEGIN
             MENUITEM "&New Label...",               ID_TNM_NEWLABEL
             MENUITEM SEPARATOR
         END
+        MENUITEM "D&uplicate",                  ID_TNM_DUPLICATE
         MENUITEM SEPARATOR
         MENUITEM "C&heck",                      ID_TNM_CHECK
         MENUITEM SEPARATOR
