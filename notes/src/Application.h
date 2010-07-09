@@ -74,6 +74,7 @@ public:
 	_tstring GetNoteLabel(int nNoteId) const;
 	void SetNoteLabel(int nNoteId, _tstring const& sLabel);
 	_tstring GetNoteText(int nNoteId) const;
+	void DuplicateNote(int nNoteId);
 protected:
 	CApplication();
 	virtual ~CApplication();
