@@ -31,7 +31,6 @@
 #define IDB_UNROLL_BTNS                 119
 #define IDB_ROLLUP_BTNS                 120
 #define IDD_NEW_LABEL                   121
-#define IDI_ICON1                       122
 #define IDI_TRASH_SM                    122
 #define IDICON                          1001
 #define IDC_COMBO_NOTE_FONT_SIZE        1002
@@ -92,13 +91,17 @@
 #define ID_LABEL_NEW                    40103
 #define ID_TRAYCHECKEDNOTEMENU_LABELCHECKED 40104
 #define ID_DUMMY                        40106
+#define ID_TRAYNOTEMENU_DUPLICATE       40107
+#define ID_TNM_DUPLICATE                40108
+#define ID_NOTEMENU_DUPLICATE           40109
+#define ID_DUPLICATE                    40110
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        123
-#define _APS_NEXT_COMMAND_VALUE         40107
+#define _APS_NEXT_COMMAND_VALUE         40111
 #define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
