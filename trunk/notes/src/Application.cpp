@@ -434,6 +434,20 @@ void CApplication::ShowNote(int nNoteId)
 }
 
 /**/
+void CApplication::DuplicateNote(int nNoteId)
+{
+	CNoteWnd* pWnd = CreateNoteWnd(CalcNewNoteRect());
+	if (pWnd && nNoteId)
+	{
+		CNote note = m_storage.GetNote(nNoteId);
+		note.SetId(0);
+		UpdateNoteWnd(pWnd, note);
+		pWnd->Unroll();
+		pWnd->SetFocus();
+	}
+}
+
+/**/
 void CApplication::NoteTextToClipboard(int nNoteId)
 {
 	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
