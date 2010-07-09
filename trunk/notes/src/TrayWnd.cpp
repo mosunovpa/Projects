@@ -481,6 +481,15 @@ void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 }
 
+/* ID_TNM_DUPLICATE */
+void CTrayWnd::OnNoteDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
+	{
+		CApplication::Get().DuplicateNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+	}
+}
+
 /* ID_TNM_CHECK */
 void CTrayWnd::OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl)
 {

@@ -140,6 +140,7 @@ public:
 	void Rollup();
 	void Unroll();
 	void ShowSystemMenu(CPoint pt);
+	void ShowLabelMenu(CPoint pt);
 	void EscapeFocus();
 	void Refresh();
 
@@ -172,9 +173,9 @@ public:
 			MSG_WM_EXITSIZEMOVE(OnExitSizeMove)
 			MSG_WM_NCLBUTTONDOWN(OnNcLButtonDown)
 
-
 			COMMAND_ID_HANDLER_EX(ID_CLIPBRD_COPY, OnCopyToClipboard)
 			COMMAND_ID_HANDLER_EX(ID_RESTORE, OnRestore)
+			COMMAND_ID_HANDLER_EX(ID_DUPLICATE, OnDuplicate)
 			COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
 			COMMAND_ID_HANDLER_EX(ID_LABEL_NEWLABEL, OnNewLabel);
 			COMMAND_ID_HANDLER_EX(ID_PASTE, OnPaste)
@@ -219,6 +220,7 @@ public:
 
 	void OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -231,6 +233,8 @@ public:
 	LRESULT OnLink(LPNMHDR pnmh);
 
 private:
+	void PopulateLabelMenu(CMenuHandle menuLabels);
+
 	CRect GetIconRect();
 	CRect GetCaptionRect();
 	int GetMinimizedHeight();

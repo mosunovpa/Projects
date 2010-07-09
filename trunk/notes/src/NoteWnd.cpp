@@ -95,30 +95,7 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 	{
 		CMenuHandle menuLabels = menuPopup.GetSubMenu(2);
 
-		m_listLabels.clear();
-		CApplication::Get().GetLabels(m_listLabels);
-		if (!m_label.empty() && (m_flagSave & CApplication::NM_LABEL))
-		{
-			m_listLabels.push_back(m_label);
-			m_listLabels.sort();
-			m_listLabels.unique();
-		}
-
-		menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
-		int nSelCmd = LABEL_CMD_FIRST;
-		int pos = 1;
-		for (std::list<_tstring>::iterator it = m_listLabels.begin();
-			it != m_listLabels.end(); ++it)
-		{
-			int nCmd = CREATE_LABEL_CMD(pos);
-			menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
-			if (*it == GetLabel())
-			{
-				nSelCmd = nCmd;
-			}
-			++pos;
-		}
-		menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
+		PopulateLabelMenu(menuLabels);
 
 		menuPopup.DeleteMenu(ID_RESTORE, MF_BYCOMMAND);
 	}
@@ -134,6 +111,61 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 		return;
 	}
 }
+
+/**/
+void CNoteWnd::ShowLabelMenu(CPoint pt)
+{
+	CMenu menuNotes;
+
+	// Load the menu resource 
+	if (!menuNotes.LoadMenu(IDR_NOTEMENU))
+	{
+		return;
+	}
+	CMenuHandle menuPopup = menuNotes.GetSubMenu(0);
+	if (menuPopup.m_hMenu == NULL)
+	{
+		return;
+	}
+	CMenuHandle menuLabels = menuPopup.GetSubMenu(2);
+	PopulateLabelMenu(menuLabels);
+
+	if (!menuLabels.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
+		pt.x, pt.y, m_hWnd))
+	{
+		return;
+	}
+}
+
+/**/
+void CNoteWnd::PopulateLabelMenu(CMenuHandle menuLabels)
+{
+	m_listLabels.clear();
+	CApplication::Get().GetLabels(m_listLabels);
+	if (!m_label.empty() && (m_flagSave & CApplication::NM_LABEL))
+	{
+		m_listLabels.push_back(m_label);
+		m_listLabels.sort();
+		m_listLabels.unique();
+	}
+
+	menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
+	int nSelCmd = LABEL_CMD_FIRST;
+	int pos = 1;
+	for (std::list<_tstring>::iterator it = m_listLabels.begin();
+		it != m_listLabels.end(); ++it)
+	{
+		int nCmd = CREATE_LABEL_CMD(pos);
+		menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
+		if (*it == GetLabel())
+		{
+			nSelCmd = nCmd;
+		}
+		++pos;
+	}
+	menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
+}
+
 
 /**
  Returns caption coordinates
@@ -699,6 +731,18 @@ void CNoteWnd::OnRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 	CApplication::Get().RestoreNote(GetId());
 }
 
+/* ID_DUPLICATE */
+void CNoteWnd::OnDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	try
+	{
+		StoreNote(); // save content 
+	}
+	CATCH_ALL_ERRORS(m_hWnd)
+	CApplication::Get().DuplicateNote(GetId());
+}
+
+
 /* ID_DELETE */
 void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
@@ -776,7 +820,8 @@ void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 /**/
 void CNoteWnd::OnNcRButtonUp(UINT nHitTest, CPoint point)
 {
-	m_icon.ShowMenu(point);
+//	m_icon.ShowMenu(point);
+	ShowLabelMenu(point);
 }
 
 int CNoteWnd::OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message)
