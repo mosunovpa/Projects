@@ -3,6 +3,7 @@
 
 #include "TrayIcon.h"
 #include "resource.h"
+#include "user_messages.h"
 #include "NotesMenuActions.h"
 #include "SettingsSheet.h"
 #include "MenuTooltip.h"
