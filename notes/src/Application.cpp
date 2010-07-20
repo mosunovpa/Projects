@@ -302,7 +302,7 @@ void CApplication::DeleteFromStorage(int nNoteId)
 	if (nNoteId > 0)
 	{
 		CNote note = m_storage.GetNote(nNoteId);
-		note.SetLabel(_tstring());
+//		note.SetLabel(_tstring());
 		if (note.GetDeletedDate() == 0)
 		{
 			note.SetDeletedDate(dateutils::GetCurrentDate());
@@ -484,7 +484,7 @@ void CApplication::RestoreNote(int nNoteId)
 		CNote note = m_storage.GetNote(nNoteId);
 		note.SetDeletedDate(0);
 		note.SetModifiedDate(dateutils::GetCurrentDate());
-		note.SetLabel(_tstring());
+//		note.SetLabel(_tstring());
 		m_storage.SaveNote(note, CApplication::NM_DELETED | CApplication::NM_MODIFIED 
 			| CApplication::NM_LABEL);
 		ShowNote(nNoteId);

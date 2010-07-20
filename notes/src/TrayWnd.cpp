@@ -72,6 +72,8 @@ BOOL CTrayWnd::BeforeTooltipShowing() const
 /* WM_CREATE */
 LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+	GetSystemSettings();
+
 	m_Icon.LoadIcon(IDR_MAINFRAME, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
 	SetIcon(m_Icon, TRUE);
 	m_IconSm.LoadIcon(IDR_MAINFRAME, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);

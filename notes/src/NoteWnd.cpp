@@ -78,10 +78,24 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 	{
 		return;
 	}
-	CMenuHandle menuPopup = menuNotes.GetSubMenu(0);
-	if (menuPopup.m_hMenu == NULL)
+	CMenuHandle menuPopup;
+	if (GetDeletedDate() == 0)
 	{
-		return;
+		menuPopup = menuNotes.GetSubMenu(0);
+		if (menuPopup.m_hMenu == NULL)
+		{
+			return;
+		}
+		CMenuHandle menuLabels = menuPopup.GetSubMenu(1);
+		PopulateLabelMenu(menuLabels);
+	}
+	else
+	{
+		menuPopup = menuNotes.GetSubMenu(1);
+		if (menuPopup.m_hMenu == NULL)
+		{
+			return;
+		}
 	}
 
 	menuPopup.SetMenuDefaultItem(ID_CLOSE);
@@ -90,18 +104,6 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 	{
 		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALL, CApplication::Get().GetOpenedNotesCount() > 1);
 		menuutils::SetMenuItemEnable(menuPopup, ID_CLOSEALLBUTTHIS, CApplication::Get().GetOpenedNotesCount() > 1);
-	}
-	if (GetDeletedDate() == 0)
-	{
-		CMenuHandle menuLabels = menuPopup.GetSubMenu(2);
-
-		PopulateLabelMenu(menuLabels);
-
-		menuPopup.DeleteMenu(ID_RESTORE, MF_BYCOMMAND);
-	}
-	else
-	{
-		menuPopup.DeleteMenu(2, MF_BYPOSITION);
 	}
 	menuPopup.DeleteMenu(IsMinimized() ? ID_ROLLUP : ID_UNROLL, MF_BYCOMMAND);
 
@@ -127,7 +129,7 @@ void CNoteWnd::ShowLabelMenu(CPoint pt)
 	{
 		return;
 	}
-	CMenuHandle menuLabels = menuPopup.GetSubMenu(2);
+	CMenuHandle menuLabels = menuPopup.GetSubMenu(1);
 	PopulateLabelMenu(menuLabels);
 
 	if (!menuLabels.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
@@ -308,6 +310,8 @@ WM_CREATE
 */
 LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 {
+	GetSystemSettings();
+
 	m_icon.Create(m_hWnd, GetIconRect(), NULL, WS_CHILD|WS_VISIBLE|SS_ICON|SS_CENTERIMAGE|SS_NOTIFY);
 	m_icon.SetIcon(m_hIconSm);
 
@@ -798,6 +802,8 @@ void CNoteWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu
 	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_PASTE, m_edit.CanPaste());
 	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_CLEAR, m_edit.CanClear());
 	menuutils::SetMenuItemEnable(menuPopup, ID_EDIT_SELECT_ALL, m_edit.CanSelectAll());
+
+	SetMsgHandled(FALSE);
 }
 
 /**/
@@ -821,7 +827,14 @@ void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 void CNoteWnd::OnNcRButtonUp(UINT nHitTest, CPoint point)
 {
 //	m_icon.ShowMenu(point);
-	ShowLabelMenu(point);
+	if (GetDeletedDate() == 0)
+	{
+		ShowLabelMenu(point);
+	}
+	else
+	{
+		ShowSystemMenu(point);
+	}
 }
 
 int CNoteWnd::OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message)
@@ -1022,9 +1035,17 @@ void CNoteWnd::Refresh()
 	if (GetDeletedDate() == 0)
 	{
 		m_icon.SetIcon(m_hIconSm);
+		SetReadOnly(FALSE);
 	}
 	else
 	{
 		m_icon.SetIcon(m_hIconTrash);
+		SetReadOnly(TRUE);
 	}
+}
+
+/**/
+void CNoteWnd::SetReadOnly(BOOL bReadOnly /*= TRUE*/)
+{
+	m_edit.SetReadOnly(bReadOnly);
 }
