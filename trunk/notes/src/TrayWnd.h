@@ -8,11 +8,13 @@
 #include "SettingsSheet.h"
 #include "MenuTooltip.h"
 #include "defines.h"
+#include "CoolContextMenu.h"
 
 /* CTrayWnd */
 class CTrayWnd : 
 	public CWindowImpl<CTrayWnd>,
-	public CMenuTooltip<CTrayWnd>
+	public CMenuTooltip<CTrayWnd>,
+	public CCoolContextMenu<CTrayWnd>
 {
 public:
 	CTrayWnd();
@@ -35,6 +37,7 @@ public:
 	BEGIN_MSG_MAP_EX(CTrayWnd)
 	try
 	{
+
 		MSG_WM_CREATE(OnCreate)
 		MSG_WM_DESTROY(OnDestroy)
 		MSG_WM_QUERYENDSESSION(OnQueryEndSession)
@@ -63,6 +66,7 @@ public:
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
 
 		CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
+		CHAIN_MSG_MAP(CCoolContextMenu<CTrayWnd>)
 	}
 	CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()

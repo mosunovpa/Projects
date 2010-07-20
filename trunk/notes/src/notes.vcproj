@@ -385,6 +385,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\common\Draw.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\Draw.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\common\errors.cpp"
 				>
 			</File>

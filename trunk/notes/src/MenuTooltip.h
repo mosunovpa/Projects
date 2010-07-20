@@ -98,6 +98,7 @@ private:
 			m_tooltip.SetMaxTipWidth(300);
 			m_nTimer = SetTimer(m_hParent, 654, 100, NULL);
 		}
+		SetMsgHandled(FALSE);
 	}
 
 	/**/
@@ -110,6 +111,7 @@ private:
 			KillTimer(m_hParent, m_nTimer);
 			m_tooltip.DestroyWindow();
 		}
+		SetMsgHandled(FALSE);
 	}
 
 	/* TTN_SHOW */
@@ -151,6 +153,7 @@ private:
 
 			return 1;
 		}
+		SetMsgHandled(FALSE);
 		return 0;
 	}
 
@@ -182,6 +185,7 @@ private:
 				}
 			}
 		}
+		SetMsgHandled(FALSE);
 	}
 
 	/**/
@@ -205,6 +209,7 @@ private:
 				}
 			}
 		}
+		SetMsgHandled(FALSE);
 	}
 
 	UINT_PTR m_nTimer;

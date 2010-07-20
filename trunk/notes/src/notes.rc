@@ -86,7 +86,6 @@ IDR_NOTEMENU MENU
 BEGIN
     POPUP "NoteMenu"
     BEGIN
-        MENUITEM "&Restore",                    ID_RESTORE
         MENUITEM "C&opy To Clipboard",          ID_CLIPBRD_COPY
         POPUP "&Label"
         BEGIN
@@ -96,6 +95,20 @@ BEGIN
         MENUITEM "D&uplicate",                  ID_DUPLICATE
         MENUITEM SEPARATOR
         MENUITEM "&Delete \tCtrl+D",            ID_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "Roll &Up",                    ID_ROLLUP
+        MENUITEM "U&nroll",                     ID_UNROLL
+        MENUITEM SEPARATOR
+        MENUITEM "&Close\tEsc",                 ID_CLOSE
+        MENUITEM "Close &All",                  ID_CLOSEALL
+        MENUITEM "Close All But &This",         ID_CLOSEALLBUTTHIS
+    END
+    POPUP "NoteMenuDeleted"
+    BEGIN
+        MENUITEM "&Restore",                    ID_RESTORE
+        MENUITEM "C&opy To Clipboard",          ID_CLIPBRD_COPY
+        MENUITEM SEPARATOR
+        MENUITEM "R&emove \tCtrl+D",            ID_DELETE
         MENUITEM SEPARATOR
         MENUITEM "Roll &Up",                    ID_ROLLUP
         MENUITEM "U&nroll",                     ID_UNROLL
@@ -145,7 +158,7 @@ BEGIN
         MENUITEM "&Open",                       ID_TNM_OPEN_NOTE
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
         MENUITEM SEPARATOR
-        MENUITEM "&Delete",                     ID_TNM_DELETE
+        MENUITEM "R&emove",                     ID_TNM_DELETE
     END
     POPUP "TrayCheckedNoteMenu"
     BEGIN

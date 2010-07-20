@@ -11,6 +11,7 @@
 #include "resource.h"
 #include "menuutils.h"
 #include "defines.h"
+#include "CoolContextMenu.h"
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -113,7 +114,8 @@ public:
 //////////////////////////////////////////////////////////////////////////
 //
 
-class CNoteWnd : public CWindowImpl<CNoteWnd>
+class CNoteWnd : public CWindowImpl<CNoteWnd>,
+	public CCoolContextMenu<CNoteWnd>
 {
 public:
 	CNoteWnd(int nNoteId = 0);
@@ -143,6 +145,7 @@ public:
 	void ShowLabelMenu(CPoint pt);
 	void EscapeFocus();
 	void Refresh();
+	void SetReadOnly(BOOL bReadOnly = TRUE);
 
 	DECLARE_WND_CLASS(NOTE_WND_CLASS_NAME)
 
@@ -187,6 +190,8 @@ public:
 			COMMAND_ID_HANDLER_EX(ID_UNROLL, OnUnroll)
 			NOTIFY_CODE_HANDLER_EX(EN_LINK, OnLink)
 			CHAIN_COMMANDS_MEMBER(m_edit)
+
+			CHAIN_MSG_MAP(CCoolContextMenu<CNoteWnd>)
 		} 
 		CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()
