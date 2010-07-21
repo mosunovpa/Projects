@@ -60,6 +60,7 @@ public:
 		COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
 		COMMAND_ID_HANDLER_EX(ID_TNM_DUPLICATE, OnNoteDuplicate);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECK, OnNoteCheck);
+		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKALL, OnNoteCheckAll);
 		COMMAND_ID_HANDLER_EX(ID_TNM_UNCHECK, OnNoteUncheck);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
 		COMMAND_ID_HANDLER_EX(ID_TNM_RESTORE, OnNoteRestore);
@@ -93,6 +94,7 @@ public:
 	void OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNoteCheckAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteUncheck(UINT uNotifyCode, int nID, CWindow wndCtl);
 
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
