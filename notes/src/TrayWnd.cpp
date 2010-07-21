@@ -510,6 +510,35 @@ void CTrayWnd::OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 }
 
+/* ID_TNM_CHECKALL */
+void CTrayWnd::OnNoteCheckAll(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
+	{
+		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd);
+		CNotesMenuActions::iterator it = m_listNotesMenuActions.find(nNoteId);
+		if (it != m_listNotesMenuActions.end())
+		{
+			CMenuHandle menu(it->m_hPopupMenu);
+			for (int i = 0; i < menu.GetMenuItemCount(); ++i)
+			{
+				int itemCmd = menu.GetMenuItemID(i);
+				if (IS_NOTE_CMD(itemCmd))
+				{
+					CNotesMenuActions::iterator iter = m_listNotesMenuActions.find(GET_NOTE_ID_FROM_CMD(itemCmd));
+					if (iter != m_listNotesMenuActions.end())
+					{
+						menu.CheckMenuItem(itemCmd, MF_BYCOMMAND | MF_CHECKED);
+						iter->SetState(CNotesMenuItem::stChecked, TRUE);
+					}
+				}
+			}
+
+			menuutils::UpdateMenuWindow(menu);
+		}
+	}
+}
+
 /* ID_TNM_UNCHECK */
 void CTrayWnd::OnNoteUncheck(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
