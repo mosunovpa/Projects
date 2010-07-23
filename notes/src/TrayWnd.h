@@ -62,6 +62,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECK, OnNoteCheck);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKALL, OnNoteCheckAll);
 		COMMAND_ID_HANDLER_EX(ID_TNM_UNCHECK, OnNoteUncheck);
+		COMMAND_ID_HANDLER_EX(ID_TNM_UNCHECKALL, OnNoteUnCheckAll);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
 		COMMAND_ID_HANDLER_EX(ID_TNM_RESTORE, OnNoteRestore);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
@@ -96,6 +97,7 @@ public:
 	void OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCheckAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteUncheck(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNoteUnCheckAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl);

@@ -6,7 +6,15 @@ CSettingsSheet::CSettingsSheet( _U_STRINGorID title /*= (LPCTSTR) NULL*/,
 							   : CPropertySheetImpl<CSettingsSheet> ( title, uStartPage, hWndParent )
 {
 	m_psh.dwFlags |= PSH_NOAPPLYNOW;
+	AddPage(m_pageSyncSettings);
+	AddPage(m_pageNotebookSettings);
+	AddPage(m_pageKeybSettings);
 	AddPage(m_pageNoteSettings);
+}
+
+void CSettingsSheet::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CenterWindow();
 }
 
 void CSettingsSheet::OnSheetInitialized()
@@ -16,7 +24,7 @@ void CSettingsSheet::OnSheetInitialized()
 
 LRESULT CSettingsSheet::OnInit ( UINT uMsg, WPARAM wParam ,LPARAM lParam )
 {
-	CenterWindow();
+//	CenterWindow();
 	return 0;
 }
 

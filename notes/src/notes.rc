@@ -74,6 +74,10 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
         MENUITEM "New and &Paste",              ID_POPUP_NEWANDPASTE
+        POPUP "Notebooks"
+        BEGIN
+            MENUITEM "(Empty)",                     ID_NOTEBOOK_EMPTY
+        END
         MENUITEM SEPARATOR
         MENUITEM "&Settings...",                40092
         MENUITEM "&Help",                       ID_MORE_HELP
@@ -173,6 +177,7 @@ BEGIN
         MENUITEM "&Delete Checked",             ID_TNM_DELETE
         MENUITEM SEPARATOR
         MENUITEM "&Uncheck",                    ID_TNM_UNCHECK
+        MENUITEM "Uncheck &All",                40113
     END
 END
 
@@ -222,6 +227,43 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,129,39,50,14
 END
 
+IDD_NOTEBOOKS_SETTING_PAGE DIALOGEX 0, 0, 235, 178
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CAPTION
+CAPTION "Notebooks"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Notebooks:",IDC_STATIC,7,10,38,8
+    CONTROL         "",IDC_NOTEBOOK_LIST,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,22,165,149
+    PUSHBUTTON      "New",IDC_NOTEBOOK_NEW,178,22,50,14
+    PUSHBUTTON      "Properties",IDC_NOTEBOOK_PROPS,178,40,50,14
+    PUSHBUTTON      "Delete",IDC_NOTEBOOK_DEL,178,58,50,14
+END
+
+IDD_SYNC_SETTING_PAGE DIALOGEX 0, 0, 235, 178
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CAPTION
+CAPTION "Syncronization"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Account Name:",IDC_STATIC,20,27,50,8
+    LTEXT           "Password:",IDC_STATIC,35,45,34,8
+    EDITTEXT        IDC_EDIT1,76,24,152,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT2,76,43,152,14,ES_AUTOHSCROLL
+    LTEXT           "Syncronize account:",IDC_STATIC,7,10,66,8
+    PUSHBUTTON      "Create New Account",IDC_NEW_ACCOUNT,75,62,153,14
+END
+
+IDD_KEYBOARD_SETTING_PAGE DIALOGEX 0, 0, 235, 178
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CAPTION
+CAPTION "Keyboard"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Assign",IDC_ASSIGN,124,157,50,14
+    PUSHBUTTON      "Delete",IDC_DELETE,178,157,50,14
+    LTEXT           "Actions:",IDC_STATIC,7,10,27,8
+    CONTROL         "",IDC_LIST1,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,22,221,130
+    CONTROL         "",IDC_HOTKEY,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,7,157,111,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -253,6 +295,30 @@ BEGIN
         RIGHTMARGIN, 179
         TOPMARGIN, 7
         BOTTOMMARGIN, 53
+    END
+
+    IDD_NOTEBOOKS_SETTING_PAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 171
+    END
+
+    IDD_SYNC_SETTING_PAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 171
+    END
+
+    IDD_KEYBOARD_SETTING_PAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 171
     END
 END
 #endif    // APSTUDIO_INVOKED
