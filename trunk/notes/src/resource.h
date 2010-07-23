@@ -32,9 +32,25 @@
 #define IDB_ROLLUP_BTNS                 120
 #define IDD_NEW_LABEL                   121
 #define IDI_TRASH_SM                    122
+#define IDD_NOTEBOOKS_SETTING_PAGE      122
+#define IDD_SYNC_SETTING_PAGE           123
+#define IDD_KEYBOARD_SETTING_PAGE       124
 #define IDICON                          1001
 #define IDC_COMBO_NOTE_FONT_SIZE        1002
 #define IDC_EDIT_LABEL                  1003
+#define IDC_NOTEBOOK_LIST               1004
+#define IDC_NOTEBOOK_NEW                1005
+#define IDC_NOTEBOOK_PROPS              1006
+#define IDC_NOTEBOOK_DEL                1007
+#define IDC_EDIT1                       1009
+#define IDC_EDIT2                       1010
+#define IDC_HOTKEY                      1011
+#define IDC_DELETE                      1013
+#define IDC_ASSIGN                      1014
+#define IDC_LIST1                       1015
+#define IDC_BUTTON2                     1018
+#define IDC_SYNC_NOW                    1018
+#define IDC_NEW_ACCOUNT                 1019
 #define ID_POPUP_NEWNOTE                40001
 #define ID_POPUP_ABOUT                  40003
 #define ID_POPUP_EXIT                   40004
@@ -97,14 +113,23 @@
 #define ID_DUPLICATE                    40110
 #define ID_TRAYNOTEMENU_CHECKALL        40111
 #define ID_TNM_CHECKALL                 40112
+#define ID_TNM_UNCHECKALL               40113
+#define ID_TRAYMENU_NOTEBOOK            40114
+#define ID_NOTEBOOK_HOME                40115
+#define ID_NOTEBOOK_WORK                40116
+#define ID_NOTEBOOK_NEW                 40117
+#define ID_NOTEBOOK_PROPERTIES          40118
+#define ID_NOTEBOOK_DELETE              40119
+#define ID_POPUP_MANAGE                 40120
+#define ID_NOTEBOOK_EMPTY               40121
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        123
-#define _APS_NEXT_COMMAND_VALUE         40113
-#define _APS_NEXT_CONTROL_VALUE         1004
+#define _APS_NEXT_COMMAND_VALUE         40122
+#define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

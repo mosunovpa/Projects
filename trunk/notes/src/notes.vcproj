@@ -169,11 +169,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\KeyboardSettingPage.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\NewLabelDialog.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Note.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NotebookSettingPage.cpp"
 				>
 			</File>
 			<File
@@ -229,6 +237,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SyncSettingPage.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TrayWnd.cpp"
 				>
 			</File>
@@ -247,6 +259,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\KeyboardSettingPage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MenuTooltip.h"
 				>
 			</File>
@@ -256,6 +272,10 @@
 			</File>
 			<File
 				RelativePath=".\Note.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NotebookSettingPage.h"
 				>
 			</File>
 			<File
@@ -292,6 +312,10 @@
 			</File>
 			<File
 				RelativePath=".\Storage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SyncSettingPage.h"
 				>
 			</File>
 			<File

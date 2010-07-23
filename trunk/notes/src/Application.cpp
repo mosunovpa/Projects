@@ -382,6 +382,7 @@ CNoteWnd* CApplication::CreateNoteWnd(CRect& rc)
 	m_listNotes.push_back(new CNoteWnd());
 	CNoteWnd* pWnd = m_listNotes.back();
 
+	winutils::AdjustScreenRect(rc);
 	pWnd->Create(m_TrayWnd, rc, _T("NoteWnd"), 
 		WS_POPUPWINDOW | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_THICKFRAME /*| WS_SYSMENU| WS_MINIMIZEBOX*/, WS_EX_NOPARENTNOTIFY | WS_EX_TOOLWINDOW /*| WS_EX_NOACTIVATE WS_CAPTION | , WS_EX_TOOLWINDOW | WS_EX_APPWINDOW*/
