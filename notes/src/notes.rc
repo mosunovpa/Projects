@@ -74,9 +74,12 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
         MENUITEM "New and &Paste",              ID_POPUP_NEWANDPASTE
+        MENUITEM SEPARATOR
         POPUP "Notebooks"
         BEGIN
             MENUITEM "(Empty)",                     ID_NOTEBOOK_EMPTY
+            MENUITEM SEPARATOR
+            MENUITEM "&Manage...",                  40122
         END
         MENUITEM SEPARATOR
         MENUITEM "&Settings...",                40092
