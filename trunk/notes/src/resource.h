@@ -48,8 +48,6 @@
 #define IDC_DELETE                      1013
 #define IDC_ASSIGN                      1014
 #define IDC_LIST1                       1015
-#define IDC_BUTTON2                     1018
-#define IDC_SYNC_NOW                    1018
 #define IDC_NEW_ACCOUNT                 1019
 #define ID_POPUP_NEWNOTE                40001
 #define ID_POPUP_ABOUT                  40003
@@ -122,13 +120,14 @@
 #define ID_NOTEBOOK_DELETE              40119
 #define ID_POPUP_MANAGE                 40120
 #define ID_NOTEBOOK_EMPTY               40121
+#define ID_MANAGE_NOTEBOOKS             40122
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        123
-#define _APS_NEXT_COMMAND_VALUE         40122
+#define _APS_NEXT_COMMAND_VALUE         40123
 #define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
