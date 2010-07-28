@@ -11,9 +11,8 @@
 #define CHECK_HR_MSG(x, s) { HRESULT hr = x; if (FAILED(hr)) ThrowError(s); }
 #define CHECK_HR(x) CHECK_HR_MSG(x, _T("Xml operation error"))
 
-static CComPtr<IXMLDOMDocument> s_spDoc = NULL;
 
-static CComPtr<IXMLDOMDocument> _GetDocument()
+CComPtr<IXMLDOMDocument> CStorage::_GetDocument()
 {
 	if (s_spDoc == NULL)
 	{
@@ -34,7 +33,7 @@ static CComPtr<IXMLDOMDocument> _GetDocument()
 	return s_spDoc;
 }
 
-static CComPtr<IXMLDOMNode> _GetRootNode(CComPtr<IXMLDOMDocument>& spDoc)
+CComPtr<IXMLDOMNode> CStorage::_GetRootNode(CComPtr<IXMLDOMDocument>& spDoc)
 {
 	CComPtr<IXMLDOMNode> spRoot;
 	CHECK_HR(spDoc->selectSingleNode(CComBSTR(_T("notes")),&spRoot));
@@ -45,7 +44,7 @@ static CComPtr<IXMLDOMNode> _GetRootNode(CComPtr<IXMLDOMDocument>& spDoc)
 	return spRoot;
 }
 
-static CComPtr<IXMLDOMNode> _FindNote(CComPtr<IXMLDOMDocument>& spDoc, int nNoteId)
+CComPtr<IXMLDOMNode> CStorage::_FindNote(CComPtr<IXMLDOMDocument>& spDoc, int nNoteId)
 {
 	CComPtr<IXMLDOMNode> spNode;
 	_tstring sPath = strutils::format(_T("notes/note[@id=%d]"), nNoteId);
@@ -57,14 +56,14 @@ static CComPtr<IXMLDOMNode> _FindNote(CComPtr<IXMLDOMDocument>& spDoc, int nNote
 	return spNode;
 }
 
-static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
+CNote CStorage::_GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 {
 	CComPtr<IXMLDOMElement> spElement;
 	CHECK_HR(spNode.QueryInterface(&spElement));
 	CNote note;
 	CComVariant val;
 
-	if ((nMask & CApplication::NM_ID) == CApplication::NM_ID)
+	if ((nMask & NM_ID) == NM_ID)
 	{
 		CHECK_HR(spElement->getAttribute(L"id", &val));
 		if (val.vt != VT_BSTR)
@@ -73,7 +72,7 @@ static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 		}
 		note.SetId(_ttoi(val.bstrVal));
 	}
-	if ((nMask & CApplication::NM_POS) == CApplication::NM_POS)
+	if ((nMask & NM_POS) == NM_POS)
 	{
 		CRect rc;
 		CHECK_HR(spElement->getAttribute(L"left", &val));
@@ -115,13 +114,13 @@ static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 		note.SetPos(rc);
 	}
 
-	if ((nMask & CApplication::NM_TEXT) == CApplication::NM_TEXT)
+	if ((nMask & NM_TEXT) == NM_TEXT)
 	{
 		CComBSTR bstr;
 		CHECK_HR(spElement->get_text(&bstr));
 		note.SetText((LPCTSTR)bstr);
 	}
-	if ((nMask & CApplication::NM_CREATED) == CApplication::NM_CREATED)
+	if ((nMask & NM_CREATED) == NM_CREATED)
 	{
 		CHECK_HR(spElement->getAttribute(L"created", &val));
 		time_t t;
@@ -139,7 +138,7 @@ static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 		}
 		note.SetCreatedDate(t);
 	}
-	if ((nMask & CApplication::NM_MODIFIED) == CApplication::NM_MODIFIED)
+	if ((nMask & NM_MODIFIED) == NM_MODIFIED)
 	{
 		CHECK_HR(spElement->getAttribute(L"modified", &val));
 		time_t t;
@@ -157,7 +156,7 @@ static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 		}
 		note.SetModifiedDate(t);
 	}
-	if ((nMask & CApplication::NM_DELETED) == CApplication::NM_DELETED)
+	if ((nMask & NM_DELETED) == NM_DELETED)
 	{
 		CHECK_HR(spElement->getAttribute(L"deleted", &val));
 		time_t t;
@@ -175,7 +174,7 @@ static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 		}
 		note.SetDeletedDate(t);
 	}
-	if ((nMask & CApplication::NM_LABEL) == CApplication::NM_LABEL)
+	if ((nMask & NM_LABEL) == NM_LABEL)
 	{
 		CHECK_HR(spElement->getAttribute(L"label", &val));
 		if (val.vt != VT_NULL && val.vt != VT_BSTR)
@@ -190,7 +189,7 @@ static CNote _GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 /*
 @param UINT nMask see CApplication::NoteMask flags
 */
-static void _GetAllNotes(CNote::List& list, UINT nMask)
+void CStorage::_GetAllNotes(CNote::List& list, UINT nMask)
 {
 	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	long len = 0;
@@ -206,10 +205,10 @@ static void _GetAllNotes(CNote::List& list, UINT nMask)
 	}
 }
 
-static int _GetNextId(CComPtr<IXMLDOMDocument>& spDoc)
+int CStorage::_GetNextId(CComPtr<IXMLDOMDocument>& spDoc)
 {
 	CNote::List notes;
-	_GetAllNotes(notes, CApplication::NM_ID);
+	_GetAllNotes(notes, NM_ID);
 	std::vector<int> ids;
 	for (int j = 0; j < notes.size(); ++j)
 	{
@@ -228,13 +227,13 @@ static int _GetNextId(CComPtr<IXMLDOMDocument>& spDoc)
 	return nNextId;
 }
 
-static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& note, UINT nMask)
+void CStorage::_SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& note, UINT nMask)
 {
-	if ((nMask & CApplication::NM_ID) == CApplication::NM_ID)
+	if ((nMask & NM_ID) == NM_ID)
 	{
 		CHECK_HR(spElement->setAttribute(L"id", CComVariant(note.GetId())));
 	}
-	if ((nMask & CApplication::NM_POS) == CApplication::NM_POS)
+	if ((nMask & NM_POS) == NM_POS)
 	{
 		CRect pos = note.GetPos();
 		CHECK_HR(spElement->setAttribute(L"left", CComVariant(pos.left)));
@@ -242,29 +241,29 @@ static void _SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& not
 		CHECK_HR(spElement->setAttribute(L"right", CComVariant(pos.right)));
 		CHECK_HR(spElement->setAttribute(L"bottom", CComVariant(pos.bottom)));
 	}
-	if ((nMask & CApplication::NM_TEXT) == CApplication::NM_TEXT)
+	if ((nMask & NM_TEXT) == NM_TEXT)
 	{
 		CHECK_HR(spElement->put_text(CComBSTR(note.GetText().c_str())));
 	}
-	if ((nMask & CApplication::NM_CREATED) == CApplication::NM_CREATED)
+	if ((nMask & NM_CREATED) == NM_CREATED)
 	{
 		CHECK_HR(spElement->setAttribute(L"created", CComVariant(note.GetCreatedDate())));
 	}
-	if ((nMask & CApplication::NM_MODIFIED) == CApplication::NM_MODIFIED)
+	if ((nMask & NM_MODIFIED) == NM_MODIFIED)
 	{
 		CHECK_HR(spElement->setAttribute(L"modified", CComVariant(note.GetModifiedDate())));
 	}
-	if ((nMask & CApplication::NM_DELETED) == CApplication::NM_DELETED)
+	if ((nMask & NM_DELETED) == NM_DELETED)
 	{
 		CHECK_HR(spElement->setAttribute(L"deleted", CComVariant(note.GetDeletedDate())));
 	}
-	if ((nMask & CApplication::NM_LABEL) == CApplication::NM_LABEL)
+	if ((nMask & NM_LABEL) == NM_LABEL)
 	{
 		CHECK_HR(spElement->setAttribute(L"label", CComVariant(note.GetLabel().c_str())));
 	}
 }
 
-static int _NewNote(CNote const& nt)
+int CStorage::_NewNote(CNote const& nt)
 {
 	CNote note = nt;
 	if (note.GetId() > 0)
@@ -276,7 +275,7 @@ static int _NewNote(CNote const& nt)
 	int id = _GetNextId(spDoc);
 	note.SetId(id);
 	CHECK_HR(spDoc->createElement(L"note", &spElement));
-	_SetNoteContent(spElement, note, CApplication::NM_ALL);
+	_SetNoteContent(spElement, note, NM_ALL);
 	CComPtr<IXMLDOMNode> spRoot = _GetRootNode(spDoc);
 	CComPtr<IXMLDOMNode> spChild;
 	CHECK_HR(spRoot->appendChild(spElement, &spChild));
@@ -288,7 +287,7 @@ static int _NewNote(CNote const& nt)
 	return id;
 }
 
-static void _UpdateNote(CNote const& note, UINT nMask)
+void CStorage::_UpdateNote(CNote const& note, UINT nMask)
 {
 	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	CComPtr<IXMLDOMNode> spNode = _FindNote(spDoc, note.GetId());
@@ -298,7 +297,7 @@ static void _UpdateNote(CNote const& note, UINT nMask)
 	CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
 }
 
-static CComPtr<IXMLDOMNode> _GetOptionsNode(CComPtr<IXMLDOMDocument>& spDoc)
+CComPtr<IXMLDOMNode> CStorage::_GetOptionsNode(CComPtr<IXMLDOMDocument>& spDoc)
 {
 	CComPtr<IXMLDOMNode> spOptions;
 	CHECK_HR(spDoc->selectSingleNode(CComBSTR(_T("notes/options")),&spOptions));
@@ -338,7 +337,7 @@ int CStorage::SaveNote(CNote const& note, UINT nMask)
 /*
 see CApplication::NoteMask flags
 */
-void CStorage::GetAllNotes(CNote::List& list, UINT nMask) const
+void CStorage::GetAllNotes(CNote::List& list, UINT nMask) 
 {
 	_GetAllNotes(list, nMask);
 }
@@ -361,7 +360,7 @@ void CStorage::DeleteNote(int nNoteId)
 	}
 }
 
-void CStorage::ReadOptions( COptions& opt ) const
+void CStorage::ReadOptions( COptions& opt ) 
 {
 	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	CComPtr<IXMLDOMNode> spOptions = _GetOptionsNode(spDoc);
@@ -383,7 +382,7 @@ void CStorage::ReadOptions( COptions& opt ) const
 	}
 }
 
-void CStorage::WriteOptions( COptions const& opt ) const
+void CStorage::WriteOptions( COptions const& opt ) 
 {
 	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	CComPtr<IXMLDOMNode> spOptions = _GetOptionsNode(spDoc);
@@ -412,10 +411,10 @@ void CStorage::WriteOptions( COptions const& opt ) const
 	CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
 }
 
-CNote CStorage::GetNote(int nNoteId) const
+CNote CStorage::GetNote(int nNoteId) 
 {
 	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
-	return _GetNote(_FindNote(spDoc, nNoteId), CApplication::NM_ALL);
+	return _GetNote(_FindNote(spDoc, nNoteId), NM_ALL);
 }
 
 void CStorage::Release()
@@ -423,7 +422,7 @@ void CStorage::Release()
 	s_spDoc.Release();
 }
 
-void CStorage::GetLabels(std::list<_tstring>& list) const
+void CStorage::GetLabels(std::list<_tstring>& list) 
 {
 	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	long len = 0;
@@ -435,7 +434,7 @@ void CStorage::GetLabels(std::list<_tstring>& list) const
 	{
 		CComPtr<IXMLDOMNode> spNode;
 		CHECK_HR(spNotes->get_item(i, &spNode));
-		CNote note = _GetNote(spNode, CApplication::NM_DELETED | CApplication::NM_LABEL);
+		CNote note = _GetNote(spNode, NM_DELETED | NM_LABEL);
 		if (!note.GetLabel().empty() && note.GetDeletedDate() == 0)
 		{
 			list.push_back(note.GetLabel());

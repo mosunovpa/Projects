@@ -17,5 +17,33 @@
 #define GET_LABEL_ID_FROM_CMD(cmd) ((cmd) - LABEL_CMD_FIRST)
 #define IS_LABEL_CMD(cmd) (cmd > LABEL_CMD_FIRST && cmd <= LABEL_CMD_LAST)
 
-const UINT WM_INITNOTE = WM_USER + 100;
+
+// GetAllNotes mask
+enum NoteMask
+{
+	NM_NONE = 0,
+	NM_ID = 1,
+	NM_TEXT = 2,
+	NM_POS = 4,
+	NM_CREATED = 8,
+	NM_MODIFIED = 16,
+	NM_DELETED = 32,
+	NM_LABEL = 64,
+	NM_ALL = NM_ID 
+	| NM_TEXT 
+	| NM_POS 
+	| NM_CREATED 
+	| NM_MODIFIED 
+	| NM_DELETED 
+	| NM_LABEL
+};
+
+enum NoteFlags
+{
+	NF_NONE = 0,
+	NF_ROLLUP = 1,
+	NF_NOACTIVATE = 2
+};
+
+
 

@@ -46,8 +46,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_icon(this),
 	m_bInitialized(FALSE),
 	m_bActive(FALSE),
-	m_flagSave(CApplication::NM_NONE),
-	m_flagInit(CApplication::NF_NONE),
+	m_flagSave(NM_NONE),
+	m_flagInit(NF_NONE),
 	m_bPrevActive(FALSE)
 {
 }
@@ -144,7 +144,7 @@ void CNoteWnd::PopulateLabelMenu(CMenuHandle menuLabels)
 {
 	m_listLabels.clear();
 	CApplication::Get().GetLabels(m_listLabels);
-	if (!m_label.empty() && (m_flagSave & CApplication::NM_LABEL))
+	if (!m_label.empty() && (m_flagSave & NM_LABEL))
 	{
 		m_listLabels.push_back(m_label);
 		m_listLabels.sort();
@@ -355,7 +355,7 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	m_edit.SetAutoURLDetect();
 	m_edit.SetFocus();
 
-	PostMessage(WM_INITNOTE);
+	PostMessage(WMU_INITNOTE);
 
 	return 0;
 }
@@ -375,10 +375,10 @@ void CNoteWnd::OnDestroy()
 	}
 }
 
-/* WM_INITNOTE */
+/* WMU_INITNOTE */
 LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	m_flagSave = CApplication::NM_NONE;
+	m_flagSave = NM_NONE;
 	m_edit.SetModify(GetId() == 0);
 	m_edit.EmptyUndoBuffer();
 	m_bInitialized = TRUE;
@@ -548,7 +548,7 @@ void CNoteWnd::OnSize(UINT wParam, CSize sz)
 
 	m_edit.MoveWindow(&(GetClientRect()), TRUE);
 
-	m_flagSave |= CApplication::NM_POS;
+	m_flagSave |= NM_POS;
 }
 
 /*
@@ -565,7 +565,7 @@ WM_MOVE
 */
 void CNoteWnd::OnMove(CPoint pt)
 {
-	m_flagSave |= CApplication::NM_POS;
+	m_flagSave |= NM_POS;
 }
 
 /*
@@ -597,13 +597,13 @@ void CNoteWnd::StoreNote()
 	{
 		if (m_edit.GetModify()) // save all if note content has been changed
 		{
-			m_nNoteId = CApplication::Get().SaveNote(this, CApplication::NM_ALL);
+			m_nNoteId = CApplication::Get().SaveNote(this, NM_ALL);
 			m_edit.SetModify(FALSE);
 		}
-		else if (m_flagSave != CApplication::NM_NONE)
+		else if (m_flagSave != NM_NONE)
 		{
 			m_nNoteId = CApplication::Get().SaveNote(this, m_flagSave);
-			m_flagSave = CApplication::NM_NONE;
+			m_flagSave = NM_NONE;
 		}
 	}
 }
@@ -682,7 +682,7 @@ void CNoteWnd::SetLabel(_tstring const& text)
 	if (m_label != text)
 	{
 		m_label = text;
-		m_flagSave |= (CApplication::NM_LABEL | CApplication::NM_MODIFIED);
+		m_flagSave |= (NM_LABEL | NM_MODIFIED);
 		Invalidate(FALSE);
 		UpdateWindow();
 	}
@@ -856,7 +856,7 @@ void CNoteWnd::OnEnterSizeMove()
 
 void CNoteWnd::OnExitSizeMove()
 {
-	if (m_bPrevActive == FALSE && (m_flagSave & CApplication::NM_POS) && m_bMinimized)
+	if (m_bPrevActive == FALSE && (m_flagSave & NM_POS) && m_bMinimized)
 	{
 		EscapeFocus();
 	}

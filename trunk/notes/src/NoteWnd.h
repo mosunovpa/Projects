@@ -154,7 +154,7 @@ public:
 		{
 			MSG_WM_CREATE(OnCreate)
 			MSG_WM_DESTROY(OnDestroy)
-			MESSAGE_HANDLER_EX(WM_INITNOTE, OnInitNote)
+			MESSAGE_HANDLER_EX(WMU_INITNOTE, OnInitNote)
 			MSG_WM_NCHITTEST(OnNcHittest)
  			MSG_WM_NCPAINT(OnNcPaint)
 			MSG_WM_PAINT(OnPaint)
