@@ -6,6 +6,7 @@
 #include "shlwapi.h"
 #include "NewLabelDialog.h"
 #include "Clipboard.h"
+#include "defines.h"
 
 ///////////////////////////////////////////////////////////
 // CTrayWnd
@@ -619,7 +620,7 @@ void CTrayWnd::OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	TCHAR buf[65536];
 	CClipboard::GetText(buf, 65536);
-	CApplication::Get().CreateNote(buf, CApplication::NF_NOACTIVATE | CApplication::NF_ROLLUP);
+	CApplication::Get().CreateNote(buf, NF_NOACTIVATE | NF_ROLLUP);
 }
 
 /**/
@@ -645,7 +646,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	int nHiddenNotes = CApplication::Get().GetHiddenNotesCount();
 	CNote::List notes;
 	CApplication::Get().GetAllNotes(notes, 
-		CApplication::NM_ID | CApplication::NM_TEXT | CApplication::NM_MODIFIED | CApplication::NM_DELETED | CApplication::NM_LABEL);
+		NM_ID | NM_TEXT | NM_MODIFIED | NM_DELETED | NM_LABEL);
 	std::sort(notes.begin(), notes.end(), compare_by_modify_date);
 
 	// check notes list

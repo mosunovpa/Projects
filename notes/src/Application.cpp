@@ -38,7 +38,7 @@ void CApplication::CreateAppWindow()
 /**/
 void CApplication::GetAllNotesPositions(CNote::List& notes)
 {
-	m_storage.GetAllNotes(notes, CApplication::NM_POS);
+	m_storage.GetAllNotes(notes, NM_POS);
 	for (std::list<CNoteWnd*>::iterator it = m_listNotes.begin(); it != m_listNotes.end(); ++it)
 	{
 		if ((*it)->GetId() == 0) // new not saved note
@@ -163,7 +163,7 @@ HWND CApplication::CreateNote(_tstring const& sText /*= _tstring()*/, DWORD nFla
 		{
 			pWnd->SetText(sText);
 		}
-		if ( nFlag & CApplication::NF_ROLLUP )
+		if ( nFlag & NF_ROLLUP )
 		{
 			pWnd->Rollup();
 		}
@@ -199,7 +199,7 @@ void CApplication::CloseAllNotes(CNoteWnd* pExceptWnd /*= NULL*/)
 void CApplication::ShowAllNotes()
 {
 	CNote::List list;
-	m_storage.GetAllNotes(list, CApplication::NM_ALL);
+	m_storage.GetAllNotes(list, NM_ALL);
 	for (int i = 0; i < list.size(); ++i)
 	{
 		CNoteWnd* pNoteWnd = FindNoteWnd(list[i].GetId());
@@ -247,7 +247,7 @@ int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 	note.SetText(pWnd->GetText());
 	note.SetPos(pWnd->GetRealNoteRect() /*CWindowRect(pWnd->m_hWnd)*/);
 	note.SetCreatedDate(pWnd->GetCreatedDate());
-	if (nMask & CApplication::NM_MODIFIED)
+	if (nMask & NM_MODIFIED)
 	{
 		note.SetModifiedDate(dateutils::GetCurrentDate());
 	}
@@ -260,7 +260,7 @@ int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 int CApplication::SaveNote(CNote const& note, UINT nMask)
 {
 	CNote nt = note;
-	if (nMask & CApplication::NM_MODIFIED)
+	if (nMask & NM_MODIFIED)
 	{
 		nt.SetModifiedDate(dateutils::GetCurrentDate());
 	}
@@ -274,17 +274,17 @@ int CApplication::GetOpenedNotesCount() const
 }
 
 /**/
-int CApplication::GetAllNotes(CNote::List& notes, UINT nMask) const
+int CApplication::GetAllNotes(CNote::List& notes, UINT nMask) 
 {
 	m_storage.GetAllNotes(notes, nMask);
 	return notes.size();
 }
 
 /**/
-int CApplication::GetHiddenNotesCount() const
+int CApplication::GetHiddenNotesCount() 
 {
 	CNote::List notes;
-	m_storage.GetAllNotes(notes, CApplication::NM_ID);
+	m_storage.GetAllNotes(notes, NM_ID);
 	int nCount = 0;
 	for (int i = 0; i < notes.size(); ++i)
 	{
@@ -307,8 +307,7 @@ void CApplication::DeleteFromStorage(int nNoteId)
 		{
 			note.SetDeletedDate(dateutils::GetCurrentDate());
 			note.SetModifiedDate(dateutils::GetCurrentDate());
-			m_storage.SaveNote(note, CApplication::NM_DELETED | CApplication::NM_LABEL 
-				| CApplication::NM_MODIFIED);
+			m_storage.SaveNote(note, NM_DELETED | NM_LABEL | NM_MODIFIED);
 		}
 		else
 		{
@@ -350,7 +349,7 @@ CNoteWnd* CApplication::FindNoteWnd(int nNoteId) const
 }
 
 /**/
-CNote CApplication::FindNote(int nNoteId) const
+CNote CApplication::FindNote(int nNoteId) 
 {
 	return m_storage.GetNote(nNoteId);
 }
@@ -486,8 +485,7 @@ void CApplication::RestoreNote(int nNoteId)
 		note.SetDeletedDate(0);
 		note.SetModifiedDate(dateutils::GetCurrentDate());
 //		note.SetLabel(_tstring());
-		m_storage.SaveNote(note, CApplication::NM_DELETED | CApplication::NM_MODIFIED 
-			| CApplication::NM_LABEL);
+		m_storage.SaveNote(note, NM_DELETED | NM_MODIFIED | NM_LABEL);
 		ShowNote(nNoteId);
 	}
 }
@@ -560,7 +558,7 @@ void CApplication::OptionsUpdated()
 }
 
 /**/
-void CApplication::GetLabels(std::list<_tstring>& list) const
+void CApplication::GetLabels(std::list<_tstring>& list) 
 {
 	m_storage.GetLabels(list);
 }
@@ -571,7 +569,7 @@ BOOL CApplication::IsNoteVisible(int nNoteId) const
 	return FindNoteWnd(nNoteId) != NULL;
 }
 
-_tstring CApplication::GetNoteLabel(int nNoteId) const
+_tstring CApplication::GetNoteLabel(int nNoteId) 
 {
 	CNote note = FindNote(nNoteId);
 	return note.GetLabel();
@@ -582,7 +580,7 @@ void CApplication::SetNoteLabel(int nNoteId, _tstring const& sLabel)
 	CNote note = FindNote(nNoteId);
 	note.SetLabel(sLabel);
 	note.SetModifiedDate(dateutils::GetCurrentDate());
-	CApplication::Get().SaveNote(note, CApplication::NM_LABEL | CApplication::NM_MODIFIED);
+	CApplication::Get().SaveNote(note, NM_LABEL | NM_MODIFIED);
 
 	CNoteWnd* pWnd = FindNoteWnd(nNoteId);
 	if (pWnd)
@@ -591,7 +589,7 @@ void CApplication::SetNoteLabel(int nNoteId, _tstring const& sLabel)
 	}
 }
 
-_tstring CApplication::GetNoteText(int nNoteId) const
+_tstring CApplication::GetNoteText(int nNoteId) 
 {
 	CNote note = FindNote(nNoteId);
 	return note.GetText();

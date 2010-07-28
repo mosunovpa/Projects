@@ -3,8 +3,7 @@
 #include "NotebookSettingPage.h"
 #include "SyncSettingPage.h"
 #include "KeyboardSettingPage.h"
-
-#define UWM_CENTER_SHEET WM_USER + 10
+#include "user_messages.h"
 
 class CSettingsSheet : public CPropertySheetImpl<CSettingsSheet>
 {
@@ -14,7 +13,7 @@ public:
 
 	BEGIN_MSG_MAP(CSettingsSheet)
 		MSG_WM_SHOWWINDOW(OnShowWindow)
-		MESSAGE_HANDLER_EX(UWM_CENTER_SHEET, OnInit)
+		MESSAGE_HANDLER_EX(WMU_SHEET_INIT, OnInit)
 		MSG_WM_DESTROY(OnDestroy)
 		CHAIN_MSG_MAP(CPropertySheetImpl<CSettingsSheet>)
 	END_MSG_MAP()

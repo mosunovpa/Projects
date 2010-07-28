@@ -19,7 +19,7 @@ void CSettingsSheet::OnShowWindow(BOOL bShow, UINT nStatus)
 
 void CSettingsSheet::OnSheetInitialized()
 {
-	PostMessage(UWM_CENTER_SHEET);
+	PostMessage(WMU_SHEET_INIT);
 }
 
 LRESULT CSettingsSheet::OnInit ( UINT uMsg, WPARAM wParam ,LPARAM lParam )
