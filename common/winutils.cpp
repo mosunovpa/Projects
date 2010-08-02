@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "winutils.h"
+#include "atlwinmisc.h"
 
 BOOL winutils::WinPosIsValid(const CRect& WinPos)
 {
@@ -27,8 +28,11 @@ HWND winutils::GetTopWnd( LPCTSTR szClassName )
 
 void winutils::AdjustScreenRect(CRect& rc)
 {
+	CWindowRect rcDesktop(::GetDesktopWindow());
+	CWindowRect rcTaskBar(::FindWindow(_T("Shell_TrayWnd"), NULL));
 	CRect rcDesk;
-	::GetWindowRect(GetDesktopWindow(), &rcDesk);
+	rcDesk.SubtractRect(rcDesktop, rcTaskBar);
+
 	if (rc.right > rcDesk.right)
 	{
 		rc.MoveToX(rcDesk.right - rc.Width());
@@ -39,11 +43,11 @@ void winutils::AdjustScreenRect(CRect& rc)
 	}
 	if (rc.left < rcDesk.left)
 	{
-		rc.MoveToX(0);
+		rc.MoveToX(rcDesk.left);
 	}
 	if (rc.top < rcDesk.top)
 	{
-		rc.MoveToY(0);
+		rc.MoveToY(rcDesk.top);
 	}
 }
 
