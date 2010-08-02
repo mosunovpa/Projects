@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "SettingsSheet.h"
+#include "winutils.h"
+#include "atlwinmisc.h"
 
 CSettingsSheet::CSettingsSheet( _U_STRINGorID title /*= (LPCTSTR) NULL*/, 
 							   UINT uStartPage /*= 0*/, HWND hWndParent /*= NULL*/ )
@@ -14,7 +16,13 @@ CSettingsSheet::CSettingsSheet( _U_STRINGorID title /*= (LPCTSTR) NULL*/,
 
 void CSettingsSheet::OnShowWindow(BOOL bShow, UINT nStatus)
 {
-	CenterWindow();
+	//CenterWindow();
+	POINT pt;
+	GetCursorPos(&pt);
+	CWindowRect rc(m_hWnd);
+	rc.MoveToXY(pt);
+	winutils::AdjustScreenRect(rc);
+	SetWindowPos(HWND_TOP, &rc, SWP_NOSIZE);
 }
 
 void CSettingsSheet::OnSheetInitialized()
