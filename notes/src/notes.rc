@@ -247,12 +247,14 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CAPTION
 CAPTION "Syncronization"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    CONTROL         "Syncronize",IDC_SYNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,9,51,10
     LTEXT           "Account Name:",IDC_STATIC,20,27,50,8
-    LTEXT           "Password:",IDC_STATIC,35,45,34,8
     EDITTEXT        IDC_EDIT1,76,24,152,14,ES_AUTOHSCROLL
+    LTEXT           "Password:",IDC_STATIC,35,45,34,8
     EDITTEXT        IDC_EDIT2,76,43,152,14,ES_AUTOHSCROLL
-    LTEXT           "Syncronize account:",IDC_STATIC,7,10,66,8
-    PUSHBUTTON      "Create New Account",IDC_NEW_ACCOUNT,75,62,153,14
+    PUSHBUTTON      "Forgot your password?",IDC_FORGET_PASS,75,62,153,14
+    PUSHBUTTON      "Create New Account",IDC_NEW_ACCOUNT,75,80,153,14
+    PUSHBUTTON      "Syncronize Now",IDC_SYNC_NOW,156,157,72,14
 END
 
 IDD_KEYBOARD_SETTING_PAGE DIALOGEX 0, 0, 235, 178
@@ -312,6 +314,7 @@ BEGIN
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 228
+        VERTGUIDE, 20
         TOPMARGIN, 7
         BOTTOMMARGIN, 171
     END

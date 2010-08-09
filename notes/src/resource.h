@@ -49,6 +49,10 @@
 #define IDC_ASSIGN                      1014
 #define IDC_LIST1                       1015
 #define IDC_NEW_ACCOUNT                 1019
+#define IDC_SYNC                        1020
+#define IDC_FORGET_PASS                 1021
+#define IDC_BUTTON2                     1023
+#define IDC_SYNC_NOW                    1023
 #define ID_POPUP_NEWNOTE                40001
 #define ID_POPUP_ABOUT                  40003
 #define ID_POPUP_EXIT                   40004
@@ -128,7 +132,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        123
 #define _APS_NEXT_COMMAND_VALUE         40123
-#define _APS_NEXT_CONTROL_VALUE         1020
+#define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif
