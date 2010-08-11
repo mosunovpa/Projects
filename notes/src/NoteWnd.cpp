@@ -827,13 +827,13 @@ void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 void CNoteWnd::OnNcRButtonUp(UINT nHitTest, CPoint point)
 {
 //	m_icon.ShowMenu(point);
-	if (GetDeletedDate() == 0)
+	if (GetDeletedDate() != 0 || IsMinimized())
 	{
-		ShowLabelMenu(point);
+		ShowSystemMenu(point);
 	}
 	else
 	{
-		ShowSystemMenu(point);
+		ShowLabelMenu(point);
 	}
 }
 

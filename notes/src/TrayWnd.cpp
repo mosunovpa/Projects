@@ -42,7 +42,7 @@ CMenuHandle CTrayWnd::GetDeletedMenu() const
 	if (menuNotes.m_hMenu)
 	{
 		int nCount = menuNotes.GetMenuItemCount();
-		return menuNotes.GetSubMenu(nCount - 11);
+		return menuNotes.GetSubMenu(nCount - 12);
 	}
 	return 0;
 }
@@ -354,7 +354,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		if (it->IsState(CNotesMenuItem::stChecked))
 		{
 			submenu = m_menuNoteActions.GetSubMenu(2);
-			PopulateLabelMenu(submenu.GetSubMenu(1), sLabel, FALSE);
+			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel, FALSE);
 		}
 		else if (it->IsState(CNotesMenuItem::stDeleted))
 		{

@@ -125,13 +125,25 @@
 #define ID_POPUP_MANAGE                 40120
 #define ID_NOTEBOOK_EMPTY               40121
 #define ID_MANAGE_NOTEBOOKS             40122
+#define ID_TRAYMENU_DOCUMENTS           40123
+#define ID_DOCUMENTS_OPENGOOGLEDOCUMENTS 40124
+#define ID_DOCUMENTS_REFRESH            40125
+#define ID_TRAYNOTEMENU_MOVETONOTEBOOK  40126
+#define ID_MOVETONOTEBOOK_              40127
+#define ID_TNM_NOBOOKS                  40128
+#define ID_TRAYNOTEMENU_MOVETODOCUMENTS 40129
+#define ID_TNM_MOVETODOCS               40130
+#define ID_TRAYCHECKEDNOTEMENU_COPYCHECKEDTOCLIPBOARD 40131
+#define ID_TNM_COPY                     40132
+#define ID_MOVETODOCS                   40133
+#define ID_NOBOOKS                      40134
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        123
-#define _APS_NEXT_COMMAND_VALUE         40123
+#define _APS_NEXT_COMMAND_VALUE         40135
 #define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
