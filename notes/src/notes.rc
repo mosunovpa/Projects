@@ -81,10 +81,7 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "&Manage...",                  40122
         END
-        POPUP "Documents"
-        BEGIN
-            MENUITEM "Refresh",                     ID_DOCUMENTS_REFRESH
-        END
+        MENUITEM "&Show All Documents...",      ID_TRAYMENU_OPENDOCUMENTS
         MENUITEM SEPARATOR
         MENUITEM "&Settings...",                40092
         MENUITEM "&Help",                       ID_MORE_HELP
@@ -104,11 +101,11 @@ BEGIN
             MENUITEM SEPARATOR
         END
         MENUITEM "D&uplicate",                  ID_DUPLICATE
-        POPUP "Move To Notebook"
+        POPUP "&Move To Notebook"
         BEGIN
             MENUITEM "(Empty)",                     ID_NOBOOKS
         END
-        MENUITEM "Move To Documents...",        ID_MOVETODOCS
+        MENUITEM "&Save As Document...",        ID_MOVETODOCS
         MENUITEM SEPARATOR
         MENUITEM "&Delete \tCtrl+D",            ID_DELETE
         MENUITEM SEPARATOR
@@ -163,11 +160,11 @@ BEGIN
             MENUITEM SEPARATOR
         END
         MENUITEM "D&uplicate",                  ID_TNM_DUPLICATE
-        POPUP "Move To Notebook"
+        POPUP "&Move To Notebook"
         BEGIN
             MENUITEM "(Empty)",                     ID_TNM_NOBOOKS
         END
-        MENUITEM "Move To Documents...",        ID_TNM_MOVETODOCS
+        MENUITEM "&Save As Document...",        ID_TNM_MOVETODOCS
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
         MENUITEM SEPARATOR
@@ -266,12 +263,13 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CAPTION
 CAPTION "Documents"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "Use Google Documents Account:",IDC_SYNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,9,120,10
+    CONTROL         "Enable Google Documents Integration",IDC_SYNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,9,137,10
     LTEXT           "Account Name:",IDC_STATIC,20,27,50,8
     EDITTEXT        IDC_EDIT1,76,25,152,14,ES_AUTOHSCROLL
     LTEXT           "Password:",IDC_STATIC,35,46,34,8
     EDITTEXT        IDC_EDIT2,76,44,152,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Create New Account",IDC_NEW_ACCOUNT,75,157,153,14
+    PUSHBUTTON      "Open Google Documents",IDC_NEW_ACCOUNT,75,88,153,14
+    LTEXT           "You have no account or login fault?",IDC_STATIC,20,74,114,8
 END
 
 IDD_KEYBOARD_SETTING_PAGE DIALOGEX 0, 0, 235, 178
