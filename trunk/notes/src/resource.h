@@ -137,13 +137,14 @@
 #define ID_TNM_COPY                     40132
 #define ID_MOVETODOCS                   40133
 #define ID_NOBOOKS                      40134
+#define ID_TRAYMENU_OPENDOCUMENTS       40135
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        123
-#define _APS_NEXT_COMMAND_VALUE         40135
+#define _APS_NEXT_COMMAND_VALUE         40136
 #define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
