@@ -75,18 +75,21 @@ BEGIN
         MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
         MENUITEM "New and &Paste",              ID_POPUP_NEWANDPASTE
         MENUITEM SEPARATOR
-        POPUP "Notebooks"
+        POPUP "Note&books"
         BEGIN
             MENUITEM "(Empty)",                     ID_NOTEBOOK_EMPTY
             MENUITEM SEPARATOR
             MENUITEM "&Manage...",                  40122
         END
-        MENUITEM "&Show All Documents...",      ID_TRAYMENU_OPENDOCUMENTS
-        MENUITEM SEPARATOR
-        MENUITEM "&Settings...",                40092
-        MENUITEM "&Help",                       ID_MORE_HELP
-        MENUITEM SEPARATOR
-        MENUITEM "&Exit",                       ID_POPUP_EXIT
+        POPUP "More &Actions"
+        BEGIN
+            MENUITEM "&Show All Documents...",      ID_TRAYMENU_OPENDOCUMENTS
+            MENUITEM SEPARATOR
+            MENUITEM "&Settings...",                40092
+            MENUITEM "&Help",                       ID_MORE_HELP
+            MENUITEM SEPARATOR
+            MENUITEM "&Exit",                       ID_POPUP_EXIT
+        END
     END
 END
 

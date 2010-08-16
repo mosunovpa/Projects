@@ -42,7 +42,7 @@ CMenuHandle CTrayWnd::GetDeletedMenu() const
 	if (menuNotes.m_hMenu)
 	{
 		int nCount = menuNotes.GetMenuItemCount();
-		return menuNotes.GetSubMenu(nCount - 12);
+		return menuNotes.GetSubMenu(nCount - 7);
 	}
 	return 0;
 }
