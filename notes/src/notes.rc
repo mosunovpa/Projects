@@ -83,8 +83,6 @@ BEGIN
         END
         POPUP "More &Actions"
         BEGIN
-            MENUITEM "&Show All Documents...",      ID_TRAYMENU_OPENDOCUMENTS
-            MENUITEM SEPARATOR
             MENUITEM "&Settings...",                40092
             MENUITEM "&Help",                       ID_MORE_HELP
             MENUITEM SEPARATOR
@@ -167,7 +165,10 @@ BEGIN
         BEGIN
             MENUITEM "(Empty)",                     ID_TNM_NOBOOKS
         END
-        MENUITEM "&Save As Document...",        ID_TNM_MOVETODOCS
+        POPUP "&Export"
+        BEGIN
+            MENUITEM "&Google Document...",         ID_TNM_MOVETODOCS
+        END
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
         MENUITEM SEPARATOR
@@ -194,6 +195,10 @@ BEGIN
         POPUP "Move Checked To Notebook"
         BEGIN
             MENUITEM "(Empty)",                     ID_TNM_NOBOOKS
+        END
+        POPUP "&Export Checked"
+        BEGIN
+            MENUITEM "&Google Document",            ID_TNM_GOOGLE_EXPORT
         END
         MENUITEM SEPARATOR
         MENUITEM "&Delete Checked",             ID_TNM_DELETE
