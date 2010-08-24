@@ -106,7 +106,10 @@ BEGIN
         BEGIN
             MENUITEM "(Empty)",                     ID_NOBOOKS
         END
-        MENUITEM "&Save As Document...",        ID_MOVETODOCS
+        POPUP "&Export"
+        BEGIN
+            MENUITEM "&Google Document...",         ID_MOVETODOCS
+        END
         MENUITEM SEPARATOR
         MENUITEM "&Delete \tCtrl+D",            ID_DELETE
         MENUITEM SEPARATOR
