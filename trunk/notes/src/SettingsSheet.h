@@ -24,7 +24,7 @@ public:
 	void OnDestroy();
 
 private:
-	CSyncSettingPage m_pageSyncSettings;
+//	CSyncSettingPage m_pageSyncSettings;
 	CNotebookSettingPage m_pageNotebookSettings;
 	CKeyboardSettingPage m_pageKeybSettings;
 	CNoteSettingPage m_pageNoteSettings;
