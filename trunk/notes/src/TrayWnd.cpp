@@ -214,7 +214,7 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	// Get cursor's position
 	POINT pt;
 	::GetCursorPos(&pt);
-	if (!menuTrackPopup.TrackPopupMenu(TPM_RIGHTALIGN | TPM_BOTTOMALIGN, pt.x, pt.y, m_hWnd, NULL))
+	if (!menuTrackPopup.TrackPopupMenu(TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_NOANIMATION, pt.x, pt.y, m_hWnd, NULL))
 	{
 		ATLTRACE(_T("Shortcut menu was not displayed!\n"));
 		m_menuPopup.DestroyMenu();
@@ -368,7 +368,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel);
 		}
 
-		submenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RECURSE, pt.x, pt.y, m_hWnd, NULL);
+		submenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RECURSE | TPM_NOANIMATION, pt.x, pt.y, m_hWnd, NULL);
 		m_menuNoteActions.DestroyMenu();
 	}
 }
