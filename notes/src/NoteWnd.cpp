@@ -107,7 +107,7 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 	}
 	menuPopup.DeleteMenu(IsMinimized() ? ID_ROLLUP : ID_UNROLL, MF_BYCOMMAND);
 
-	if (!menuPopup.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
+	if (!menuPopup.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON|TPM_NOANIMATION,
 		pt.x, pt.y, m_hWnd))
 	{
 		return;
@@ -132,7 +132,7 @@ void CNoteWnd::ShowLabelMenu(CPoint pt)
 	CMenuHandle menuLabels = menuPopup.GetSubMenu(1);
 	PopulateLabelMenu(menuLabels);
 
-	if (!menuLabels.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
+	if (!menuLabels.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON|TPM_NOANIMATION,
 		pt.x, pt.y, m_hWnd))
 	{
 		return;
