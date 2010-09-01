@@ -674,6 +674,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	// show all notes
 	std::list<_tstring> listLabels;
 	CApplication::Get().GetLabels(listLabels);
+	bool bLabels = false;
 	for (std::list<_tstring>::reverse_iterator it = listLabels.rbegin();
 		it != listLabels.rend(); ++it)
 	{
@@ -684,6 +685,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 		{
 			if (notes[i].GetDeletedDate() == 0 && notes[i].GetLabel() == sLabel)
 			{
+				bLabels = true;
 				_tstring sCaption = CApplication::Get().GetNoteCaption(notes[i].GetText());
 				int nId = notes[i].GetId();
 				int nCmd = CREATE_NOTE_CMD(nId);
@@ -693,11 +695,18 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 		}
 		menuNotes.InsertMenu(0, MF_BYPOSITION | MF_POPUP, menuLabel, sLabel.c_str());
 	}
-
+	
+	bool bSeparator = false;
 	for (int i = 0; i < notes.size(); ++i)
 	{
 		if (notes[i].GetDeletedDate() == 0 && notes[i].GetLabel().empty())
 		{
+			if (bSeparator == false && bLabels == true)
+			{
+				// insert separator
+				menuNotes.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR);
+				bSeparator = true;
+			}
 			_tstring sCaption = CApplication::Get().GetNoteCaption(notes[i].GetText());
 			int nId = notes[i].GetId();
 			int nCmd = CREATE_NOTE_CMD(nId);
