@@ -14,10 +14,9 @@ HWND winutils::GetTopWnd( LPCTSTR szClassName )
 	HWND h = ::GetWindow(GetDesktopWindow(), GW_CHILD);
 	while (h)
 	{
-		_tstring sName;
-		sName.resize(255);
-		if (::GetClassName(h, &sName[0], 255) 
-			&& lstrcmp(sName.c_str(), szClassName) == 0)
+		TCHAR sName[255];
+		if (::GetClassName(h, sName, 255) 
+			&& lstrcmp(sName, szClassName) == 0)
 		{
 			return h;
 		}
