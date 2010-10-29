@@ -41,13 +41,15 @@ LRESULT CNewLabelDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 LRESULT CNewLabelDialog::OnOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_sLabel.resize(512, 0);
-	GetDlgItemText(IDC_EDIT_LABEL, &m_sLabel[0], 512);
-	boost::trim(m_sLabel);
-	if (m_sLabel[0] == 0)
+	_tstring s;
+	s.resize(512, 0);
+	GetDlgItemText(IDC_EDIT_LABEL, &s[0], 512);
+	boost::trim(s);
+	if (s[0] == 0)
 	{
-		m_sLabel.clear();
+		s.clear();
 	}
+	m_sLabel = s.c_str();
 
 	EndDialog(IDOK);
 	return 0;

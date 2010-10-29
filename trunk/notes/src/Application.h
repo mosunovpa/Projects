@@ -48,6 +48,7 @@ public:
 	void SetNoteLabel(int nNoteId, _tstring const& sLabel);
 	_tstring GetNoteText(int nNoteId) ;
 	void DuplicateNote(int nNoteId);
+	_tstring GetDataFileFolder();
 protected:
 	CApplication();
 	virtual ~CApplication();

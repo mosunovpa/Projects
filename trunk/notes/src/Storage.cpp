@@ -11,28 +11,46 @@
 #define CHECK_HR_MSG(x, s) { HRESULT hr = x; if (FAILED(hr)) ThrowError(s); }
 #define CHECK_HR(x) CHECK_HR_MSG(x, _T("Xml operation error"))
 
+//////////////////////////////////////////////////////////////////////////
+//
 
-CComPtr<IXMLDOMDocument> CStorage::_GetDocument()
+CStorage::CStorage(void)
 {
+}
+
+CStorage::~CStorage(void)
+{
+}
+
+/**/
+void CStorage::SetDataFile(LPCTSTR fileName)
+{
+	m_fileName = fileName;
 	if (s_spDoc == NULL)
 	{
 		CHECK_HR_MSG(s_spDoc.CoCreateInstance(__uuidof(DOMDocument)), _T("Create document error"));
-		LPCTSTR sFileName = CApplication::Get().GetDataFileName();
-		VARIANT_BOOL bSuccess = false;
-		if (::PathFileExists(sFileName))
-		{
-			CHECK_HR_MSG(s_spDoc->load(CComVariant(sFileName), &bSuccess), _T("Load file error"));
-		}
-		else
-		{
-
-			CComBSTR sXml(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?><notes><options></options></notes>"));
-			CHECK_HR_MSG(s_spDoc->loadXML(sXml, &bSuccess), _T("Load xml error"));
-		}
 	}
+	LPCTSTR sFileName = m_fileName.c_str();
+	VARIANT_BOOL bSuccess = false;
+	if (::PathFileExists(sFileName))
+	{
+		CHECK_HR_MSG(s_spDoc->load(CComVariant(sFileName), &bSuccess), _T("Load file error"));
+	}
+	else
+	{
+
+		CComBSTR sXml(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?><notes><options></options></notes>"));
+		CHECK_HR_MSG(s_spDoc->loadXML(sXml, &bSuccess), _T("Load xml error"));
+	}
+}
+
+/**/
+CComPtr<IXMLDOMDocument> CStorage::_GetDocument()
+{
 	return s_spDoc;
 }
 
+/**/
 CComPtr<IXMLDOMNode> CStorage::_GetRootNode(CComPtr<IXMLDOMDocument>& spDoc)
 {
 	CComPtr<IXMLDOMNode> spRoot;
@@ -44,6 +62,7 @@ CComPtr<IXMLDOMNode> CStorage::_GetRootNode(CComPtr<IXMLDOMDocument>& spDoc)
 	return spRoot;
 }
 
+/**/
 CComPtr<IXMLDOMNode> CStorage::_FindNote(CComPtr<IXMLDOMDocument>& spDoc, int nNoteId)
 {
 	CComPtr<IXMLDOMNode> spNode;
@@ -56,6 +75,7 @@ CComPtr<IXMLDOMNode> CStorage::_FindNote(CComPtr<IXMLDOMDocument>& spDoc, int nN
 	return spNode;
 }
 
+/**/
 CNote CStorage::_GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 {
 	CComPtr<IXMLDOMElement> spElement;
@@ -283,7 +303,7 @@ int CStorage::_NewNote(CNote const& nt)
 	{
 		ThrowError(_T("Append note error"));
 	}
-	CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
+	CHECK_HR(spDoc->save(CComVariant(m_fileName.c_str())));
 	return id;
 }
 
@@ -294,7 +314,7 @@ void CStorage::_UpdateNote(CNote const& note, UINT nMask)
 	CComPtr<IXMLDOMElement> spElement;
 	CHECK_HR(spNode.QueryInterface(&spElement));
 	_SetNoteContent(spElement, note, nMask);
-	CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
+	CHECK_HR(spDoc->save(CComVariant(m_fileName.c_str())));
 }
 
 CComPtr<IXMLDOMNode> CStorage::_GetOptionsNode(CComPtr<IXMLDOMDocument>& spDoc)
@@ -306,16 +326,6 @@ CComPtr<IXMLDOMNode> CStorage::_GetOptionsNode(CComPtr<IXMLDOMDocument>& spDoc)
 		ThrowError(_T("Options node not found"));
 	}
 	return spOptions;
-}
-//////////////////////////////////////////////////////////////////////////
-//
-
-CStorage::CStorage(void)
-{
-}
-
-CStorage::~CStorage(void)
-{
 }
 
 /**/
@@ -356,7 +366,7 @@ void CStorage::DeleteNote(int nNoteId)
 		{
 			ThrowError(_T("Remove note error"));
 		}
-		CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
+		CHECK_HR(spDoc->save(CComVariant(m_fileName.c_str())));
 	}
 }
 
@@ -408,7 +418,7 @@ void CStorage::WriteOptions( COptions const& opt )
 	}
 	spFontNode->put_text(CComBSTR(strutils::to_string(opt.GetFontSize()).c_str()));
 
-	CHECK_HR(spDoc->save(CComVariant(CApplication::Get().GetDataFileName())));
+	CHECK_HR(spDoc->save(CComVariant(m_fileName.c_str())));
 }
 
 CNote CStorage::GetNote(int nNoteId) 
