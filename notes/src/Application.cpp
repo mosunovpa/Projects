@@ -14,12 +14,33 @@
 /**/
 CApplication::CApplication()
 {
+	_tstring sDataFile = GetDataFileFolder();
+	if (!::PathFileExists(sDataFile.c_str()))
+	{
+		fileutils::CreateDirectoryRecursive(sDataFile.c_str());
+	}
+	TCHAR destBuf[MAX_PATH] = _T("");
+	::PathCombine(destBuf, sDataFile.c_str(), _T("notes.dat"));
+
+	m_sDataFile = destBuf;
+	m_storage.SetDataFile(m_sDataFile.c_str());
 	m_storage.ReadOptions(m_options);
+
 }
 
 /**/
 CApplication::~CApplication()
 {
+}
+
+/**/
+_tstring CApplication::GetDataFileFolder()
+{
+	TCHAR destBuf[MAX_PATH] = _T("");
+	TCHAR pathBuf[MAX_PATH] = _T("");
+	::SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_DEFAULT, pathBuf);
+	::PathCombine(destBuf, pathBuf, RESSTR(IDS_APP_NAME));
+	return _tstring(destBuf);
 }
 
 /**/
@@ -316,23 +337,6 @@ void CApplication::DeleteFromStorage(int nNoteId)
 	}
 }
 
-/**/
-LPCTSTR CApplication::GetDataFileName()
-{
-	if (m_sDataFile.empty())
-	{
-		m_sDataFile.resize(MAX_PATH);
-		LPTSTR szFile = &m_sDataFile[0];
-		::SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_DEFAULT, szFile);
-		::PathCombine(szFile, szFile, RESSTR(IDS_APP_NAME));
-		if (!::PathFileExists(szFile))
-		{
-			fileutils::CreateDirectoryRecursive(szFile);
-		}
-		::PathCombine(szFile, szFile, _T("notes.dat"));
-	}
-	return m_sDataFile.c_str();
-}
 
 /**/
 CNoteWnd* CApplication::FindNoteWnd(int nNoteId) const

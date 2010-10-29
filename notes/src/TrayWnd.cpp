@@ -253,6 +253,8 @@ void CTrayWnd::OnUnInitMenuPopup(UINT nID, CMenuHandle menu)
 /**/
 void CTrayWnd::ProcessCheckedMenu(CNotesMenuItem::Actions action)
 {
+	_tstring clipboartText;
+	_tstring textSeparator = _T("\r\n---\r\n");
 	for (CNotesMenuActions::iterator it = m_listNotesMenuActions.begin();
 		it != m_listNotesMenuActions.end(); ++it)
 	{
@@ -269,9 +271,24 @@ void CTrayWnd::ProcessCheckedMenu(CNotesMenuItem::Actions action)
 			case CNotesMenuItem::acLabel:
 				CApplication::Get().SetNoteLabel(it->m_nNoteId, m_listNotesMenuActions.m_sLabel);
 				break;
+			case CNotesMenuItem::acClipboard:
+				{
+					_tstring s = CApplication::Get().GetNoteText(it->m_nNoteId);
+					if (!clipboartText.empty()) 
+					{
+						clipboartText += textSeparator;
+					}
+					clipboartText += s;
+				}
+				break;
 			}
 		}
 	}
+	if (!clipboartText.empty())
+	{
+		CClipboard::SetText(clipboartText.c_str(), m_hWnd);
+	}
+	
 	m_listNotesMenuActions.clear();
 }
 
@@ -409,7 +426,14 @@ void CTrayWnd::OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		CApplication::Get().NoteTextToClipboard(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		if (IsMenuState(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), CNotesMenuItem::stChecked))
+		{
+			ProcessCheckedMenu(CNotesMenuItem::acClipboard);
+		}
+		else
+		{
+			CApplication::Get().NoteTextToClipboard(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		}
 		EndMenu();
 	}
 }

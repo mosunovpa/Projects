@@ -626,7 +626,7 @@ _tstring CNoteWnd::GetText() const
 	{
 		s.clear();
 	}
-	return s;
+	return _tstring(s.c_str());
 }
 
 /**/

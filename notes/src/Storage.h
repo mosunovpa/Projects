@@ -8,7 +8,8 @@ class COptions;
 class CStorage
 {
 public:
-	CStorage(void);
+	CStorage();
+	void SetDataFile(LPCTSTR fileName);
 	~CStorage(void);
 	void Release();
 	int SaveNote(CNote const& note, UINT nMask);
@@ -32,4 +33,5 @@ private:
 	int _NewNote(CNote const& nt);
 	void _UpdateNote(CNote const& note, UINT nMask);
 	CComPtr<IXMLDOMNode> _GetOptionsNode(CComPtr<IXMLDOMDocument>& spDoc);
+	_tstring m_fileName;
 };
