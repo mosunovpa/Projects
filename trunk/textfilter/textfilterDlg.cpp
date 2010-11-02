@@ -109,62 +109,80 @@ UINT __cdecl Filter_Thread( LPVOID pParam )
 		return 0;
 	}
 	
-	CStdioFile fileInput(pFilterParam->csFileName, CFile::modeRead);
-
-	int nReaded = 0;
-
-	ULONGLONG nFileSize = fileInput.GetLength();
-	int nProgress = 0;
-	int nProgressPartSize = (int)(nFileSize / 50);
-	int nProgressPart = 0;
-
-	pFilterParam->pParentWnd->PostMessage(WMS_START, (WPARAM)nFileSize);
-	
-	CStdioFile fileOutput(GetOutFileName(pFilterParam->csFileName), CFile::modeWrite | CFile::modeCreate);
-	TCHAR line[4096];
-
-	// skip header
-	CStringList slistHeader;
-	while (pFilterParam->nHeader)
+	CStdioFile fileInput(pFilterParam->csFileName, CFile::modeRead | CFile::shareDenyNone);
+	TRY
 	{
-		fileInput.ReadString(line, 4096);
-		slistHeader.AddTail(line);
-		--pFilterParam->nHeader;
-	}
-	// copy header
-	POSITION pos = slistHeader.GetHeadPosition();
-	while (pos)
-	{
-		CString const& csHeaderLine = slistHeader.GetNext(pos);
-		fileOutput.WriteString(csHeaderLine);
-	}
+		int nReaded = 0;
 
-	// copy content
-	CStringList filters; 
-	ParseFilter(pFilterParam->csFilter, filters);
-	while (fileInput.ReadString(line, 2048))
-	{
-		if (*(pFilterParam->pbCanceled) == TRUE)
+		LONGLONG nFileSize = 0;
+		DWORD dwSizeHigh = 0, dwSizeLow = 0;
+		dwSizeLow = GetFileSize(fileInput.m_hFile, &dwSizeHigh);
+		nFileSize = (dwSizeHigh * (MAXDWORD + 1)) + dwSizeLow;
+
+		LONGLONG nProgress = 0;
+		LONGLONG nProgressPartSize = nFileSize / 100;
+		LONGLONG nProgressPart = 0;
+
+		pFilterParam->pParentWnd->PostMessage(WMS_START, (WPARAM)100);
+		
+		CStdioFile fileOutput(GetOutFileName(pFilterParam->csFileName), CFile::modeWrite | CFile::modeCreate);
+		TCHAR line[4096];
+
+		// skip header
+		CStringList slistHeader;
+		while (pFilterParam->nHeader)
 		{
-			break;
-		}			
-		if (Consist(line, pFilterParam->nPos, filters))
-		{
-			fileOutput.WriteString(line);
+			fileInput.ReadString(line, 4096);
+			slistHeader.AddTail(line);
+			--pFilterParam->nHeader;
 		}
-		// update progress bar
-		nReaded = lstrlen(line);
-		nProgress += nReaded;
-		nProgressPart += nReaded;
-		if (nProgressPart > nProgressPartSize)
+		// copy header
+		POSITION pos = slistHeader.GetHeadPosition();
+		while (pos)
 		{
-			nProgressPart = 0;
-			pFilterParam->pParentWnd->PostMessage(WMS_PROGRESS, (WPARAM)nProgress, (LPARAM)nFileSize);
+			CString const& csHeaderLine = slistHeader.GetNext(pos);
+			fileOutput.WriteString(csHeaderLine);
 		}
+
+		// copy content
+		CStringList filters; 
+		ParseFilter(pFilterParam->csFilter, filters);
+		while (fileInput.ReadString(line, 2048))
+		{
+			if (*(pFilterParam->pbCanceled) == TRUE)
+			{
+				break;
+			}			
+			if (Consist(line, pFilterParam->nPos, filters))
+			{
+				fileOutput.WriteString(line);
+			}
+			// update progress bar
+			nReaded = lstrlen(line);
+			nProgress += nReaded;
+			nProgressPart += nReaded;
+			if (nProgressPart > nProgressPartSize)
+			{
+				nProgressPart = 0;
+				pFilterParam->pParentWnd->PostMessage(WMS_PROGRESS, 
+					(WPARAM)(nProgress * 100 / nFileSize), 
+					(LPARAM)nFileSize);
+			}
+		}
+
+		fileOutput.Close();
 	}
+	CATCH(CFileException, pEx)
+	{
+		pEx->ReportError();
+	}
+	AND_CATCH(CMemoryException, pEx)
+	{
+		AfxAbort();
+	}
+	END_CATCH
+
 	pFilterParam->pParentWnd->PostMessage(WMS_FINISH, *pFilterParam->pbCanceled);
-
-	fileOutput.Close();
 	fileInput.Close();
 
 	return 0;
