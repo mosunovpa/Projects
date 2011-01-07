@@ -20,13 +20,13 @@ public:
 
 	enum { IDD = IDD_NEW_LABEL };
 
-	BEGIN_MSG_MAP(CNewLabelDialog)
+	BEGIN_MSG_MAP_EX(CNewLabelDialog)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WMU_CLOSE_FORM, OnCloseForm)
 		MSG_WM_ACTIVATE(OnActivate)
 		COMMAND_ID_HANDLER(IDOK, OnOK)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
-	END_MSG_MAP()
+	END_MSG_MAP_EX()
 
 	// Handler prototypes (uncomment arguments if needed):
 	//	LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

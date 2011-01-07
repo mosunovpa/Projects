@@ -171,7 +171,7 @@ private:
 				m_tmLastTime = nTime;
 				HideTooltip();
 			}
-			else if (nTime - m_tmLastTime >= 500)
+			else if (nTime - m_tmLastTime >= 300)
 			{
 //				if (m_nShownMenuItemId != m_nSelectedMenuItemId)
 				{
