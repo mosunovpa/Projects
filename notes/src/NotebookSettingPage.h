@@ -6,10 +6,10 @@ class CNotebookSettingPage : public CPropertyPageImpl<CNotebookSettingPage>
 public:
 	enum { IDD = IDD_NOTEBOOKS_SETTING_PAGE };
 
-	BEGIN_MSG_MAP(CNotebookSettingPage)
+	BEGIN_MSG_MAP_EX(CNotebookSettingPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		CHAIN_MSG_MAP(CPropertyPageImpl<CNotebookSettingPage>)
-	END_MSG_MAP()
+	END_MSG_MAP_EX()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	int OnApply();
