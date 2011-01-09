@@ -127,8 +127,6 @@ public:
 	void SetText(_tstring const& text);
 	time_t GetCreatedDate() const;
 	void SetCreatedDate(time_t dt);
-// 	time_t GetModifiedDate() const;
-// 	void SetModifiedDate(time_t dt);
 	time_t GetDeletedDate() const;
 	void SetDeletedDate(time_t dt);
 	_tstring GetLabel() const;
@@ -158,6 +156,7 @@ public:
 			MSG_WM_NCHITTEST(OnNcHittest)
  			MSG_WM_NCPAINT(OnNcPaint)
 			MSG_WM_PAINT(OnPaint)
+			MSG_WM_NCACTIVATE(OnNcActivate)
 			MSG_WM_ACTIVATE(OnActivate)
 			MSG_WM_ERASEBKGND(OnErasebkgnd)
 			MSG_WM_GETMINMAXINFO(OnGetMinMaxInfo)
@@ -168,7 +167,7 @@ public:
 			MSG_WM_CTLCOLOREDIT(OnCtlColorEdit)
 			MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 			MSG_WM_NCLBUTTONDBLCLK(OnNcLButtonDblClk)
-			MSG_WM_NCRBUTTONUP(OnNcRButtonUp)
+			MSG_WM_CONTEXTMENU(OnContextMenu)
 
 			MSG_WM_MOUSEACTIVATE(OnMouseActivate)
 			MSG_WM_LBUTTONUP(OnLButtonUp)
@@ -204,6 +203,7 @@ public:
 	LRESULT OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcHittest(CPoint pt);
 	void OnPaint(HDC hdc);
+	BOOL OnNcActivate(BOOL bActive);
 	void OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther);
 	void OnNcPaint(HRGN wParam);
 	BOOL OnErasebkgnd(HDC hdc) { return TRUE; }
@@ -215,7 +215,7 @@ public:
 	HBRUSH OnCtlColorEdit(CDCHandle dc, CEdit edit);
 	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
 	void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
-	void OnNcRButtonUp(UINT nHitTest, CPoint point);
+	void OnContextMenu(CWindow wnd, CPoint point);
 
 	int OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message);
 	void OnLButtonUp(UINT nFlags, CPoint point);

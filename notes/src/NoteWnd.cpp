@@ -189,7 +189,8 @@ CRect CNoteWnd::GetCaptionRect()
 /**/
 int CNoteWnd::GetMinimizedHeight()
 {
-	return s_nCaptionSize + ::GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXSIZEFRAME);
+	return s_nCaptionSize + ::GetSystemMetrics(SM_CXSIZEFRAME) + 
+		GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CYSMCAPTION);
 }
 
 /**/
@@ -383,14 +384,6 @@ LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	m_edit.EmptyUndoBuffer();
 	m_bInitialized = TRUE;
 
-//	if (m_flagInit & CApplication::NF_ROLLUP)
-//	{
-//		Rollup();
-//	}
-//	if (m_flagInit & CApplication::NF_NOACTIVATE)
-//	{
-//		EscapeFocus();
-//	}
 	return 0;
 }
 
@@ -400,10 +393,6 @@ WM_NCHITTEST
 LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 {
 	ScreenToClient(&pt);
-	if (GetCaptionRect().PtInRect(pt))
-	{
-		return HTCAPTION;
-	}
 	if (!m_bMinimized)
 	{
 		if (GetBottomRightRect().PtInRect(pt))
@@ -412,7 +401,7 @@ LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 		}
 		SetMsgHandled(FALSE);
 	}
-	return HTCLIENT;
+	return HTCAPTION;
 }
 
 /**
@@ -420,8 +409,7 @@ LRESULT CNoteWnd::OnNcHittest(CPoint pt)
  */
 void CNoteWnd::OnNcPaint(HRGN wParam)
 {
-	HDC hdc;
-	//hdc = GetDCEx(wParam, DCX_WINDOW | DCX_INTERSECTRGN | DCX_CACHE | DCX_CLIPSIBLINGS);
+	CDCHandle hdc;
 	hdc = GetWindowDC();
 	ATLASSERT(hdc != NULL);
 
@@ -429,16 +417,16 @@ void CNoteWnd::OnNcPaint(HRGN wParam)
 	rcWindow.OffsetRect(-rcWindow.left, -rcWindow.top);
 
 	CClientRect rcClient(m_hWnd);
-	rcClient.OffsetRect(GetSystemMetrics(SM_CXSIZEFRAME), GetSystemMetrics(SM_CYSIZEFRAME));
+	rcClient.OffsetRect(GetSystemMetrics(SM_CXSIZEFRAME), 
+		GetSystemMetrics(SM_CYSIZEFRAME) + GetSystemMetrics(SM_CYSMCAPTION));
 
 	CRgn rgClient = ::CreateRectRgnIndirect(&rcClient);
 	CRgn rgWindow = ::CreateRectRgnIndirect(&rcWindow);
 	rgWindow.CombineRgn(rgClient, RGN_DIFF);
-	::SelectClipRgn(hdc, rgWindow);
+	hdc.SelectClipRgn(rgWindow);
 
 	{
 		CMemoryDC memDc(hdc, rcWindow);
-		//CDCHandle memDc(hdc);
 		HBRUSH hOldBrush = memDc.SelectBrush(m_hBgBrush);
 		HPEN hOldPen = memDc.SelectPen(m_bActive ? m_hPen : m_hGrayPen);
 		memDc.Rectangle(&rcWindow);
@@ -460,7 +448,6 @@ void CNoteWnd::DrawTextInCaption(CDC& dc, const _tstring& text, COLORREF color)
 	rc.left += 2;
 	dc.DrawText(text.c_str(), -1, rc, DT_LEFT | DT_VCENTER| DT_END_ELLIPSIS);
 	dc.SelectFont(hOldFont);
-
 }
 
 /**
@@ -490,12 +477,20 @@ void CNoteWnd::OnPaint(HDC hdc)
 }
 
 /**
+WM_NCACTIVATE
+*/
+BOOL CNoteWnd::OnNcActivate(BOOL bActive)
+{
+	m_bActive = bActive;
+	SendMessage(WM_NCPAINT, 1);
+	return 1;
+}
+
+/**
  WM_ACTIVATE
  */
 void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 {
-	m_bActive = nState;
-
 	m_btnClose.SetImages(nState == 0 ? 3 : 0);
 	m_btnClose.Invalidate(FALSE);
    	m_btnClose.UpdateWindow();
@@ -508,7 +503,6 @@ void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 	m_btnUnroll.Invalidate(FALSE);
 	m_btnUnroll.UpdateWindow();
 
-	SendMessage(WM_NCPAINT, 1);
 	Invalidate(FALSE);
 	UpdateWindow();
 
@@ -525,9 +519,10 @@ void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
  */
 void CNoteWnd::OnGetMinMaxInfo(LPMINMAXINFO lParam)
 {
+	int nMinHeight = GetMinimizedHeight() + s_nStatusBarSize + 30;
 	if (!m_bMinimized)
 	{
-		lParam->ptMinTrackSize = CPoint(160, s_nCaptionSize + 46);
+		lParam->ptMinTrackSize = CPoint(160, nMinHeight);
 	}
 	else
 	{
@@ -661,18 +656,6 @@ void CNoteWnd::SetCreatedDate(time_t dt)
 	}
 }
 
-// /**/
-// time_t CNoteWnd::GetModifiedDate() const
-// {
-// 	return m_dtModified;
-// }
-// 
-// /**/
-// void CNoteWnd::SetModifiedDate(time_t dt)
-// {
-// 	m_dtModified = dt;
-// }
-
 /**/
 _tstring CNoteWnd::GetLabel() const
 {
@@ -701,11 +684,12 @@ CNoteEdit& CNoteWnd::GetEditor()
 CMenuHandle CNoteWnd::AdjustSystemMenu()
 {
 	CMenuHandle menu = GetSystemMenu(FALSE);
-	
-	menu.DeleteMenu(SC_MINIMIZE, MF_BYCOMMAND);
-	menu.DeleteMenu(SC_MAXIMIZE, MF_BYCOMMAND);
-	menu.DeleteMenu(SC_RESTORE, MF_BYCOMMAND);
-	
+	if (!menu.IsNull())
+	{
+		menu.DeleteMenu(SC_MINIMIZE, MF_BYCOMMAND);
+		menu.DeleteMenu(SC_MAXIMIZE, MF_BYCOMMAND);
+		menu.DeleteMenu(SC_RESTORE, MF_BYCOMMAND);
+	}
 	return menu;
 }
 
@@ -829,9 +813,9 @@ void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 }
 
 /**/
-void CNoteWnd::OnNcRButtonUp(UINT nHitTest, CPoint point)
+
+void CNoteWnd::OnContextMenu(CWindow wnd, CPoint point)
 {
-//	m_icon.ShowMenu(point);
 	if (GetDeletedDate() != 0 || IsMinimized())
 	{
 		ShowSystemMenu(point);
