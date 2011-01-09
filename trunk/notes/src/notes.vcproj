@@ -255,6 +255,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CoolContextMenu.h"
+				>
+			</File>
+			<File
 				RelativePath=".\defines.h"
 				>
 			</File>

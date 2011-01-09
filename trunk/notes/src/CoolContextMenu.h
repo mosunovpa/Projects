@@ -231,6 +231,8 @@ protected:
 
             if (!(mii.fType & MFT_OWNERDRAW))   // not already an ownerdraw item
             {
+				mii.fState &= ~MFS_DEFAULT; // windows 7 bug with SetMenuItemInfo
+
                 MenuItemData * pMI = new MenuItemData;
                 ATLASSERT(pMI != NULL);
 
