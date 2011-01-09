@@ -96,7 +96,7 @@ private:
 			m_tooltip.Create(m_hParent, CWindow::rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
 			m_tooltip.AddTool(&CToolInfo( TTF_IDISHWND | TTF_TRACK | TTF_ABSOLUTE | TTF_TRANSPARENT, m_hParent, (UINT)m_hParent));
 			m_tooltip.SetMaxTipWidth(300);
-			m_nTimer = SetTimer(m_hParent, 654, 100, NULL);
+			m_nTimer = SetTimer(m_hParent, 654, 50, NULL);
 		}
 		SetMsgHandled(FALSE);
 	}
@@ -171,7 +171,7 @@ private:
 				m_tmLastTime = nTime;
 				HideTooltip();
 			}
-			else if (nTime - m_tmLastTime >= 300)
+			else if (nTime - m_tmLastTime >= 400)
 			{
 //				if (m_nShownMenuItemId != m_nSelectedMenuItemId)
 				{
