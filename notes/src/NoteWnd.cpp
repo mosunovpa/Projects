@@ -421,7 +421,9 @@ LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 void CNoteWnd::OnNcPaint(HRGN wParam)
 {
 	HDC hdc;
-	hdc = GetDCEx(wParam, DCX_WINDOW | DCX_INTERSECTRGN | DCX_CACHE | DCX_CLIPSIBLINGS);
+	//hdc = GetDCEx(wParam, DCX_WINDOW | DCX_INTERSECTRGN | DCX_CACHE | DCX_CLIPSIBLINGS);
+	hdc = GetWindowDC();
+	ATLASSERT(hdc != NULL);
 
 	CWindowRect rcWindow(m_hWnd);
 	rcWindow.OffsetRect(-rcWindow.left, -rcWindow.top);
@@ -436,6 +438,7 @@ void CNoteWnd::OnNcPaint(HRGN wParam)
 
 	{
 		CMemoryDC memDc(hdc, rcWindow);
+		//CDCHandle memDc(hdc);
 		HBRUSH hOldBrush = memDc.SelectBrush(m_hBgBrush);
 		HPEN hOldPen = memDc.SelectPen(m_bActive ? m_hPen : m_hGrayPen);
 		memDc.Rectangle(&rcWindow);
@@ -698,9 +701,11 @@ CNoteEdit& CNoteWnd::GetEditor()
 CMenuHandle CNoteWnd::AdjustSystemMenu()
 {
 	CMenuHandle menu = GetSystemMenu(FALSE);
+	
 	menu.DeleteMenu(SC_MINIMIZE, MF_BYCOMMAND);
 	menu.DeleteMenu(SC_MAXIMIZE, MF_BYCOMMAND);
 	menu.DeleteMenu(SC_RESTORE, MF_BYCOMMAND);
+	
 	return menu;
 }
 
