@@ -13,8 +13,11 @@
 /* CTrayWnd */
 class CTrayWnd : 
 	public CWindowImpl<CTrayWnd>,
-	public CMenuTooltip<CTrayWnd>,
+	public CMenuTooltip<CTrayWnd>
+#ifdef COOL_CONTEXT_MENU
+	,
 	public CCoolContextMenu<CTrayWnd>
+#endif
 {
 public:
 	CTrayWnd();
@@ -49,6 +52,7 @@ public:
 		MSG_WM_UNINITMENUPOPUP(OnUnInitMenuPopup)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
 		MESSAGE_HANDLER_EX(WMU_NEW_LABEL, OnWMUNewLabel)
+		MESSAGE_HANDLER_EX(WMU_MENUUPDATE, OnWMMenuUpdate)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWANDPASTE, OnNewAndPaste)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
@@ -68,7 +72,9 @@ public:
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
 
 		CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
+#ifdef COOL_CONTEXT_MENU
 		CHAIN_MSG_MAP(CCoolContextMenu<CTrayWnd>)
+#endif
 	}
 	CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()
@@ -83,6 +89,7 @@ public:
 	void OnUnInitMenuPopup(UINT nID, CMenuHandle menu);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT OnWMMenuUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPopupAbout(UINT uNotifyCode, int nID, CWindow wndCtl);
