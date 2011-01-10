@@ -1,5 +1,6 @@
 #pragma once
 
+#define COOL_CONTEXT_MENU
 
 #define NOTE_WND_CLASS_NAME _T("MyNoteWnd")
 

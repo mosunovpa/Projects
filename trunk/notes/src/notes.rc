@@ -154,16 +154,8 @@ BEGIN
     BEGIN
         MENUITEM "&Open",                       ID_TNM_OPEN_NOTE
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
-        POPUP "&Label"
-        BEGIN
-            MENUITEM "&New Label...",               ID_TNM_NEWLABEL
-            MENUITEM SEPARATOR
-        END
+        MENUITEM "&Label...",                   ID_TNM_NEWLABEL
         MENUITEM "D&uplicate",                  ID_TNM_DUPLICATE
-        POPUP "&Move To Notebook"
-        BEGIN
-            MENUITEM "(Empty)",                     ID_TNM_NOBOOKS
-        END
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
         MENUITEM SEPARATOR
@@ -180,19 +172,11 @@ BEGIN
     END
     POPUP "TrayCheckedNoteMenu"
     BEGIN
-        MENUITEM "&Open Checked",               ID_TNM_OPEN_NOTE
-        MENUITEM "&Copy Checked To Clipboard",  ID_TNM_COPYALLTOCLIPBOARD
-        POPUP "&Label for Checked"
-        BEGIN
-            MENUITEM "&New Label...",               ID_TNM_NEWLABEL
-            MENUITEM SEPARATOR
-        END
-        POPUP "Move Checked To Notebook"
-        BEGIN
-            MENUITEM "(Empty)",                     ID_TNM_NOBOOKS
-        END
+        MENUITEM "&Open",                       ID_TNM_OPEN_NOTE
+        MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
+        MENUITEM "&Label...",                   ID_TNM_NEWLABEL
         MENUITEM SEPARATOR
-        MENUITEM "&Delete Checked",             ID_TNM_DELETE
+        MENUITEM "&Delete",                     ID_TNM_DELETE
         MENUITEM SEPARATOR
         MENUITEM "&Uncheck",                    ID_TNM_UNCHECK
         MENUITEM "Uncheck &All",                40113

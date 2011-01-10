@@ -73,8 +73,9 @@ BOOL CTrayWnd::BeforeTooltipShowing() const
 /* WM_CREATE */
 LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+#ifdef COOL_CONTEXT_MENU
 	GetSystemSettings();
-
+#endif
 	m_Icon.LoadIcon(IDR_MAINFRAME, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
 	SetIcon(m_Icon, TRUE);
 	m_IconSm.LoadIcon(IDR_MAINFRAME, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
@@ -214,7 +215,7 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	// Get cursor's position
 	POINT pt;
 	::GetCursorPos(&pt);
-	if (!menuTrackPopup.TrackPopupMenu(TPM_RIGHTALIGN | TPM_BOTTOMALIGN, pt.x, pt.y, m_hWnd, NULL))
+	if (!menuTrackPopup.TrackPopupMenuEx(TPM_RIGHTALIGN | TPM_BOTTOMALIGN /*| TPM_NOANIMATION*/, pt.x, pt.y, m_hWnd, NULL))
 	{
 		ATLTRACE(_T("Shortcut menu was not displayed!\n"));
 		m_menuPopup.DestroyMenu();
@@ -241,6 +242,8 @@ void CTrayWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu
 		m_listNotesMenuActions.clear();
 		ModifyNotesMenu(menuPopup);
 	}
+//	menuutils::UpdateMenuWindow(menuPopup);
+//	PostMessage(WMU_MENUUPDATE, (WPARAM)menuPopup.m_hMenu);
 	SetMsgHandled(FALSE);
 }
 
@@ -371,7 +374,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		if (it->IsState(CNotesMenuItem::stChecked))
 		{
 			submenu = m_menuNoteActions.GetSubMenu(2);
-			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel, FALSE);
+//			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel, FALSE);
 		}
 		else if (it->IsState(CNotesMenuItem::stDeleted))
 		{
@@ -382,10 +385,10 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		{
 			submenu = m_menuNoteActions.GetSubMenu(0);
 			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
-			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel);
+//			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel);
 		}
 
-		submenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RECURSE, pt.x, pt.y, m_hWnd, NULL);
+		submenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RECURSE | TPM_NOANIMATION, pt.x, pt.y, m_hWnd, NULL);
 		m_menuNoteActions.DestroyMenu();
 	}
 }
@@ -456,6 +459,13 @@ LRESULT CTrayWnd::OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CApplication::Get().SetNoteLabel(nId, dlg.m_sLabel);
 		}
 	}
+	return 0;
+}
+
+/*WMU_MENUUPDATE*/
+LRESULT CTrayWnd::OnWMMenuUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	menuutils::UpdateMenuWindow((HMENU)wParam);
 	return 0;
 }
 
