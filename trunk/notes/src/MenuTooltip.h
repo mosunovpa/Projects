@@ -169,11 +169,14 @@ private:
 			{
 				m_ptLastCursorPos = ptCursorPos;
 				m_tmLastTime = nTime;
-				HideTooltip();
+				if (m_nShownMenuItemId != m_nSelectedMenuItemId)
+				{
+					HideTooltip();
+				}
 			}
 			else if (nTime - m_tmLastTime >= 400)
 			{
-//				if (m_nShownMenuItemId != m_nSelectedMenuItemId)
+				if (m_nShownMenuItemId != m_nSelectedMenuItemId)
 				{
 					m_ptLastCursorPos = ptCursorPos;
 					m_tmLastTime = nTime;
