@@ -236,6 +236,7 @@ public:
 	void OnRollUp(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnUnroll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	LRESULT OnLink(LPNMHDR pnmh);
+	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
 
 private:
 	void PopulateLabelMenu(CMenuHandle menuLabels);

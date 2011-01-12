@@ -35,6 +35,8 @@
 #define IDD_NOTEBOOKS_SETTING_PAGE      122
 #define IDD_SYNC_SETTING_PAGE           123
 #define IDD_KEYBOARD_SETTING_PAGE       124
+#define IDB_NOTE                        124
+#define IDB_TRAY_MENU                   124
 #define IDICON                          1001
 #define IDC_COMBO_NOTE_FONT_SIZE        1002
 #define IDC_EDIT_LABEL                  1003
@@ -147,13 +149,14 @@
 #define ID_EXPORTCHECKED_GOOGLEDOCUMENT 40139
 #define ID_TNM_GOOGLE_EXPORT            40140
 #define ID_NOTEMENU_EXPORT              40141
+#define ID_POPUP_SETTINGS               40142
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        123
-#define _APS_NEXT_COMMAND_VALUE         40142
+#define _APS_NEXT_RESOURCE_VALUE        125
+#define _APS_NEXT_COMMAND_VALUE         40143
 #define _APS_NEXT_CONTROL_VALUE         1026
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

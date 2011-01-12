@@ -83,7 +83,7 @@ BEGIN
         END
         POPUP "More &Actions"
         BEGIN
-            MENUITEM "&Settings...",                40092
+            MENUITEM "&Settings...",                ID_SETTINGS
             MENUITEM "&Help",                       ID_MORE_HELP
             MENUITEM SEPARATOR
             MENUITEM "&Exit",                       ID_POPUP_EXIT
@@ -192,6 +192,7 @@ END
 IDB_CLOSE_BTNS          BITMAP                  "res\\close_btns.bmp"
 IDB_UNROLL_BTNS         BITMAP                  "res\\unroll_btns.bmp"
 IDB_ROLLUP_BTNS         BITMAP                  "res\\rollup_btns.bmp"
+IDB_TRAY_MENU           BITMAP                  "res\\tray_menu.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

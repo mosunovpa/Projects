@@ -110,6 +110,8 @@ public:
 	void OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl);
 
+	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
+
 private:
 	LRESULT DisplayShortcutMenu();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
