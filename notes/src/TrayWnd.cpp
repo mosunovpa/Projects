@@ -106,6 +106,9 @@ LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		}
 	}
 
+	// images for menu icons
+	m_ImageList.CreateFromImage(IDB_TRAY_MENU, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+
 	BOOL bAlwaisOnTop = TRUE; //CApplication::Get().GetOptions().GetAlwaysOnTop();
 	SetWindowPos(bAlwaisOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, CRect(0,0,0,0), SWP_NOSIZE | SWP_NOMOVE);
 
@@ -374,6 +377,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		if (it->IsState(CNotesMenuItem::stChecked))
 		{
 			submenu = m_menuNoteActions.GetSubMenu(2);
+			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
 //			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel, FALSE);
 		}
 		else if (it->IsState(CNotesMenuItem::stDeleted))
@@ -805,5 +809,44 @@ void CTrayWnd::OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl)
 		m_pSettingsDlg = std::auto_ptr<CSettingsSheet>(new CSettingsSheet(IDS_SETTINGS));
 		m_pSettingsDlg->DoModal(m_hWnd);
 		m_pSettingsDlg.reset();
+	}
+}
+
+/**/
+void CTrayWnd::AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI)
+{
+	if (IS_NOTE_CMD(mii.wID))
+	{
+		pMI->iImage = 0;
+	}
+	else	
+	{
+		switch (mii.wID)
+		{
+		case ID_TNM_DELETE:
+			pMI->iImage = 1;
+			break;
+		case ID_POPUP_NEWNOTE:
+			pMI->iImage = 2;
+			break;
+		case ID_TNM_OPEN_NOTE:
+			pMI->iImage = 3;
+			break;
+		case ID_TNM_COPYALLTOCLIPBOARD:
+			pMI->iImage = 4;
+			break;
+		case ID_TNM_DUPLICATE:
+			pMI->iImage = 5;
+			break;
+		case ID_SETTINGS:
+			pMI->iImage = 6;
+			break;
+		case ID_MORE_HELP:
+			pMI->iImage = 7;
+			break;
+		default:
+			pMI->iImage = -1;
+			break;
+		}
 	}
 }

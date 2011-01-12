@@ -174,7 +174,7 @@ private:
 					HideTooltip();
 				}
 			}
-			else if (nTime - m_tmLastTime >= 400)
+			else if (nTime - m_tmLastTime >= 300)
 			{
 				if (m_nShownMenuItemId != m_nSelectedMenuItemId)
 				{

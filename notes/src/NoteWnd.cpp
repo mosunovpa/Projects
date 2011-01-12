@@ -313,6 +313,9 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 {
 	GetSystemSettings();
 
+	// images for menu icons
+	m_ImageList.CreateFromImage(IDB_TRAY_MENU, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+
 	m_icon.Create(m_hWnd, GetIconRect(), NULL, WS_CHILD|WS_VISIBLE|SS_ICON|SS_CENTERIMAGE|SS_NOTIFY);
 	m_icon.SetIcon(m_hIconSm);
 
@@ -1037,4 +1040,48 @@ void CNoteWnd::Refresh()
 void CNoteWnd::SetReadOnly(BOOL bReadOnly /*= TRUE*/)
 {
 	m_edit.SetReadOnly(bReadOnly);
+}
+
+/**/
+void CNoteWnd::AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI)
+{
+	switch (mii.wID)
+	{
+	case ID_CLIPBRD_COPY:
+		pMI->iImage = 4;
+		break;
+	case ID_DUPLICATE:
+		pMI->iImage = 5;
+		break;
+	case ID_DELETE:
+		pMI->iImage = 1;
+		break;
+	case ID_ROLLUP:
+		pMI->iImage = 8;
+		break;
+	case ID_UNROLL:
+		pMI->iImage = 9;
+		break;
+	case ID_EDIT_CUT:
+		pMI->iImage = 10;
+		break;
+	case ID_EDIT_COPY:
+		pMI->iImage = 11;
+		break;
+	case ID_EDIT_PASTE:
+		pMI->iImage = 12;
+		break;
+	case ID_EDIT_REDO:
+		pMI->iImage = 13;
+		break;
+	case ID_EDIT_UNDO:
+		pMI->iImage = 14;
+		break;
+	case ID_EDIT_CLEAR:
+		pMI->iImage = 15;
+		break;
+	default:
+		pMI->iImage = -1;
+		break;
+	}
 }

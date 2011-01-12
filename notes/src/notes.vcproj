@@ -381,6 +381,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\tray_menu.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\unroll_btns.bmp"
 				>
 			</File>
