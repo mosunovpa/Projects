@@ -450,9 +450,15 @@ LRESULT CTrayWnd::OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	CNewLabelDialog	dlg;
 	dlg.m_nInitParam = (CNewLabelDialog::ipCursorPos | CNewLabelDialog::ipPopup);
+	UINT nId = GET_NOTE_ID_FROM_CMD(wParam);
+
+	if (!IsMenuState(nId, CNotesMenuItem::stChecked))
+	{
+		dlg.m_sLabel = CApplication::Get().GetNoteLabel(nId); 
+	}
+
 	if (dlg.DoModal() == IDOK)
 	{
-		UINT nId = GET_NOTE_ID_FROM_CMD(wParam);
 		if (IsMenuState(nId, CNotesMenuItem::stChecked))
 		{
 			m_listNotesMenuActions.m_sLabel = dlg.m_sLabel;
