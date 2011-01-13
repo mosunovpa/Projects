@@ -151,7 +151,7 @@ void CNoteWnd::PopulateLabelMenu(CMenuHandle menuLabels)
 		m_listLabels.unique();
 	}
 
-	menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
+//	menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
 	int nSelCmd = LABEL_CMD_FIRST;
 	int pos = 1;
 	for (std::list<_tstring>::iterator it = m_listLabels.begin();
