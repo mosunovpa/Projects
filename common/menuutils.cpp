@@ -48,7 +48,7 @@ HWND menuutils::FindMenuWindow(HMENU hMenu)
 BOOL menuutils::UpdateMenuWindow(CMenuHandle const& menu)
 {
 	CWindow wndMenu = menuutils::FindMenuWindow(menu);
-	if (::IsWindow(wndMenu))
+	if (::IsWindowVisible(wndMenu))
 	{
 		wndMenu.Invalidate(FALSE);
 		wndMenu.UpdateWindow();
