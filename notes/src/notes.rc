@@ -250,15 +250,14 @@ CAPTION "Syncronization"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "Account Name:",IDC_STATIC,7,10,50,8
-    EDITTEXT        IDC_EDIT1,65,7,163,14,ES_AUTOHSCROLL
-    LTEXT           "Password:",IDC_STATIC,7,27,34,8
-    EDITTEXT        IDC_EDIT2,65,26,163,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Forgot Password",IDC_FORGOT_PASSWORD,65,45,163,14
-    PUSHBUTTON      "Change Password",IDC_CHANGE_PASSWORD,65,63,163,14
-    CONTROL         "Syncronize automatically",IDC_SYNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,82,95,10
-    PUSHBUTTON      "Syncronize Now",IDC_SYNC_NOW,65,95,163,14
-    LTEXT           "You have no account?",IDC_STATIC,7,145,72,8
-    PUSHBUTTON      "Create New Account",IDC_NEW_ACCOUNT,65,157,163,14
+    EDITTEXT        IDC_EDIT1,64,7,164,14,ES_AUTOHSCROLL
+    LTEXT           "Password:",IDC_STATIC,7,28,34,8
+    EDITTEXT        IDC_EDIT2,64,26,164,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Forgot Password",IDC_FORGOT_PASSWORD,133,45,95,14
+    PUSHBUTTON      "Change Password",IDC_CHANGE_PASSWORD,133,63,95,14
+    CONTROL         "Syncronize automatically",IDC_SYNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,98,95,10
+    PUSHBUTTON      "Syncronize Now",IDC_SYNC_NOW,133,95,95,14
+    PUSHBUTTON      "Create New Account",IDC_NEW_ACCOUNT,7,157,99,14
 END
 
 IDD_KEYBOARD_SETTING_PAGE DIALOGEX 0, 0, 235, 178
@@ -319,7 +318,7 @@ BEGIN
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 228
-        VERTGUIDE, 65
+        VERTGUIDE, 133
         TOPMARGIN, 7
         BOTTOMMARGIN, 171
     END
