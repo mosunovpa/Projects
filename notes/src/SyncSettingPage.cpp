@@ -5,7 +5,6 @@
 
 LRESULT CSyncSettingPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-
 	return TRUE;
 }
 

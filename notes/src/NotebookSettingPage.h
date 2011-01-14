@@ -14,4 +14,6 @@ public:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	int OnApply();
 
+private:
+	CListViewCtrl m_listCtl;
 };

@@ -56,10 +56,13 @@
 #define IDC_BUTTON2                     1023
 #define IDC_SYNC_NOW                    1023
 #define IDC_CHENGE_PASSWORD             1024
+#define IDC_CHANGE_PASSWORD             1024
 #define IDC_CHECK1                      1025
 #define IDC_ENABLE_SHORTCUTS            1025
 #define IDC_CLEAR                       1027
 #define IDC_LABELS                      1029
+#define IDC_FORGOT_PASSW                1030
+#define IDC_FORGOT_PASSWORD             1030
 #define ID_POPUP_NEWNOTE                40001
 #define ID_POPUP_ABOUT                  40003
 #define ID_POPUP_EXIT                   40004
@@ -159,7 +162,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        125
 #define _APS_NEXT_COMMAND_VALUE         40143
-#define _APS_NEXT_CONTROL_VALUE         1030
+#define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

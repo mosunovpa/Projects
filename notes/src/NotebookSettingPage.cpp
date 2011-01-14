@@ -5,9 +5,10 @@
 
 LRESULT CNotebookSettingPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	CListViewCtrl listCntr = (CListViewCtrl)GetDlgItem(IDC_NOTEBOOK_LIST);
-	listCntr.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 240);
-//	listCntr.AddColumn(_T("File"), 1);
+	m_listCtl = GetDlgItem(IDC_NOTEBOOK_LIST);
+	m_listCtl.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
+	m_listCtl.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 240);
+//	m_listCtl.AddColumn(_T("File"), 1);
 
 	HANDLE hFind;
 	WIN32_FIND_DATA FindData;
@@ -18,10 +19,15 @@ LRESULT CNotebookSettingPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 	{
 		while (FindNextFile(hFind, &FindData) != 0) 
 		{
-			listCntr.AddItem(0, 0, FindData.cFileName);
+			if ((FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+			{
+				m_listCtl.AddItem(0, 0, FindData.cFileName);
+			}
 		}
 		FindClose(hFind);
 	}
+
+
 	return TRUE;
 }
 
