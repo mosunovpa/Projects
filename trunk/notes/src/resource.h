@@ -61,7 +61,6 @@
 #define IDC_ENABLE_SHORTCUTS            1025
 #define IDC_CLEAR                       1027
 #define IDC_LABELS                      1029
-#define IDC_FORGOT_PASSW                1030
 #define IDC_FORGOT_PASSWORD             1030
 #define ID_POPUP_NEWNOTE                40001
 #define ID_POPUP_ABOUT                  40003
@@ -155,13 +154,15 @@
 #define ID_TNM_GOOGLE_EXPORT            40140
 #define ID_NOTEMENU_EXPORT              40141
 #define ID_POPUP_SETTINGS               40142
+#define ID_TRAYNOTEMENU_TEST            40143
+#define ID_TEST_TEST                    40144
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        125
-#define _APS_NEXT_COMMAND_VALUE         40143
+#define _APS_NEXT_COMMAND_VALUE         40145
 #define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

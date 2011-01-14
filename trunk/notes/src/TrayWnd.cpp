@@ -246,7 +246,7 @@ void CTrayWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu
 		ModifyNotesMenu(menuPopup);
 	}
 //	menuutils::UpdateMenuWindow(menuPopup);
-//	PostMessage(WMU_MENUUPDATE, (WPARAM)menuPopup.m_hMenu);
+	PostMessage(WMU_MENUUPDATE, (WPARAM)menuPopup.m_hMenu);
 	SetMsgHandled(FALSE);
 }
 
@@ -522,6 +522,11 @@ void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 		}
 		else
 		{
+			_tstring label = CApplication::Get().GetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+			if (label == sLabel)
+			{
+				sLabel = _T(""); // если выбрана та же метка - очистить
+			}
 			CApplication::Get().SetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), sLabel);
 		}
 		EndMenu();

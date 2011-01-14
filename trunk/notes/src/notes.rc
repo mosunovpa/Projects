@@ -161,6 +161,10 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "C&heck",                      ID_TNM_CHECK
         MENUITEM "Check &All",                  ID_TNM_CHECKALL
+        POPUP "test"
+        BEGIN
+            MENUITEM "test",                        ID_TEST_TEST
+        END
     END
     POPUP "TrayDeletedNoteMenu"
     BEGIN

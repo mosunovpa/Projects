@@ -974,7 +974,14 @@ void CNoteWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 		{
 			if (pos == i)
 			{
-				SetLabel(it->c_str());
+				if (GetLabel() == _tstring(it->c_str()))
+				{
+					SetLabel(_T("")); // если выбрана та же метка - очистить
+				}
+				else
+				{
+					SetLabel(it->c_str());
+				}
 				return;
 			}
 			++i;
