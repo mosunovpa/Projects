@@ -156,13 +156,15 @@
 #define ID_POPUP_SETTINGS               40142
 #define ID_TRAYNOTEMENU_TEST            40143
 #define ID_TEST_TEST                    40144
+#define ID_TRAYNOTEMENU_LABEL40145      40145
+#define ID_TRAYCHECKEDNOTEMENU_LABEL    40146
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        125
-#define _APS_NEXT_COMMAND_VALUE         40145
+#define _APS_NEXT_COMMAND_VALUE         40147
 #define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
