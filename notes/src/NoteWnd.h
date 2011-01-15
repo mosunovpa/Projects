@@ -285,4 +285,5 @@ private:
 	DWORD m_flagInit;
 
 	BOOL m_bPrevActive;
+	CMenuHandle m_activeMenu;
 };

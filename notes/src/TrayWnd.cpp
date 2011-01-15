@@ -187,7 +187,7 @@ void CTrayWnd::OnSysCommand(UINT nID, CPoint pt)
 /**/
 LRESULT CTrayWnd::DisplayShortcutMenu()
 {
-	if (m_menuPopup.m_hMenu)
+	if (m_menuPopup.IsMenu())
 	{
 		return 0;
 	}
@@ -246,7 +246,7 @@ void CTrayWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu
 		ModifyNotesMenu(menuPopup);
 	}
 //	menuutils::UpdateMenuWindow(menuPopup);
-	PostMessage(WMU_MENUUPDATE, (WPARAM)menuPopup.m_hMenu);
+//	PostMessage(WMU_MENUUPDATE, (WPARAM)menuPopup.m_hMenu);
 	SetMsgHandled(FALSE);
 }
 
@@ -329,7 +329,7 @@ void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel,
 	m_listLabels.clear();
 	CApplication::Get().GetLabels(m_listLabels);
 
-	menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
+//	menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
 
 	int nSelCmd = LABEL_CMD_FIRST;
 	int pos = 1;
@@ -362,9 +362,22 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 	{
 		return;
 	}
+ 	POINT pt;
+ 	::GetCursorPos(&pt);
 
-	POINT pt;
-	::GetCursorPos(&pt);
+
+// 	CMenu mnu;
+// 	mnu.CreatePopupMenu();
+// 	mnu.AppendMenu(MF_STRING, 150, _T("test"));
+// 	mnu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RECURSE /*| TPM_NOANIMATION*/, pt.x, pt.y, m_hWnd, NULL);
+// 	mnu.DestroyMenu();
+
+
+// 	m_menuNoteActions.LoadMenu(IDR_TRAY_NOTE_MENU);
+// 	CMenuHandle submenu;
+// 	submenu = m_menuNoteActions.GetSubMenu(0);
+// 	submenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RECURSE /*| TPM_NOANIMATION*/, pt.x, pt.y, m_hWnd, NULL);
+// 	m_menuNoteActions.DestroyMenu();
 
 	CNotesMenuActions::iterator it = m_listNotesMenuActions.find(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 	if (it != m_listNotesMenuActions.end())
@@ -378,7 +391,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		{
 			submenu = m_menuNoteActions.GetSubMenu(2);
 			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
-//			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel, FALSE);
+			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel, FALSE);
 		}
 		else if (it->IsState(CNotesMenuItem::stDeleted))
 		{
@@ -389,12 +402,13 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		{
 			submenu = m_menuNoteActions.GetSubMenu(0);
 			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
-//			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel);
+			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel);
 		}
 
-		submenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RECURSE | TPM_NOANIMATION, pt.x, pt.y, m_hWnd, NULL);
+		submenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RECURSE /*| TPM_NOANIMATION*/, pt.x, pt.y, m_hWnd, NULL);
 		m_menuNoteActions.DestroyMenu();
 	}
+
 }
 
 /**/

@@ -71,17 +71,20 @@ CRect CNoteWnd::GetIconRect()
 
 void CNoteWnd::ShowSystemMenu(CPoint pt)
 {
-	CMenu menuNotes;
+	if (m_activeMenu.IsMenu())
+	{
+		return;
+	}
 
 	// Load the menu resource 
-	if (!menuNotes.LoadMenu(IDR_NOTEMENU))
+	if (!m_activeMenu.LoadMenu(IDR_NOTEMENU))
 	{
 		return;
 	}
 	CMenuHandle menuPopup;
 	if (GetDeletedDate() == 0)
 	{
-		menuPopup = menuNotes.GetSubMenu(0);
+		menuPopup = m_activeMenu.GetSubMenu(0);
 		if (menuPopup.m_hMenu == NULL)
 		{
 			return;
@@ -91,7 +94,7 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 	}
 	else
 	{
-		menuPopup = menuNotes.GetSubMenu(1);
+		menuPopup = m_activeMenu.GetSubMenu(1);
 		if (menuPopup.m_hMenu == NULL)
 		{
 			return;
@@ -112,19 +115,23 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 	{
 		return;
 	}
+	m_activeMenu.DestroyMenu();
 }
 
 /**/
 void CNoteWnd::ShowLabelMenu(CPoint pt)
 {
-	CMenu menuNotes;
-
-	// Load the menu resource 
-	if (!menuNotes.LoadMenu(IDR_NOTEMENU))
+	if (m_activeMenu.IsMenu())
 	{
 		return;
 	}
-	CMenuHandle menuPopup = menuNotes.GetSubMenu(0);
+
+	// Load the menu resource 
+	if (!m_activeMenu.LoadMenu(IDR_NOTEMENU))
+	{
+		return;
+	}
+	CMenuHandle menuPopup = m_activeMenu.GetSubMenu(0);
 	if (menuPopup.m_hMenu == NULL)
 	{
 		return;
@@ -137,6 +144,7 @@ void CNoteWnd::ShowLabelMenu(CPoint pt)
 	{
 		return;
 	}
+	m_activeMenu.DestroyMenu();
 }
 
 /**/
@@ -819,6 +827,18 @@ void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 
 void CNoteWnd::OnContextMenu(CWindow wnd, CPoint point)
 {
+	if (m_activeMenu.IsMenu())
+	{
+// 		CMenu menu;
+// 		menu.CreatePopupMenu();
+// 		menu.AppendMenu(MF_STRING, 150, _T("test"));
+// 		POINT pt;
+// 		::GetCursorPos(&pt);
+// 		menu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RECURSE /*| TPM_NOANIMATION*/, pt.x, pt.y, m_hWnd, NULL);
+// 		menu.DestroyMenu();
+
+		return;
+	}
 	if (GetDeletedDate() != 0 || IsMinimized())
 	{
 		ShowSystemMenu(point);

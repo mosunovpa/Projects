@@ -40,7 +40,6 @@ public:
 	BEGIN_MSG_MAP_EX(CTrayWnd)
 	try
 	{
-
 		MSG_WM_CREATE(OnCreate)
 		MSG_WM_DESTROY(OnDestroy)
 		MSG_WM_QUERYENDSESSION(OnQueryEndSession)
