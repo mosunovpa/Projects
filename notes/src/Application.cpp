@@ -273,7 +273,7 @@ int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 		note.SetModifiedDate(dateutils::GetCurrentDate());
 	}
 	note.SetDeletedDate(pWnd->GetDeletedDate());
-	note.SetLabel(pWnd->GetLabel());
+	note.SetLabel(pWnd->GetLabel().c_str());
 	return m_storage.SaveNote(note, nMask);
 }
 
@@ -365,7 +365,7 @@ void CApplication::UpdateNoteWnd( CNoteWnd* pWnd, CNote const& note )
 	pWnd->SetText(note.GetText());
 	pWnd->SetCreatedDate(note.GetCreatedDate());
 	pWnd->SetDeletedDate(note.GetDeletedDate());
-	pWnd->SetLabel(note.GetLabel());
+	pWnd->SetLabel(note.GetLabel().c_str());
 	pWnd->Refresh();
 }
 
@@ -583,17 +583,17 @@ _tstring CApplication::GetNoteLabel(int nNoteId)
 	return note.GetLabel();
 }
 
-void CApplication::SetNoteLabel(int nNoteId, _tstring const& sLabel)
+void CApplication::SetNoteLabel(int nNoteId, LPCTSTR label)
 {
 	CNote note = FindNote(nNoteId);
-	note.SetLabel(sLabel);
+	note.SetLabel(label);
 	note.SetModifiedDate(dateutils::GetCurrentDate());
 	CApplication::Get().SaveNote(note, NM_LABEL | NM_MODIFIED);
 
 	CNoteWnd* pWnd = FindNoteWnd(nNoteId);
 	if (pWnd)
 	{
-		pWnd->SetLabel(sLabel);
+		pWnd->SetLabel(label);
 	}
 }
 

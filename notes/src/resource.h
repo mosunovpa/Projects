@@ -158,13 +158,15 @@
 #define ID_TEST_TEST                    40144
 #define ID_TRAYNOTEMENU_LABEL40145      40145
 #define ID_TRAYCHECKEDNOTEMENU_LABEL    40146
+#define ID_LABEL_CLEAR                  40147
+#define ID_TNM_CLEARLABEL               40148
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        125
-#define _APS_NEXT_COMMAND_VALUE         40147
+#define _APS_NEXT_COMMAND_VALUE         40149
 #define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

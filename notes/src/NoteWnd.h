@@ -130,7 +130,7 @@ public:
 	time_t GetDeletedDate() const;
 	void SetDeletedDate(time_t dt);
 	_tstring GetLabel() const;
-	void SetLabel(_tstring const& text);
+	void SetLabel(LPCTSTR label);
 	void SetInitFlags(DWORD nFlags);
 
 	CNoteEdit& GetEditor();
@@ -180,6 +180,7 @@ public:
 			COMMAND_ID_HANDLER_EX(ID_DUPLICATE, OnDuplicate)
 			COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
 			COMMAND_ID_HANDLER_EX(ID_LABEL_NEWLABEL, OnNewLabel);
+			COMMAND_ID_HANDLER_EX(ID_LABEL_CLEAR, OnLabelClear);
 			COMMAND_ID_HANDLER_EX(ID_PASTE, OnPaste)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALL, OnNoteCloseAll)
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
@@ -228,6 +229,7 @@ public:
 	void OnDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnLabelClear(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);

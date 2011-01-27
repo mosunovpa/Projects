@@ -27,16 +27,17 @@ private:
     COLORREF m_clrMask;
 
 protected:
-	struct MenuItemData	            // menu item data
+ 	struct MenuItemData	            // menu item data
 	{
 		LPTSTR lpstrText;
 		UINT fType;
 		UINT fState;
         int iImage;
-	};
+		ULONG_PTR dwItemData;
+	}; 
 
 public:
-    CImageList m_ImageList;
+  	CImageList m_ImageList;
 
 protected:
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
@@ -264,6 +265,9 @@ protected:
 
                     if (pMI->lpstrText != NULL)
                         lstrcpy(pMI->lpstrText, szString);
+
+					pMI->dwItemData = mii.dwItemData;
+
                     mii.dwItemData = (ULONG_PTR)pMI;
 
                     bRet = menuPopup.SetMenuItemInfo(i, TRUE, &mii);
@@ -297,7 +301,7 @@ protected:
                 mii.fType = pMI->fType;
                 mii.dwTypeData = pMI->lpstrText;
                 mii.cch = lstrlen(pMI->lpstrText);
-                mii.dwItemData = NULL;
+                mii.dwItemData = pMI->dwItemData;
 
                 bRet = menuPopup.SetMenuItemInfo(i, TRUE, &mii);
                 ATLASSERT(bRet);
@@ -442,6 +446,7 @@ public:
     {
         return InitMenuPopupHandler(uMsg, wParam, lParam, bHandled);
     }
+
 	LRESULT OnUnInitMenuPopup(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		return UnInitMenuPopupHandler(uMsg, wParam, lParam, bHandled);

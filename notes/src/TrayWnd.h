@@ -60,6 +60,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_OPEN_NOTE, OnOpenNote);
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
 		COMMAND_ID_HANDLER_EX(ID_TNM_NEWLABEL, OnNewLabel)
+		COMMAND_ID_HANDLER_EX(ID_TNM_CLEARLABEL, OnClearLabel)
 		COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
 		COMMAND_ID_HANDLER_EX(ID_TNM_DUPLICATE, OnNoteDuplicate);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECK, OnNoteCheck);
@@ -98,6 +99,7 @@ public:
 	void OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnClearLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -117,11 +119,14 @@ private:
 	void ProcessCheckedMenu(CNotesMenuItem::Actions action);
 	void PopulateLabelMenu(CMenuHandle menu, _tstring const& sLabel, BOOL bCheckPadio = TRUE);
 	BOOL IsMenuState(int id, CNotesMenuItem::States nState) ;
+	BOOL SetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition, UINT nFlagEx);
+	UINT GetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition);
 
 	CMenuHandle GetDeletedMenu() const;
 	CMenuHandle GetMenuNotes() const;
 
 	int m_nSelectedNoteCmd;
+	CMenuHandle m_selectedMenu;
 	CMenu m_menuNoteActions;
 
 	CNotesMenuActions m_listNotesMenuActions;

@@ -23,7 +23,7 @@ public:
 	void SetCreatedDate(time_t dt);
 	void SetModifiedDate(time_t dt);
 	void SetDeletedDate(time_t dt);
-	void SetLabel(_tstring const& text);
+	void SetLabel(LPCTSTR label);
 private:
 	int m_id;
 	_tstring m_text;
