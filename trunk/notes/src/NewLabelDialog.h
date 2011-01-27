@@ -17,6 +17,7 @@ public:
 	CNewLabelDialog(void);
 
 	_tstring m_sLabel;
+	BOOL m_bEnableClearButton;
 
 	enum { IDD = IDD_NEW_LABEL };
 

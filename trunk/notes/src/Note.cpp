@@ -74,9 +74,9 @@ void CNote::SetModifiedDate(time_t dt)
 	m_dtModified = dt;
 }
 
-void CNote::SetLabel(_tstring const& text)
+void CNote::SetLabel(LPCTSTR label)
 {
-	m_label = text;
+	m_label = label;
 }
 
 void CNote::SetDeletedDate( time_t dt )

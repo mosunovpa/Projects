@@ -99,6 +99,7 @@ BEGIN
         POPUP "&Label"
         BEGIN
             MENUITEM "&New Label...",               ID_LABEL_NEWLABEL
+            MENUITEM "&Clear",                      ID_LABEL_CLEAR
         END
         MENUITEM "D&uplicate",                  ID_DUPLICATE
         POPUP "&Move To Notebook"
@@ -156,6 +157,7 @@ BEGIN
         POPUP "&Label"
         BEGIN
             MENUITEM "&New Label...",               ID_TNM_NEWLABEL
+            MENUITEM "&Clear",                      ID_TNM_CLEARLABEL
         END
         MENUITEM "D&uplicate",                  ID_TNM_DUPLICATE
         MENUITEM SEPARATOR
@@ -178,7 +180,8 @@ BEGIN
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
         POPUP "&Label"
         BEGIN
-            MENUITEM "&Label...",                   ID_TNM_NEWLABEL
+            MENUITEM "&New Label...",               ID_TNM_NEWLABEL
+            MENUITEM "&Clear",                      ID_TNM_CLEARLABEL
         END
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_DELETE
@@ -232,7 +235,7 @@ BEGIN
     LTEXT           "&Type new label or select in list:",IDC_STATIC,7,27,147,8
     EDITTEXT        IDC_EDIT_LABEL,7,39,147,14,ES_AUTOHSCROLL
     LISTBOX         IDC_LABELS,7,57,147,79,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON   "Set",IDOK,51,142,50,14
+    DEFPUSHBUTTON   "Ok",IDOK,51,142,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,104,142,50,14
     PUSHBUTTON      "Clear Current Label",IDC_CLEAR,7,7,80,14
 END

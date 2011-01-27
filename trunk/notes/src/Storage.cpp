@@ -201,7 +201,7 @@ CNote CStorage::_GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 		{
 			ThrowError(_T("Attribute label not found"));
 		}
-		note.SetLabel(val.bstrVal == 0 ? _tstring() : val.bstrVal);
+		note.SetLabel(val.bstrVal == 0 ? _T("") : val.bstrVal);
 	}
 	return note;
 }

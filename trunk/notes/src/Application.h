@@ -45,7 +45,7 @@ public:
 	void OptionsUpdated();
 	void GetLabels(std::list<_tstring>& list) ;
 	_tstring GetNoteLabel(int nNoteId) ;
-	void SetNoteLabel(int nNoteId, _tstring const& sLabel);
+	void SetNoteLabel(int nNoteId, LPCTSTR label);
 	_tstring GetNoteText(int nNoteId) ;
 	void DuplicateNote(int nNoteId);
 	_tstring GetDataFileFolder();

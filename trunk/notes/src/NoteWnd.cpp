@@ -158,7 +158,11 @@ void CNoteWnd::PopulateLabelMenu(CMenuHandle menuLabels)
 		m_listLabels.sort();
 		m_listLabels.unique();
 	}
-
+	menuLabels.EnableMenuItem(ID_LABEL_CLEAR, GetLabel().empty() ? MF_GRAYED : MF_ENABLED);
+	if (!m_listLabels.empty())
+	{
+		menuLabels.AppendMenu(MF_SEPARATOR);
+	}
 //	menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
 	int nSelCmd = LABEL_CMD_FIRST;
 	int pos = 1;
@@ -674,8 +678,9 @@ _tstring CNoteWnd::GetLabel() const
 }
 
 /**/
-void CNoteWnd::SetLabel(_tstring const& text)
+void CNoteWnd::SetLabel(LPCTSTR label)
 {
+	_tstring text = label;
 	if (m_label != text)
 	{
 		m_label = text;
@@ -994,11 +999,11 @@ void CNoteWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 		{
 			if (pos == i)
 			{
-				if (GetLabel() == _tstring(it->c_str()))
-				{
-					SetLabel(_T("")); // если выбрана та же метка - очистить
-				}
-				else
+// 				if (GetLabel() == _tstring(it->c_str()))
+// 				{
+// 					SetLabel(_T("")); // если выбрана та же метка - очистить
+// 				}
+// 				else
 				{
 					SetLabel(it->c_str());
 				}
@@ -1014,10 +1019,17 @@ void CNoteWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CNewLabelDialog	dlg;
 	dlg.m_sLabel = GetLabel();
+	dlg.m_bEnableClearButton = !dlg.m_sLabel.empty();
 	if (dlg.DoModal(this->m_hWnd) == IDOK)
 	{
 		SetLabel(dlg.m_sLabel.c_str());
 	}
+}
+
+/**/
+void CNoteWnd::OnLabelClear(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	SetLabel(_T(""));
 }
 
 /**/
