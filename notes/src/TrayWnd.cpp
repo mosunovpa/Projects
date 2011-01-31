@@ -670,7 +670,7 @@ void CTrayWnd::OnNoteUnCheckAll(UINT uNotifyCode, int nID, CWindow wndCtl)
 }
 
 
-/* ID_TNM_DELETE */
+/* ID_TNM_REMOVE & ID_TNM_DELETE */
 void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
@@ -893,7 +893,7 @@ void CTrayWnd::AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI)
 	{
 		if (mii.dwItemData & MFT_EX_DELETED)
 		{
-			pMI->iImage = 1;
+			pMI->iImage = 16;
 		}
 		else
 		{
@@ -906,6 +906,9 @@ void CTrayWnd::AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI)
 		{
 		case ID_TNM_DELETE:
 			pMI->iImage = 1;
+			break;
+		case ID_TNM_REMOVE:
+			pMI->iImage = 16;
 			break;
 		case ID_POPUP_NEWNOTE:
 			pMI->iImage = 2;
