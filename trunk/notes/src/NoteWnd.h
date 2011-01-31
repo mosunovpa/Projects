@@ -33,7 +33,7 @@ public:
 		}
 		if (wParam == 68 && GetKeyState(VK_CONTROL) & 0x8000) // Ctrl+D
 		{
-			GetParent().PostMessage(WM_COMMAND, ID_DELETE);
+			GetParent().PostMessage(WM_COMMAND, ID_REMOVE);
 		}
 		SetMsgHandled(FALSE);
 		return 0;
@@ -186,6 +186,7 @@ public:
 			COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
 			COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
 			COMMAND_ID_HANDLER_EX(ID_DELETE, OnNoteDelete)
+			COMMAND_ID_HANDLER_EX(ID_REMOVE, OnNoteDelete)
 			COMMAND_ID_HANDLER_EX(ID_ROLLUP, OnRollUp)
 			COMMAND_ID_HANDLER_EX(ID_UNROLL, OnUnroll)
 			NOTIFY_CODE_HANDLER_EX(EN_LINK, OnLink)

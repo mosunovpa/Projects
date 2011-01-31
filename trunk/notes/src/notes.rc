@@ -107,7 +107,7 @@ BEGIN
             MENUITEM "(Empty)",                     ID_NOBOOKS
         END
         MENUITEM SEPARATOR
-        MENUITEM "&Delete \tCtrl+D",            ID_DELETE
+        MENUITEM "&Remove \tCtrl+D",            ID_REMOVE
         MENUITEM SEPARATOR
         MENUITEM "Roll &Up",                    ID_ROLLUP
         MENUITEM "U&nroll",                     ID_UNROLL
@@ -121,7 +121,7 @@ BEGIN
         MENUITEM "&Restore",                    ID_RESTORE
         MENUITEM "C&opy All To Clipboard",      ID_CLIPBRD_COPY
         MENUITEM SEPARATOR
-        MENUITEM "R&emove \tCtrl+D",            ID_DELETE
+        MENUITEM "&Delete \tCtrl+D",            ID_DELETE
         MENUITEM SEPARATOR
         MENUITEM "Roll &Up",                    ID_ROLLUP
         MENUITEM "U&nroll",                     ID_UNROLL
@@ -161,7 +161,7 @@ BEGIN
         END
         MENUITEM "D&uplicate",                  ID_TNM_DUPLICATE
         MENUITEM SEPARATOR
-        MENUITEM "&Delete",                     ID_TNM_DELETE
+        MENUITEM "&Remove",                     ID_TNM_REMOVE
         MENUITEM SEPARATOR
         MENUITEM "C&heck",                      ID_TNM_CHECK
         MENUITEM "Check &All",                  ID_TNM_CHECKALL
@@ -172,7 +172,7 @@ BEGIN
         MENUITEM "&Open",                       ID_TNM_OPEN_NOTE
         MENUITEM "&Copy To Clipboard",          ID_TNM_COPYALLTOCLIPBOARD
         MENUITEM SEPARATOR
-        MENUITEM "R&emove",                     ID_TNM_DELETE
+        MENUITEM "&Delete",                     ID_TNM_DELETE
     END
     POPUP "TrayCheckedNoteMenu"
     BEGIN
@@ -184,7 +184,7 @@ BEGIN
             MENUITEM "&Clear",                      ID_TNM_CLEARLABEL
         END
         MENUITEM SEPARATOR
-        MENUITEM "&Delete",                     ID_TNM_DELETE
+        MENUITEM "&Remove",                     ID_TNM_REMOVE
         MENUITEM SEPARATOR
         MENUITEM "&Uncheck",                    ID_TNM_UNCHECK
         MENUITEM "Uncheck &All",                40113

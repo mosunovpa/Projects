@@ -752,7 +752,7 @@ void CNoteWnd::OnDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl)
 }
 
 
-/* ID_DELETE */
+/* ID_DELETE & ID_REMOVE */
 void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
 	try
@@ -1094,6 +1094,9 @@ void CNoteWnd::AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI)
 		break;
 	case ID_DELETE:
 		pMI->iImage = 1;
+		break;
+	case ID_REMOVE:
+		pMI->iImage = 16;
 		break;
 	case ID_ROLLUP:
 		pMI->iImage = 8;
