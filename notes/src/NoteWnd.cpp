@@ -159,23 +159,22 @@ void CNoteWnd::PopulateLabelMenu(CMenuHandle menuLabels)
 		m_listLabels.unique();
 	}
 	menuLabels.EnableMenuItem(ID_LABEL_CLEAR, GetLabel().empty() ? MF_GRAYED : MF_ENABLED);
-	if (!m_listLabels.empty())
-	{
-		menuLabels.AppendMenu(MF_SEPARATOR);
-	}
-//	menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
 	int nSelCmd = LABEL_CMD_FIRST;
 	int pos = 1;
 	for (std::list<_tstring>::iterator it = m_listLabels.begin();
 		it != m_listLabels.end(); ++it)
 	{
 		int nCmd = CREATE_LABEL_CMD(pos);
-		menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
+		menuLabels.InsertMenu(ID_LABEL_CLEAR, MF_BYCOMMAND | MF_STRING, nCmd, it->c_str());
 		if (*it == GetLabel())
 		{
 			nSelCmd = nCmd;
 		}
 		++pos;
+	}
+	if (!m_listLabels.empty())
+	{
+		menuLabels.InsertMenu(ID_LABEL_CLEAR, MF_BYCOMMAND | MF_SEPARATOR);
 	}
 	menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
 }
@@ -834,24 +833,16 @@ void CNoteWnd::OnContextMenu(CWindow wnd, CPoint point)
 {
 	if (m_activeMenu.IsMenu())
 	{
-// 		CMenu menu;
-// 		menu.CreatePopupMenu();
-// 		menu.AppendMenu(MF_STRING, 150, _T("test"));
-// 		POINT pt;
-// 		::GetCursorPos(&pt);
-// 		menu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RECURSE /*| TPM_NOANIMATION*/, pt.x, pt.y, m_hWnd, NULL);
-// 		menu.DestroyMenu();
-
 		return;
 	}
-	if (GetDeletedDate() != 0 || IsMinimized())
-	{
+// 	if (GetDeletedDate() != 0 || IsMinimized())
+// 	{
 		ShowSystemMenu(point);
-	}
-	else
-	{
-		ShowLabelMenu(point);
-	}
+// 	}
+// 	else
+// 	{
+// 		ShowLabelMenu(point);
+// 	}
 }
 
 int CNoteWnd::OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message)
@@ -999,11 +990,11 @@ void CNoteWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 		{
 			if (pos == i)
 			{
-// 				if (GetLabel() == _tstring(it->c_str()))
-// 				{
-// 					SetLabel(_T("")); // если выбрана та же метка - очистить
-// 				}
-// 				else
+				if (GetLabel() == _tstring(it->c_str()))
+				{
+					SetLabel(_T("")); // если выбрана та же метка - очистить
+				}
+				else
 				{
 					SetLabel(it->c_str());
 				}

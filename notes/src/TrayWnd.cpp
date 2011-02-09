@@ -332,12 +332,6 @@ void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel,
 	CApplication::Get().GetLabels(m_listLabels);
 
 	menuLabels.EnableMenuItem(ID_TNM_CLEARLABEL, sLabel.empty() ? MF_GRAYED : MF_ENABLED);
-	if (!m_listLabels.empty())
-	{
-		menuLabels.AppendMenu(MF_SEPARATOR);
-	}
-
-//	menuLabels.AppendMenu(MF_STRING, LABEL_CMD_FIRST, resutils::resstring(IDS_NO_LABEL).c_str());
 
 	int nSelCmd = LABEL_CMD_FIRST;
 	int pos = 1;
@@ -345,7 +339,7 @@ void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel,
 		it != m_listLabels.end(); ++it)
 	{
 		int nCmd = CREATE_LABEL_CMD(pos);
-		menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
+		menuLabels.InsertMenu(ID_TNM_CLEARLABEL, MF_BYCOMMAND | MF_STRING, nCmd, it->c_str());
 		if (bCheckPadio && *it == sLabel)
 		{
 			nSelCmd = nCmd;
@@ -355,6 +349,10 @@ void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel,
 	if (bCheckPadio)
 	{
 		menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
+	}
+	if (!m_listLabels.empty())
+	{
+		menuLabels.InsertMenu(ID_TNM_CLEARLABEL, MF_BYCOMMAND | MF_SEPARATOR);
 	}
 	
 }
@@ -372,6 +370,20 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 	}
  	POINT pt;
  	::GetCursorPos(&pt);
+
+	// if click in check bitmap region - check or uncheck menu item
+	int pos = menu.MenuItemFromPoint(m_hWnd, pt);
+	RECT mir;
+	if (menu.GetMenuItemRect(NULL, pos, &mir))
+	{
+		if (pt.x - mir.left < 22)
+		{
+			UINT state = menu.GetMenuState(pos, MF_BYPOSITION);
+			PostMessage(WM_COMMAND, 
+				(state & MF_CHECKED) == MF_CHECKED ? ID_TNM_UNCHECK : ID_TNM_CHECK);
+			return;
+		}
+	}
 
 	CNotesMenuActions::iterator it = m_listNotesMenuActions.find(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 	if (it != m_listNotesMenuActions.end())
@@ -548,11 +560,11 @@ void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 		}
 		else
 		{
-// 			_tstring label = CApplication::Get().GetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
-// 			if (label == sLabel)
-// 			{
-// 				sLabel = _T(""); // если выбрана та же метка - очистить
-// 			}
+			_tstring label = CApplication::Get().GetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+			if (label == sLabel)
+			{
+				sLabel = _T(""); // если выбрана та же метка - очистить
+			}
 			CApplication::Get().SetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), sLabel.c_str());
 		}
 		EndMenu();
