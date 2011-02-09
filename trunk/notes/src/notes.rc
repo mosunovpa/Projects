@@ -99,7 +99,8 @@ BEGIN
         POPUP "&Label"
         BEGIN
             MENUITEM "&New Label...",               ID_LABEL_NEWLABEL
-            MENUITEM "&Clear",                      ID_LABEL_CLEAR
+            MENUITEM SEPARATOR
+            MENUITEM "&Clear Label",                ID_LABEL_CLEAR
         END
         MENUITEM "D&uplicate",                  ID_DUPLICATE
         POPUP "&Move To Notebook"
@@ -107,7 +108,7 @@ BEGIN
             MENUITEM "(Empty)",                     ID_NOBOOKS
         END
         MENUITEM SEPARATOR
-        MENUITEM "&Remove \tCtrl+D",            ID_REMOVE
+        MENUITEM "&Delete \tCtrl+D",            ID_REMOVE
         MENUITEM SEPARATOR
         MENUITEM "Roll &Up",                    ID_ROLLUP
         MENUITEM "U&nroll",                     ID_UNROLL
@@ -157,11 +158,12 @@ BEGIN
         POPUP "&Label"
         BEGIN
             MENUITEM "&New Label...",               ID_TNM_NEWLABEL
-            MENUITEM "&Clear",                      ID_TNM_CLEARLABEL
+            MENUITEM SEPARATOR
+            MENUITEM "&Clear Label",                ID_TNM_CLEARLABEL
         END
         MENUITEM "D&uplicate",                  ID_TNM_DUPLICATE
         MENUITEM SEPARATOR
-        MENUITEM "&Remove",                     ID_TNM_REMOVE
+        MENUITEM "&Delete",                     ID_TNM_REMOVE
         MENUITEM SEPARATOR
         MENUITEM "C&heck",                      ID_TNM_CHECK
         MENUITEM "Check &All",                  ID_TNM_CHECKALL
@@ -181,10 +183,11 @@ BEGIN
         POPUP "&Label"
         BEGIN
             MENUITEM "&New Label...",               ID_TNM_NEWLABEL
-            MENUITEM "&Clear",                      ID_TNM_CLEARLABEL
+            MENUITEM SEPARATOR
+            MENUITEM "&Clear Label",                ID_TNM_CLEARLABEL
         END
         MENUITEM SEPARATOR
-        MENUITEM "&Remove",                     ID_TNM_REMOVE
+        MENUITEM "&Delete",                     ID_TNM_REMOVE
         MENUITEM SEPARATOR
         MENUITEM "&Uncheck",                    ID_TNM_UNCHECK
         MENUITEM "Uncheck &All",                40113
