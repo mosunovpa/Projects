@@ -330,16 +330,17 @@ void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel,
 
 	m_listLabels.clear();
 	CApplication::Get().GetLabels(m_listLabels);
-
-	menuLabels.EnableMenuItem(ID_TNM_CLEARLABEL, sLabel.empty() ? MF_GRAYED : MF_ENABLED);
-
+	if (!m_listLabels.empty())
+	{
+		menuLabels.AppendMenu(MF_SEPARATOR);
+	}
 	int nSelCmd = LABEL_CMD_FIRST;
 	int pos = 1;
 	for (std::list<_tstring>::iterator it = m_listLabels.begin();
 		it != m_listLabels.end(); ++it)
 	{
 		int nCmd = CREATE_LABEL_CMD(pos);
-		menuLabels.InsertMenu(ID_TNM_CLEARLABEL, MF_BYCOMMAND | MF_STRING, nCmd, it->c_str());
+		menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
 		if (bCheckPadio && *it == sLabel)
 		{
 			nSelCmd = nCmd;
@@ -350,11 +351,6 @@ void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel,
 	{
 		menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
 	}
-	if (!m_listLabels.empty())
-	{
-		menuLabels.InsertMenu(ID_TNM_CLEARLABEL, MF_BYCOMMAND | MF_SEPARATOR);
-	}
-	
 }
 
 /* WM_MENURBUTTONUP */
@@ -372,6 +368,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
  	::GetCursorPos(&pt);
 
 	// if click in check bitmap region - check or uncheck menu item
+
 	int pos = menu.MenuItemFromPoint(m_hWnd, pt);
 	RECT mir;
 	if (menu.GetMenuItemRect(NULL, pos, &mir))
@@ -385,6 +382,8 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		}
 	}
 
+	// show context menu
+
 	CNotesMenuActions::iterator it = m_listNotesMenuActions.find(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 	if (it != m_listNotesMenuActions.end())
 	{
@@ -395,22 +394,33 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 
 		if (it->IsState(CNotesMenuItem::stChecked))
 		{
-			submenu = m_menuNoteActions.GetSubMenu(2);
-			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
-			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel, FALSE);
+			if (it->IsState(CNotesMenuItem::stDeleted))
+			{
+				submenu = m_menuNoteActions.GetSubMenu(3);
+				submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
+			}
+			else
+			{
+				submenu = m_menuNoteActions.GetSubMenu(2);
+				submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
+				PopulateLabelMenu(submenu.GetSubMenu(2), sLabel, FALSE);
+			}
 		}
-		else if (it->IsState(CNotesMenuItem::stDeleted))
+		else 
 		{
-			submenu = m_menuNoteActions.GetSubMenu(1);
-			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
+			if (it->IsState(CNotesMenuItem::stDeleted))
+			{
+				submenu = m_menuNoteActions.GetSubMenu(1);
+				submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
+			}
+		
+			else
+			{
+				submenu = m_menuNoteActions.GetSubMenu(0);
+				submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
+				PopulateLabelMenu(submenu.GetSubMenu(1), sLabel);
+			}
 		}
-		else
-		{
-			submenu = m_menuNoteActions.GetSubMenu(0);
-			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
-			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel);
-		}
-
 		submenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RECURSE /*| TPM_NOANIMATION*/, pt.x, pt.y, m_hWnd, NULL);
 		m_menuNoteActions.DestroyMenu();
 	}

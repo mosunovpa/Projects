@@ -158,6 +158,10 @@ void CNoteWnd::PopulateLabelMenu(CMenuHandle menuLabels)
 		m_listLabels.sort();
 		m_listLabels.unique();
 	}
+	if (!m_listLabels.empty())
+	{
+		menuLabels.AppendMenu(MF_SEPARATOR);
+	}
 	menuLabels.EnableMenuItem(ID_LABEL_CLEAR, GetLabel().empty() ? MF_GRAYED : MF_ENABLED);
 	int nSelCmd = LABEL_CMD_FIRST;
 	int pos = 1;
@@ -165,16 +169,12 @@ void CNoteWnd::PopulateLabelMenu(CMenuHandle menuLabels)
 		it != m_listLabels.end(); ++it)
 	{
 		int nCmd = CREATE_LABEL_CMD(pos);
-		menuLabels.InsertMenu(ID_LABEL_CLEAR, MF_BYCOMMAND | MF_STRING, nCmd, it->c_str());
+		menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
 		if (*it == GetLabel())
 		{
 			nSelCmd = nCmd;
 		}
 		++pos;
-	}
-	if (!m_listLabels.empty())
-	{
-		menuLabels.InsertMenu(ID_LABEL_CLEAR, MF_BYCOMMAND | MF_SEPARATOR);
 	}
 	menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
 }
