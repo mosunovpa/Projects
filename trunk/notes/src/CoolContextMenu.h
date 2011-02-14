@@ -123,12 +123,25 @@ protected:
         { 
             // Draw the menu item background
             CRect rc(pRect);
-
+#if 0
 			rc.right = m_szBitmap.cx + IMGPADDING;
 			pDC->FillSolidRect(rc, crBackImg = HLS_TRANSFORM(::GetSysColor(COLOR_3DFACE), +20, 0));
 			rc.left = rc.right;
 	        rc.right = pRect->right;
 		    pDC->FillSolidRect(rc, HLS_TRANSFORM(::GetSysColor(COLOR_3DFACE), +75, 0));
+#else			
+			rc.right = m_szBitmap.cx + IMGPADDING;
+			CBrush brush1;
+			brush1.CreateSolidBrush(crBackImg = HLS_TRANSFORM(::GetSysColor(COLOR_3DFACE), +20, 0));
+			BOOL ret = pDC->FillRect(rc, brush1);
+			ATLASSERT(ret != NULL);
+			rc.left = rc.right;
+			rc.right = pRect->right;
+			CBrush brush2;
+			brush2.CreateSolidBrush(HLS_TRANSFORM(::GetSysColor(COLOR_3DFACE), +75, 0));
+			ret = pDC->FillRect(rc, brush2);
+			ATLASSERT(ret != NULL);
+#endif
         }
 
         // Menu item is a separator
