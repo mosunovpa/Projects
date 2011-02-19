@@ -123,7 +123,7 @@ protected:
         { 
             // Draw the menu item background
             CRect rc(pRect);
-#if 0
+#if 1
 			rc.right = m_szBitmap.cx + IMGPADDING;
 			pDC->FillSolidRect(rc, crBackImg = HLS_TRANSFORM(::GetSysColor(COLOR_3DFACE), +20, 0));
 			rc.left = rc.right;
