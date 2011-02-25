@@ -845,15 +845,26 @@ void CNoteWnd::OnContextMenu(CWindow wnd, CPoint point)
 // 	}
 }
 
+void CNoteWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
+{
+	POINT pt;
+	::GetCursorPos(&pt);
+
+	CMenu mnu;
+	mnu.CreatePopupMenu();
+	mnu.AppendMenu(MF_STRING, (UINT_PTR)0, _T("test"));
+	mnu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RECURSE /*| TPM_NOANIMATION*/, pt.x, pt.y, m_hWnd, NULL);
+}
+
 int CNoteWnd::OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message)
 {
 	SetMsgHandled(FALSE);
 	return MA_ACTIVATE;
 }
+
 void CNoteWnd::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	SetMsgHandled(FALSE);
-
 }
 
 void CNoteWnd::OnEnterSizeMove()
