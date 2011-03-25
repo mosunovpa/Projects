@@ -512,6 +512,10 @@
 	</Files>
 	<Globals>
 		<Global
+			Name="RESOURCE_FILE"
+			Value="notes.rc"
+		/>
+		<Global
 			Name="WTLHELPER.Menu.IDR_TRAYMENU"
 			Value="CTrayWnd"
 		/>
