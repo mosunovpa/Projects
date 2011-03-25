@@ -51,7 +51,6 @@ public:
 		MSG_WM_UNINITMENUPOPUP(OnUnInitMenuPopup)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
 		MESSAGE_HANDLER_EX(WMU_NEW_LABEL, OnWMUNewLabel)
-		MESSAGE_HANDLER_EX(WMU_MENUUPDATE, OnWMMenuUpdate)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWANDPASTE, OnNewAndPaste)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
@@ -90,7 +89,6 @@ public:
 	void OnUnInitMenuPopup(UINT nID, CMenuHandle menu);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	LRESULT OnWMMenuUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPopupAbout(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -115,23 +113,32 @@ public:
 	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
 
 private:
+	enum Actions { acNone = 0, acDelete, acOpen, acLabel, acClipboard };
+
+
 	LRESULT DisplayShortcutMenu();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
 	void ProcessCheckedMenu(CNotesMenuItem::Actions action);
+	void ProcessCheckedMenu(Actions action);
 	void PopulateLabelMenu(CMenuHandle menu, _tstring const& sLabel, BOOL bCheckPadio = TRUE);
 	BOOL IsMenuState(int id, CNotesMenuItem::States nState) ;
 	BOOL SetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition, UINT nFlagEx);
 	UINT GetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition);
+	void UncheckAll(CMenuHandle menu);
 
 	CMenuHandle GetDeletedMenu() const;
 	CMenuHandle GetMenuNotes() const;
 
 	int m_nSelectedNoteCmd;
+	CMenuHandle m_menuWithChecked;
 	CMenuHandle m_selectedMenu;
+
 	CMenu m_menuNoteActions;
+
 
 	CNotesMenuActions m_listNotesMenuActions;
 	std::list<_tstring> m_listLabels;
 
 	std::auto_ptr<CSettingsSheet> m_pSettingsDlg;
+	_tstring m_newLabel;
 };
