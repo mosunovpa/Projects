@@ -4,7 +4,6 @@
 #include "TrayIcon.h"
 #include "resource.h"
 #include "user_messages.h"
-#include "NotesMenuActions.h"
 #include "SettingsSheet.h"
 #include "MenuTooltip.h"
 #include "defines.h"
@@ -118,10 +117,8 @@ private:
 
 	LRESULT DisplayShortcutMenu();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
-	void ProcessCheckedMenu(CNotesMenuItem::Actions action);
 	void ProcessCheckedMenu(Actions action);
 	void PopulateLabelMenu(CMenuHandle menu, _tstring const& sLabel, BOOL bCheckPadio = TRUE);
-	BOOL IsMenuState(int id, CNotesMenuItem::States nState) ;
 	BOOL SetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition, UINT nFlagEx);
 	UINT GetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition);
 	void UncheckAll(CMenuHandle menu);
@@ -135,8 +132,6 @@ private:
 
 	CMenu m_menuNoteActions;
 
-
-	CNotesMenuActions m_listNotesMenuActions;
 	std::list<_tstring> m_listLabels;
 
 	std::auto_ptr<CSettingsSheet> m_pSettingsDlg;
