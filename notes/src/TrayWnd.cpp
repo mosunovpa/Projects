@@ -495,10 +495,15 @@ LRESULT CTrayWnd::OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam)
 /* ID_TNM_NEWLABEL */
 void CTrayWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	EndMenu();
+// 	EndMenu();
+// 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
+// 	{
+// 		PostMessage(WMU_NEW_LABEL, m_nSelectedNoteCmd);
+// 	}
+
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		PostMessage(WMU_NEW_LABEL, m_nSelectedNoteCmd);
+		SendMessage(WMU_NEW_LABEL, m_nSelectedNoteCmd);
 	}
 }
 
