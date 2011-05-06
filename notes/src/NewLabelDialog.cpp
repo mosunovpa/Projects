@@ -6,7 +6,7 @@
 #include "Application.h"
 
 
-CNewLabelDialog::CNewLabelDialog(void) : m_nInitParam(ipNone), m_bEnableClearButton(TRUE)
+CNewLabelDialog::CNewLabelDialog(void) : m_nInitParam(ipNone)
 {
 }
 
@@ -63,8 +63,6 @@ LRESULT CNewLabelDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 		}
 	}
 	
-	((CButton)GetDlgItem(IDC_CLEAR)).EnableWindow(m_bEnableClearButton);
-
 	m_editCtl.SetWindowText(m_sLabel.c_str());
 
 	std::list<_tstring> listLabels;

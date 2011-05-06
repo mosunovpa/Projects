@@ -100,7 +100,6 @@ BEGIN
         BEGIN
             MENUITEM "&New Label...",               ID_LABEL_NEWLABEL
         END
-        MENUITEM "D&uplicate",                  ID_DUPLICATE
         POPUP "&Move To Notebook"
         BEGIN
             MENUITEM "(Empty)",                     ID_NOBOOKS
@@ -156,7 +155,6 @@ BEGIN
         BEGIN
             MENUITEM "&New Label...",               ID_TNM_NEWLABEL
         END
-        MENUITEM "D&uplicate",                  ID_TNM_DUPLICATE
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_REMOVE
         MENUITEM SEPARATOR
@@ -250,12 +248,11 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Label"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "&Type new label or select in list:",IDC_STATIC,7,27,147,8
-    EDITTEXT        IDC_EDIT_LABEL,7,39,147,14,ES_AUTOHSCROLL
-    LISTBOX         IDC_LABELS,7,57,147,79,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Type new label or select in list:",IDC_STATIC,7,7,147,8
+    EDITTEXT        IDC_EDIT_LABEL,7,19,147,14,ES_AUTOHSCROLL
+    LISTBOX         IDC_LABELS,7,38,147,98,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     DEFPUSHBUTTON   "Ok",IDOK,51,142,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,104,142,50,14
-    PUSHBUTTON      "Clear Current Label",IDC_CLEAR,7,7,80,14
 END
 
 IDD_NOTEBOOKS_SETTING_PAGE DIALOGEX 0, 0, 235, 178

@@ -405,7 +405,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		{
 			submenu = m_menuNoteActions.GetSubMenu(2);
 			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
-			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel, FALSE);
+			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel/*, FALSE*/);
 		}
 	}
 	else
@@ -552,6 +552,12 @@ void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 			}
 		}
 
+		_tstring label = CApplication::Get().GetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		if (label == sLabel)
+		{
+			sLabel = _T(""); // если выбрана та же метка - очистить
+		}
+
 		UINT state = m_selectedMenu.GetMenuState(m_nSelectedNoteCmd, MF_BYCOMMAND);
 		if ((state & MF_CHECKED) == MF_CHECKED)
 		{
@@ -560,11 +566,6 @@ void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 		}
 		else
 		{
-			_tstring label = CApplication::Get().GetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
-			if (label == sLabel)
-			{
-				sLabel = _T(""); // если выбрана та же метка - очистить
-			}
 			CApplication::Get().SetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), sLabel.c_str());
 		}
 		EndMenu();
