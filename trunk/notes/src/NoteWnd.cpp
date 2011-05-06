@@ -1021,7 +1021,6 @@ void CNoteWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CNewLabelDialog	dlg;
 	dlg.m_sLabel = GetLabel();
-	dlg.m_bEnableClearButton = !dlg.m_sLabel.empty();
 	if (dlg.DoModal(this->m_hWnd) == IDOK)
 	{
 		SetLabel(dlg.m_sLabel.c_str());
