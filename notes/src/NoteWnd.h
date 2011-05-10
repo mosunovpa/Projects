@@ -12,6 +12,7 @@
 #include "menuutils.h"
 #include "defines.h"
 #include "CoolContextMenu.h"
+#include "CaptionButton.h"
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -115,7 +116,8 @@ public:
 //
 
 class CNoteWnd : public CWindowImpl<CNoteWnd>,
-	public CCoolContextMenu<CNoteWnd>
+	public CCoolContextMenu<CNoteWnd>,
+	public CCaptionButton<CNoteWnd>
 {
 public:
 	CNoteWnd(int nNoteId = 0);
@@ -194,6 +196,7 @@ public:
 			CHAIN_COMMANDS_MEMBER(m_edit)
 
 			CHAIN_MSG_MAP(CCoolContextMenu<CNoteWnd>)
+			CHAIN_MSG_MAP(CCaptionButton<CNoteWnd>)
 		} 
 		CATCH_ALL_ERRORS(m_hWnd)
 	END_MSG_MAP_EX()

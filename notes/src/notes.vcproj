@@ -255,6 +255,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CaptionButton.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CoolContextMenu.h"
 				>
 			</File>

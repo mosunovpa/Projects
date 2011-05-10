@@ -220,6 +220,14 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	// Get cursor's position
 	POINT pt;
 	::GetCursorPos(&pt);
+	
+	BOOL bMenuAnim = FALSE;
+	SystemParametersInfo(SPI_GETMENUANIMATION, 0, &bMenuAnim, 0);
+	if (bMenuAnim)
+	{
+		SystemParametersInfo(SPI_SETMENUANIMATION, 0, (LPVOID)FALSE, 0);
+	}
+	
 	if (!menuTrackPopup.TrackPopupMenuEx(TPM_RIGHTALIGN | TPM_BOTTOMALIGN /*| TPM_NOANIMATION*/, pt.x, pt.y, m_hWnd, NULL))
 	{
 		ATLTRACE(_T("Shortcut menu was not displayed!\n"));
@@ -227,6 +235,11 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 		m_menuPopup.m_hMenu = NULL;
 		return 0;
 	}
+	if (bMenuAnim)
+	{
+		SystemParametersInfo(SPI_SETMENUANIMATION, 0, &bMenuAnim, 0);
+	}
+
 	::PostMessage(m_hWnd, WM_NULL, 0, 0);
 	
 	// Destroy the menu and free any memory that the menu occupies
