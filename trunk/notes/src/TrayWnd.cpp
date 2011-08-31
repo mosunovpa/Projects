@@ -432,7 +432,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 		{
 			submenu = m_menuNoteActions.GetSubMenu(0);
 			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
-			PopulateLabelMenu(submenu.GetSubMenu(1), sLabel);
+			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel);
 		}
 	}
 
