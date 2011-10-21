@@ -75,20 +75,24 @@ public:
 	}
 
 	/**/
-	BEGIN_MSG_MAP_EX(CMenuTooltip)
+	BEGIN_MSG_MAP(CMenuTooltip)
 		m_hParent = hWnd;
-		MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
-		MSG_WM_UNINITMENUPOPUP(OnUnInitMenuPopup)
-		MSG_WM_TIMER(OnTimer)
-		MSG_WM_MENUSELECT(OnMenuSelect)
-		NOTIFY_CODE_HANDLER_EX(TTN_SHOW, OnNotifyCodeHandlerEX)
-	END_MSG_MAP_EX()
+		MESSAGE_HANDLER(WM_INITMENUPOPUP, OnInitMenuPopup)
+		MESSAGE_HANDLER(WM_UNINITMENUPOPUP, OnUnInitMenuPopup)
+		NOTIFY_CODE_HANDLER(TTN_SHOW, OnNotifyCodeHandler)
+		MESSAGE_HANDLER(WM_TIMER, OnTimer)
+		MESSAGE_HANDLER(WM_MENUSELECT, OnMenuSelect)
+	END_MSG_MAP()
 
 private:
 
 	/**/
-	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu)
+	LRESULT OnInitMenuPopup(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
+		CMenuHandle menuPopup = (HMENU)wParam;
+		UINT nIndex = (UINT)LOWORD(lParam);
+		BOOL bSysMenu = (BOOL)HIWORD(lParam);
+
 		T* pT = static_cast<T*>(this);
 		CMenuHandle menu(pT->GetTooltipMenu());
 		if (menu.m_hMenu != NULL && menuPopup.m_hMenu == menu.m_hMenu)
@@ -98,12 +102,16 @@ private:
 			m_tooltip.SetMaxTipWidth(300);
 			m_nTimer = SetTimer(m_hParent, 654, 50, NULL);
 		}
-		SetMsgHandled(FALSE);
+		bHandled = FALSE;
+		return 0;
 	}
 
 	/**/
-	void OnUnInitMenuPopup(UINT nID, CMenuHandle menuPopup)
+	LRESULT OnUnInitMenuPopup(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
+		UINT nID = (UINT)HIWORD(lParam);
+		CMenuHandle menuPopup = (HMENU)wParam;
+
 		T* pT = static_cast<T*>(this);
 		CMenuHandle menu(pT->GetTooltipMenu());
 		if (menu.m_hMenu != NULL && menuPopup.m_hMenu == menu.m_hMenu)
@@ -111,11 +119,12 @@ private:
 			KillTimer(m_hParent, m_nTimer);
 			m_tooltip.DestroyWindow();
 		}
-		SetMsgHandled(FALSE);
+		bHandled = FALSE;
+		return 0;
 	}
 
 	/* TTN_SHOW */
-	LRESULT OnNotifyCodeHandlerEX(LPNMHDR pnmh)
+	LRESULT OnNotifyCodeHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 	{
 		if (m_tooltip.m_hWnd == pnmh->hwndFrom)
 		{
@@ -153,13 +162,15 @@ private:
 
 			return 1;
 		}
-		SetMsgHandled(FALSE);
+		bHandled = FALSE;
 		return 0;
 	}
 
 	/**/
-	void OnTimer(UINT_PTR nIDEvent)
+	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
+		UINT_PTR nIDEvent = (UINT_PTR)wParam;
+
 		if (nIDEvent == 654 && m_nSelectedMenuItemId)
 		{
 			CPoint ptCursorPos;
@@ -188,12 +199,17 @@ private:
 				}
 			}
 		}
-		SetMsgHandled(FALSE);
+		bHandled = FALSE;
+		return 0;
 	}
 
 	/**/
-	void OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu)
+	LRESULT OnMenuSelect(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
+		UINT nItemID = (UINT)LOWORD(wParam);
+		UINT nFlags = (UINT)HIWORD(wParam);
+		CMenuHandle menu = (HMENU)lParam;
+
 		HideTooltip();
 		m_nShownMenuItemId = 0;
 		if (nFlags & MF_POPUP)
@@ -212,7 +228,8 @@ private:
 				}
 			}
 		}
-		SetMsgHandled(FALSE);
+		bHandled = FALSE;
+		return 0;
 	}
 
 	UINT_PTR m_nTimer;

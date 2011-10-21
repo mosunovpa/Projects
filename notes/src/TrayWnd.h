@@ -36,9 +36,7 @@ private:
 public:
 	DECLARE_WND_CLASS(_T("TrayWnd"))
 
-	BEGIN_MSG_MAP_EX(CTrayWnd)
-	try
-	{
+	BEGIN_MSG_MAP(CTrayWnd)
 		MSG_WM_CREATE(OnCreate)
 		MSG_WM_DESTROY(OnDestroy)
 		MSG_WM_QUERYENDSESSION(OnQueryEndSession)
@@ -75,9 +73,7 @@ public:
 #ifdef COOL_CONTEXT_MENU
 		CHAIN_MSG_MAP(CCoolContextMenu<CTrayWnd>)
 #endif
-	}
-	CATCH_ALL_ERRORS(m_hWnd)
-	END_MSG_MAP_EX()
+	END_MSG_MAP()
 
 	LRESULT OnCreate(LPCREATESTRUCT lpCreateStruct);
 	LRESULT OnDestroy(void);
