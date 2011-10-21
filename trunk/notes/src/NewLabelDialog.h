@@ -20,7 +20,7 @@ public:
 
 	enum { IDD = IDD_NEW_LABEL };
 
-	BEGIN_MSG_MAP_EX(CNewLabelDialog)
+	BEGIN_MSG_MAP(CNewLabelDialog)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WMU_CLOSE_FORM, OnCloseForm)
 		MSG_WM_ACTIVATE(OnActivate)
@@ -29,7 +29,7 @@ public:
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
 		COMMAND_ID_HANDLER_EX(IDC_LABELS, OnLabelsNotify)
 		COMMAND_ID_HANDLER_EX(IDC_EDIT_LABEL, OnEditLabelNotify)
-	END_MSG_MAP_EX()
+	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCloseForm(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
