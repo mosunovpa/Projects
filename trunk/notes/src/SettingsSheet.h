@@ -11,12 +11,12 @@ public:
 	CSettingsSheet( _U_STRINGorID title = (LPCTSTR) NULL, 
 		UINT uStartPage = 0, HWND hWndParent = NULL );
 
-	BEGIN_MSG_MAP_EX(CSettingsSheet)
+	BEGIN_MSG_MAP(CSettingsSheet)
 		MSG_WM_SHOWWINDOW(OnShowWindow)
 		MESSAGE_HANDLER_EX(WMU_SHEET_INIT, OnInit)
 		MSG_WM_DESTROY(OnDestroy)
 		CHAIN_MSG_MAP(CPropertySheetImpl<CSettingsSheet>)
-	END_MSG_MAP_EX()
+	END_MSG_MAP()
 
 	void OnShowWindow(BOOL bShow, UINT nStatus);
 	void OnSheetInitialized();
