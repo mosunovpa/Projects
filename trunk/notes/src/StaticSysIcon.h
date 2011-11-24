@@ -10,10 +10,10 @@ public:
 
 	DECLARE_WND_SUPERCLASS(NULL, CStatic::GetWndClassName())
 
-	BEGIN_MSG_MAP_TRY(CStaticSysIcon)
+	BEGIN_MSG_MAP(CStaticSysIcon)
 		MSG_WM_LBUTTONDOWN(OnLButtonDown)
 		MSG_WM_LBUTTONDBLCLK(OnLButtonDblClk)
-	END_MSG_MAP_CATCH()
+	END_MSG_MAP()
 
 	void ShowMenu(CPoint pt);
 

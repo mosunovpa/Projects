@@ -369,7 +369,11 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	m_edit.SetEventMask(ENM_LINK);
 	m_edit.SetAutoURLDetect();
 	m_edit.SetFocus();
-
+/*
+	CImageList	il;
+	il.Create(IDB_CLOSE_BTNS_3, 16, 5, RGB(255, 255, 255));
+	AddButton(ID_CLOSE, 16, 16, il, _T("Close"));
+*/
 	PostMessage(WMU_INITNOTE);
 
 	return 0;
@@ -1127,4 +1131,25 @@ void CNoteWnd::AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI)
 		pMI->iImage = -1;
 		break;
 	}
+}
+
+/*
+*/
+POINT CNoteWnd::GetButtonPos(int index)
+{
+	CWindowRect rcWindow(m_hWnd);
+	rcWindow.OffsetRect(-rcWindow.left, -rcWindow.top);
+	rcWindow.DeflateRect(GetSystemMetrics(SM_CXSIZEFRAME), GetSystemMetrics(SM_CYSIZEFRAME));
+
+		//locate the top right base point
+		CPoint	pt(rcWindow.right, rcWindow.top);
+		switch (index)
+		{
+		case 0://autohide pin
+			pt.x -= 16;
+			break;
+		}
+
+		return pt;
+
 }
