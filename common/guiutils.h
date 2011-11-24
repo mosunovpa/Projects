@@ -3,5 +3,5 @@
 	
 namespace guiutils
 {
-	void DrawBitmap(CDC& dc, HBITMAP hBitmap, CRect const& rc);
+	void DrawBitmap(CDCHandle dc, HBITMAP hBitmap, CRect const& rc);
 }

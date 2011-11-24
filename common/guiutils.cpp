@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "guiutils.h"
 	
-void guiutils::DrawBitmap(CDC& dc, HBITMAP hBitmap, CRect const& rc)
+void guiutils::DrawBitmap(CDCHandle dc, HBITMAP hBitmap, CRect const& rc)
 {
 	CDC dcBmp;
 	dcBmp.CreateCompatibleDC(dc);
