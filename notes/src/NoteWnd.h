@@ -241,6 +241,7 @@ public:
 	void OnUnroll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	LRESULT OnLink(LPNMHDR pnmh);
 	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
+	POINT GetButtonPos(int index);
 
 private:
 	void PopulateLabelMenu(CMenuHandle menuLabels);

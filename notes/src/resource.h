@@ -37,6 +37,8 @@
 #define IDD_KEYBOARD_SETTING_PAGE       124
 #define IDB_NOTE                        124
 #define IDB_TRAY_MENU                   124
+#define IDB_BITMAP1                     125
+#define IDB_CLOSE_BTNS_3                125
 #define IDICON                          1001
 #define IDC_COMBO_NOTE_FONT_SIZE        1002
 #define IDC_EDIT_LABEL                  1003
@@ -169,7 +171,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        125
+#define _APS_NEXT_RESOURCE_VALUE        126
 #define _APS_NEXT_COMMAND_VALUE         40153
 #define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           103
