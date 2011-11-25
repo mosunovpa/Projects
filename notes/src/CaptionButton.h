@@ -78,6 +78,7 @@ public:
 	{
 		m_nPressed = -1;
 	}
+
 	virtual ~CCaptionButton()
 	{
 		Clear();
@@ -85,13 +86,14 @@ public:
 
 
 	BEGIN_MSG_MAP(CCaptionButton)
-//		MESSAGE_HANDLER(WM_NCHITTEST, OnNcHitTest)
+		MESSAGE_HANDLER(WM_NCMOUSELEAVE, OnNcMouseLeave)
 		MESSAGE_HANDLER(WM_NCPAINT, OnNcPaint)
-//		MESSAGE_HANDLER(WM_NCLBUTTONDOWN, OnNcLButtonDown)
-//		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
-//		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
-//		MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)
-//		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, OnGetDispInfo)
+		MESSAGE_HANDLER(WM_NCLBUTTONDOWN, OnNcLButtonDown)
+		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
+		MESSAGE_HANDLER(WM_NCMOUSEMOVE, OnNcMouseMove)
+		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
+		MESSAGE_HANDLER(WM_NCACTIVATE, OnNcActivate)
+		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, OnGetDispInfo)
 	END_MSG_MAP()
 
 	/////////////////////////////////////////////////////////////////
@@ -117,6 +119,12 @@ public:
 		//erase from the list
 		m_buttons.erase(it);
 
+		if (m_buttons.empty()) 
+		{
+			m_tooltips.DestroyWindow();
+			m_tooltips.m_hWnd = NULL;
+		}
+
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -126,7 +134,7 @@ public:
 	{
 		T* pT = static_cast<T*>(this);
 
-		if (m_tooltips.m_hWnd==NULL)
+		if (m_tooltips.m_hWnd == NULL)
 		{
 			m_tooltips.Create(NULL, NULL, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
 				WS_EX_TOOLWINDOW|WS_EX_TOPMOST);
@@ -143,7 +151,6 @@ public:
 
 			m_tooltips.Activate(TRUE);
 		}
-
 
 		_button	btn;
 		memset(&btn, 0, sizeof(btn));
@@ -304,10 +311,10 @@ private:
 		int nButton = GetButtonAtPos(pt);
 		if (nButton != -1 && m_buttons[nButton].uStatus!=CAPTION_BTN_DISABLED)
 		{
-			bHandled = TRUE;
+//			bHandled = TRUE;
 		}
 
-		RelayEvent();
+		//RelayEvent();
 
 		return hit;
 	}
@@ -318,12 +325,7 @@ private:
 	LRESULT OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		T* pT = static_cast<T*>(this);
-
-		::DefWindowProc(pT->m_hWnd, uMsg, wParam, lParam);
-
 		DrawCaptionButtons();
-
-		bHandled = FALSE;
 		return 0;
 	}
 
@@ -351,6 +353,7 @@ private:
 	LRESULT OnNcLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		bHandled = FALSE;
+
 		T* pT = static_cast<T*>(this);
 
 		WORD	hit = wParam;
@@ -365,11 +368,12 @@ private:
 			_button &btn = m_buttons[nButton];
 			if (btn.uStatus != CAPTION_BTN_DISABLED)
 			{
-				if (::GetCapture()!=pT->m_hWnd)
+				if (::GetCapture() != pT->m_hWnd)
 					pT->SetCapture();
 
 				m_nPressed = nButton;
-				bHandled = TRUE;
+				
+				m_tooltips.Activate(FALSE);
 
 				if (btn.uStatus != CAPTION_BTN_CHECKED)
 					btn.uStatus = CAPTION_BTN_PUSHED;
@@ -384,18 +388,53 @@ private:
 
 	///////////////////////////////////////////////////////////////////////////////////
 	// WM_MOUSEMOVE message handler
-	// valid only if mouse captured
+	// 
 	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		bHandled = FALSE;
 		T* pT = static_cast<T*>(this);
 
-		if (::GetCapture()==pT->m_hWnd && m_nPressed != -1)
+		if (::GetCapture() == pT->m_hWnd)
 		{
-			bHandled = TRUE;
 			UpdateStatus();
 		}
 
+		return 0;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	// WM_NCMOUSEMOVE message handler
+	// 
+	LRESULT OnNcMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		bHandled = FALSE;
+		T* pT = static_cast<T*>(this);
+
+		TRACKMOUSEEVENT tme = { 0 };
+		tme.hwndTrack = pT->m_hWnd;
+		tme.cbSize = sizeof(tme);
+		tme.dwFlags = TME_NONCLIENT | TME_LEAVE;
+//		tme.dwHoverTime = 1000 * 3;
+		TrackMouseEvent(&tme);
+
+		UpdateStatus();
+
+		RelayEvent();
+
+		return 0;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	// WM_NCMOUSELEAVE message handler
+	// 
+	LRESULT OnNcMouseLeave(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		bHandled = FALSE;
+		T* pT = static_cast<T*>(this);
+		if (::GetCapture() != pT->m_hWnd)
+		{
+			UpdateStatus();
+		}
 		return 0;
 	}
 
@@ -406,11 +445,14 @@ private:
 	LRESULT OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		bHandled = FALSE;
+
 		T* pT = static_cast<T*>(this);
-		if (::GetCapture()==pT->m_hWnd && m_nPressed != -1)
+		if (::GetCapture() == pT->m_hWnd && m_nPressed != -1)
 		{
-			bHandled = TRUE;
+			//bHandled = TRUE;
 			::ReleaseCapture();
+
+			m_tooltips.Activate(TRUE);
 
 			CPoint	pt;
 			::GetCursorPos(&pt);
@@ -427,23 +469,21 @@ private:
 
 			m_nPressed = -1;
 			//force repaint
-			pT->SendMessage(WM_NCPAINT, 1);
+			//pT->SendMessage(WM_NCPAINT, 1);
+			UpdateStatus();
 		}
 
-		return 0;
+		return 1;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
-	// WM_ACTIVATE messsage handler
+	// WM_NCACTIVATE messsage handler
 	// force repaint of non-client area
-	LRESULT OnActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnNcActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
-		bHandled = FALSE;
-
 		T* pT = static_cast<T*>(this);
-		pT->SendMessage(WM_NCPAINT);
-
-		return 0;
+		pT->SendMessage(WM_NCPAINT, 1);
+		return 1;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -560,7 +600,7 @@ protected:
 			MSG	msg;
 			memset(&msg, 0, sizeof(msg));
 			msg.hwnd		= pT->m_hWnd;
-			msg.message		= WM_MOUSEMOVE;
+			msg.message		= WM_NCMOUSEMOVE;
 			msg.lParam		= MAKELONG(pt.x, pt.y);
 			msg.pt			= pt;
 

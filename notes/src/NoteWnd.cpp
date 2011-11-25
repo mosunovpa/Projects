@@ -337,6 +337,12 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	CreateBitmapButton(m_btnUnroll, m_hWnd, ID_UNROLL, IDB_UNROLL_BTNS, 16, 16, IDS_UNROLL);
 	m_btnUnroll.ShowWindow(SW_HIDE);
 
+	//add caption buttons
+	CImageList	il;
+//	il.Create(IDB_CLOSE_BTNS_3, 16, 5, RGB(255, 255, 255));
+	il.CreateFromImage(IDB_CLOSE_BTNS_3, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+	AddButton(ID_CLOSE, 16, 16, il, _T("Close"));
+
 	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
  	m_editCreated.SetFont(m_hStatusFont);
 
@@ -369,11 +375,7 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	m_edit.SetEventMask(ENM_LINK);
 	m_edit.SetAutoURLDetect();
 	m_edit.SetFocus();
-/*
-	CImageList	il;
-	il.Create(IDB_CLOSE_BTNS_3, 16, 5, RGB(255, 255, 255));
-	AddButton(ID_CLOSE, 16, 16, il, _T("Close"));
-*/
+
 	PostMessage(WMU_INITNOTE);
 
 	return 0;
@@ -411,15 +413,18 @@ WM_NCHITTEST
 LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 {
 	ScreenToClient(&pt);
-	if (!m_bMinimized)
+	if (m_bMinimized)
 	{
-		if (GetBottomRightRect().PtInRect(pt))
-		{
-			return HTBOTTOMRIGHT;
-		}
-		SetMsgHandled(FALSE);
+		return HTCAPTION;
 	}
-	return HTCAPTION;
+
+	if (GetBottomRightRect().PtInRect(pt))
+	{
+		return HTBOTTOMRIGHT;
+	}
+
+	SetMsgHandled(FALSE);
+	return 0;
 }
 
 /**
@@ -452,6 +457,8 @@ void CNoteWnd::OnNcPaint(HRGN wParam)
 		memDc.SelectBrush(hOldBrush);
 	}	
 	ReleaseDC(hdc);
+	
+	SetMsgHandled(FALSE);
 }
 
 /**/
@@ -500,8 +507,8 @@ WM_NCACTIVATE
 BOOL CNoteWnd::OnNcActivate(BOOL bActive)
 {
 	m_bActive = bActive;
-	SendMessage(WM_NCPAINT, 1);
-	return 1;
+	SetMsgHandled(FALSE);
+	return TRUE;
 }
 
 /**
@@ -1132,6 +1139,7 @@ void CNoteWnd::AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI)
 		break;
 	}
 }
+
 
 /*
 */
