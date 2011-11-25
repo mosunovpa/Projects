@@ -195,6 +195,7 @@ public:
 
 		CHAIN_MSG_MAP(CCoolContextMenu<CNoteWnd>)
 		CHAIN_MSG_MAP(CCaptionButton<CNoteWnd>)
+
 	END_MSG_MAP()
 
 
@@ -241,7 +242,7 @@ public:
 	void OnUnroll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	LRESULT OnLink(LPNMHDR pnmh);
 	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
-	POINT GetButtonPos(int index);
+	POINT CNoteWnd::GetButtonPos(int index);
 
 private:
 	void PopulateLabelMenu(CMenuHandle menuLabels);
