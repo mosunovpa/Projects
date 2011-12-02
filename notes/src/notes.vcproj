@@ -384,6 +384,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\rollup_btns_3.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\trash_sm.ico"
 				>
 			</File>
@@ -393,6 +397,10 @@
 			</File>
 			<File
 				RelativePath=".\res\unroll_btns.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\unroll_btns_3.bmp"
 				>
 			</File>
 		</Filter>
