@@ -372,6 +372,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\notes.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\notes.ico"
 				>
 			</File>

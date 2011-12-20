@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "StaticSysIcon.h"
+//#include "StaticSysIcon.h"
 #include "resource.h"
 #include "menuutils.h"
 #include "defines.h"
@@ -190,6 +190,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_REMOVE, OnNoteDelete)
 		COMMAND_ID_HANDLER_EX(ID_ROLLUP, OnRollUp)
 		COMMAND_ID_HANDLER_EX(ID_UNROLL, OnUnroll)
+		COMMAND_ID_HANDLER_EX(ID_SYSMENU, OnSysMenu)
 		NOTIFY_CODE_HANDLER_EX(EN_LINK, OnLink)
 		CHAIN_COMMANDS_MEMBER(m_edit)
 
@@ -240,6 +241,7 @@ public:
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnRollUp(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnUnroll(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnSysMenu(UINT uNotifyCode, int nID, CWindow wndCtl);
 	LRESULT OnLink(LPNMHDR pnmh);
 	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
 	POINT CNoteWnd::GetButtonPos(int index);
@@ -247,12 +249,13 @@ public:
 private:
 	void PopulateLabelMenu(CMenuHandle menuLabels);
 
-	CRect GetIconRect();
+//	CRect GetIconRect();
 	CRect GetCaptionRect();
 	int GetMinimizedHeight();
+	int GetMinimizedWidth();
 	CRect GetBottomRightRect();
-	CRect GetRollupButtonRect();
-	CRect GetCloseButtonRect();
+//	CRect GetRollupButtonRect();
+//	CRect GetCloseButtonRect();
 	CRect GetClientRect();
 	CMenuHandle AdjustSystemMenu();
 	void StoreNote();
@@ -269,11 +272,13 @@ private:
 
 	CNoteEdit m_edit;
 	CEdit m_editCreated;
+
+	/*
 	CStaticSysIcon m_icon;
 	CBitmapButton m_btnRollUp;
 	CBitmapButton m_btnUnroll;
 	CBitmapButton m_btnClose;
-		
+	*/	
 	int m_nNoteId;
 	
 	DWORD m_flagSave;

@@ -67,6 +67,7 @@ public:
 		CAPTION_BTN_HOVER		= 2,
 		CAPTION_BTN_CHECKED		= 3,
 		CAPTION_BTN_DISABLED	= 4,
+		CAPTION_BTN_HIDDEN		= 5,
 
 		//Interval between buttons
 		CAPTION_BTN_INTERVAL	= 2
@@ -130,7 +131,8 @@ public:
 	////////////////////////////////////////////////////////////////
 	// append a button
 	// return the count of buttons
-	int AddButton(UINT uID, int cx, int cy, HIMAGELIST himl, LPCTSTR lpszHint=NULL)
+	int AddButton(UINT uID, int cx, int cy, HIMAGELIST himl, LPCTSTR lpszHint=NULL, 
+		UINT uStatus = CAPTION_BTN_NORMAL)
 	{
 		T* pT = static_cast<T*>(this);
 
@@ -158,7 +160,7 @@ public:
 		btn.cx	= cx;
 		btn.cy	= cy;
 		btn.himl= himl;
-		btn.uStatus = CAPTION_BTN_NORMAL;
+		btn.uStatus = uStatus;
 		if (lpszHint)
 		{
 			_tcsncpy(btn.szHint, lpszHint, 80);
@@ -182,7 +184,7 @@ public:
 		if (pT->m_hWnd)
 		{
 			//force repaint
-			pT->SendMessage(WM_NCPAINT, 1);
+			pT->SendMessage(WM_NCPAINT/*, 1*/);
 		}
 	}
 
@@ -208,7 +210,7 @@ public:
 		if (pT->m_hWnd)
 		{
 			//force repaint
-			pT->SendMessage(WM_NCPAINT, 1);
+			pT->SendMessage(WM_NCPAINT/*, 1*/);
 		}
 	}
 
@@ -217,6 +219,30 @@ public:
 		_button &btn = m_buttons[index];
 
 		return (btn.uStatus != CAPTION_BTN_DISABLED);
+	}
+
+	/////////////////////////////////////////////////////////////////////////////
+	// show/hide button at given position
+	void ShowButton(int index, bool bVisible, bool bRepaint = false)
+	{
+		T* pT = static_cast<T*>(this);
+
+		_button &btn = m_buttons[index];
+		btn.uStatus = bVisible ? CAPTION_BTN_NORMAL : CAPTION_BTN_HIDDEN;
+
+		//Update visual effect
+		if (pT->m_hWnd && bRepaint)
+		{
+			//force repaint
+			pT->SendMessage(WM_NCPAINT/*, 1*/);
+		}
+	}
+
+	bool IsButtonVisible(int index)
+	{
+		_button &btn = m_buttons[index];
+
+		return (btn.uStatus != CAPTION_BTN_HIDDEN);
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////
@@ -230,6 +256,21 @@ public:
 		}
 
 		return -1;
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////
+	// Get button size
+	SIZE GetButtonSize(int index) 
+	{
+		_button &btn = m_buttons[index];
+		return CSize(btn.cx, btn.cy);
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////
+	// Get buttons count
+	int GetButtonCount()
+	{
+		return (int)m_buttons.size();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////
@@ -252,9 +293,12 @@ public:
 		//calculate button position
 		for (int i=0; i<=index; i++)
 		{
-			_button &btn = m_buttons[i];
-			pt.x -= btn.cx;
-			pt.x -= CAPTION_BTN_INTERVAL;
+			if (IsButtonVisible(i))
+			{
+				_button &btn = m_buttons[i];
+				pt.x -= btn.cx;
+				pt.x -= CAPTION_BTN_INTERVAL;
+			}
 		}
 
 		return pt;
@@ -292,6 +336,23 @@ public:
 		return -1;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////
+	// draw caption buttons
+	void DrawCaptionButtons(HDC hdc)
+	{
+		T* pT = static_cast<T*>(this);
+
+		for (int i=0; i<(int)m_buttons.size(); i++)
+		{
+			_button btn = m_buttons[i];
+			POINT	pt = pT->GetButtonPos(i);
+			if (IsButtonVisible(i))
+			{
+				ImageList_Draw(btn.himl, btn.uStatus, hdc, pt.x, pt.y, ILD_NORMAL);
+			}
+		}
+	}
+
 private:
 	////////////////////////////////////////////////////////////////////////////////////
 	// WM_NCHITTEST	 message handler
@@ -309,12 +370,14 @@ private:
 		pt.Offset(-rcWnd.TopLeft());
 
 		int nButton = GetButtonAtPos(pt);
-		if (nButton != -1 && m_buttons[nButton].uStatus!=CAPTION_BTN_DISABLED)
+		if (nButton != -1 
+			&& m_buttons[nButton].uStatus != CAPTION_BTN_DISABLED
+			&& m_buttons[nButton].uStatus != CAPTION_BTN_HIDDEN)
 		{
-//			bHandled = TRUE;
+			bHandled = TRUE;
 		}
 
-		//RelayEvent();
+		RelayEvent();
 
 		return hit;
 	}
@@ -325,25 +388,9 @@ private:
 	LRESULT OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		T* pT = static_cast<T*>(this);
-		DrawCaptionButtons();
-		return 0;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////
-	// draw caption buttons
-	void DrawCaptionButtons()
-	{
-		T* pT = static_cast<T*>(this);
-
 		CWindowDC	dc(pT->m_hWnd);
-
-		for (int i=0; i<(int)m_buttons.size(); i++)
-		{
-			_button btn = m_buttons[i];
-			POINT	pt = pT->GetButtonPos(i);
-
-			ImageList_Draw(btn.himl, btn.uStatus, dc, pt.x, pt.y, ILD_NORMAL);
-		}
+		DrawCaptionButtons(dc);
+		return 0;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////
@@ -366,7 +413,7 @@ private:
 		if (nButton != -1)
 		{
 			_button &btn = m_buttons[nButton];
-			if (btn.uStatus != CAPTION_BTN_DISABLED)
+			if (btn.uStatus != CAPTION_BTN_DISABLED && btn.uStatus != CAPTION_BTN_HIDDEN)
 			{
 				if (::GetCapture() != pT->m_hWnd)
 					pT->SetCapture();
@@ -379,7 +426,7 @@ private:
 					btn.uStatus = CAPTION_BTN_PUSHED;
 
 				//force repaint
-				pT->SendMessage(WM_NCPAINT, 1);
+				pT->SendMessage(WM_NCPAINT/*, 1*/);
 			}
 		}
 
@@ -482,7 +529,7 @@ private:
 	LRESULT OnNcActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		T* pT = static_cast<T*>(this);
-		pT->SendMessage(WM_NCPAINT, 1);
+//		pT->SendMessage(WM_NCPAINT, 1);
 		return 1;
 	}
 
@@ -506,7 +553,7 @@ private:
 		{
 			_button &btn = m_buttons[nButton];
 
-			if (btn.uStatus != CAPTION_BTN_DISABLED)
+			if (btn.uStatus != CAPTION_BTN_DISABLED && btn.uStatus != CAPTION_BTN_HIDDEN)
 				_tcsncpy_s(lptt->szText, 80, btn.szHint, 80);
 		}
 
@@ -548,7 +595,7 @@ protected:
 		{
 			_button &btn = m_buttons[i];
 			
-			if (btn.uStatus != CAPTION_BTN_DISABLED)
+			if (btn.uStatus != CAPTION_BTN_DISABLED && btn.uStatus != CAPTION_BTN_HIDDEN)
 			{
 				CRect	rc = GetButtonRect(i);
 				UINT	uNewStatus;
@@ -579,7 +626,7 @@ protected:
 
 		if (bRepaint)
 		{
-			pT->SendMessage(WM_NCPAINT, 1);
+			pT->SendMessage(WM_NCPAINT/*, 1*/);
 		}
 	}
 
