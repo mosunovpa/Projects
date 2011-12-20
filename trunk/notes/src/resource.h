@@ -39,8 +39,8 @@
 #define IDB_TRAY_MENU                   124
 #define IDB_CLOSE_BTNS_3                125
 #define IDB_ROLLUP_BTNS_3               126
-#define IDB_BITMAP1                     127
 #define IDB_UNROLL_BTNS_3               127
+#define IDB_NOTES                       128
 #define IDICON                          1001
 #define IDC_COMBO_NOTE_FONT_SIZE        1002
 #define IDC_EDIT_LABEL                  1003
@@ -159,7 +159,7 @@
 #define ID_NOTEMENU_EXPORT              40141
 #define ID_POPUP_SETTINGS               40142
 #define ID_TRAYNOTEMENU_TEST            40143
-#define ID_TEST_TEST                    40144
+#define ID_SYSMENU                      40144
 #define ID_TRAYNOTEMENU_LABEL40145      40145
 #define ID_TRAYCHECKEDNOTEMENU_LABEL    40146
 #define ID_LABEL_CLEAR                  40147
@@ -173,7 +173,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        128
+#define _APS_NEXT_RESOURCE_VALUE        129
 #define _APS_NEXT_COMMAND_VALUE         40153
 #define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           103
