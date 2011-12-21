@@ -168,7 +168,6 @@ public:
 		MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 		MSG_WM_NCLBUTTONDBLCLK(OnNcLButtonDblClk)
 		MSG_WM_CONTEXTMENU(OnContextMenu)
-		MSG_WM_MENURBUTTONUP(OnMenuRButtonUp)
 
 		MSG_WM_MOUSEACTIVATE(OnMouseActivate)
 		MSG_WM_LBUTTONUP(OnLButtonUp)
@@ -220,7 +219,6 @@ public:
 	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
 	void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
 	void OnContextMenu(CWindow wnd, CPoint point);
-	void OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu);
 
 	int OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message);
 	void OnLButtonUp(UINT nFlags, CPoint point);
@@ -249,13 +247,10 @@ public:
 private:
 	void PopulateLabelMenu(CMenuHandle menuLabels);
 
-//	CRect GetIconRect();
 	CRect GetCaptionRect();
 	int GetMinimizedHeight();
 	int GetMinimizedWidth();
 	CRect GetBottomRightRect();
-//	CRect GetRollupButtonRect();
-//	CRect GetCloseButtonRect();
 	CRect GetClientRect();
 	CMenuHandle AdjustSystemMenu();
 	void StoreNote();
@@ -273,12 +268,6 @@ private:
 	CNoteEdit m_edit;
 	CEdit m_editCreated;
 
-	/*
-	CStaticSysIcon m_icon;
-	CBitmapButton m_btnRollUp;
-	CBitmapButton m_btnUnroll;
-	CBitmapButton m_btnClose;
-	*/	
 	int m_nNoteId;
 	
 	DWORD m_flagSave;

@@ -340,31 +340,7 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\res\bitmap1.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\res\close.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\res\close_btns.bmp"
-				>
-			</File>
-			<File
 				RelativePath=".\res\close_btns_3.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\res\close_hot.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\res\close_press.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\res\icon1.ico"
 				>
 			</File>
 			<File
@@ -384,11 +360,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\rollup_btns.bmp"
+				RelativePath=".\res\rollup_btns_3.bmp"
 				>
 			</File>
 			<File
-				RelativePath=".\res\rollup_btns_3.bmp"
+				RelativePath=".\res\tag_btns.bmp"
 				>
 			</File>
 			<File
@@ -397,10 +373,6 @@
 			</File>
 			<File
 				RelativePath=".\res\tray_menu.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\res\unroll_btns.bmp"
 				>
 			</File>
 			<File
