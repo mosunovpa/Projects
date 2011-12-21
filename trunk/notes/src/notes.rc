@@ -214,14 +214,12 @@ END
 // Bitmap
 //
 
-IDB_CLOSE_BTNS          BITMAP                  "res\\close_btns.bmp"
-IDB_UNROLL_BTNS         BITMAP                  "res\\unroll_btns.bmp"
-IDB_ROLLUP_BTNS         BITMAP                  "res\\rollup_btns.bmp"
 IDB_TRAY_MENU           BITMAP                  "res\\tray_menu.bmp"
 IDB_CLOSE_BTNS_3        BITMAP                  "res\\close_btns_3.bmp"
 IDB_ROLLUP_BTNS_3       BITMAP                  "res\\rollup_btns_3.bmp"
 IDB_UNROLL_BTNS_3       BITMAP                  "res\\unroll_btns_3.bmp"
 IDB_NOTES               BITMAP                  "res\\notes.bmp"
+IDB_TAG_BTNS            BITMAP                  "res\\tag_btns.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -17,19 +17,12 @@
 #include "Clipboard.h"
 #include "NewLabelDialog.h"
 
-#define RIGHT_ROLLUP_BTN
-
-//const INT s_nCaptionSize = 16;
 const INT s_nCornerSize = 14;
 const INT s_nStatusBarSize = 15;
 
 CBrush CNoteWnd::m_hBgBrush = CreateSolidBrush(RGB(255, 255, 204));
 CIcon CNoteWnd::m_hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
 								  IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
-//CIcon CNoteWnd::m_hIconSm = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_NOTES_SM),
-//								  IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
-//CIcon CNoteWnd::m_hIconTrash = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_TRASH_SM),
-//											   IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 
 CPen CNoteWnd::m_hPen = ::CreatePen(PS_SOLID, 1, RGB(0,0,0));
 CPen CNoteWnd::m_hGrayPen = ::CreatePen(PS_SOLID, 1, RGB(128, 128, 128));
@@ -43,7 +36,6 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_dtCreated(0),
 	m_dtDeleted(0),
 	m_bMinimized(FALSE),
-//	m_icon(this),
 	m_bInitialized(FALSE),
 	m_bActive(FALSE),
 	m_flagSave(NM_NONE),
@@ -59,15 +51,6 @@ CNoteWnd::~CNoteWnd()
 {
 }
 
-/**
- Returns icon rect
- */
-/*
-CRect CNoteWnd::GetIconRect()
-{
-	return CRect(0, 0, s_nCaptionSize, s_nCaptionSize);
-}
-*/
 /**/
 
 void CNoteWnd::ShowSystemMenu(CPoint pt)
@@ -205,18 +188,6 @@ CRect CNoteWnd::GetCaptionRect()
 		}
 	}
 	return rc;
-/*
-	CClientRect rc(m_hWnd);
-#ifdef RIGHT_ROLLUP_BTN
- 	rc.left = s_nCaptionSize + 2;
- 	rc.right -= (s_nCaptionSize + s_nCaptionSize + 3);
-#else
-	rc.left = s_nCaptionSize + s_nCaptionSize + 2;
-	rc.right -= (s_nCaptionSize + 3);
-#endif
-	rc.bottom = s_nCaptionSize;
-	return rc;
-*/
 }
 
 /**/
@@ -237,7 +208,7 @@ int CNoteWnd::GetMinimizedWidth()
 CRect CNoteWnd::GetClientRect()
 {
 	CClientRect rc(m_hWnd);
-//	rc.top += s_nCaptionSize + 4;
+	rc.top += 4;
 	rc.bottom -= (s_nStatusBarSize + 2);
 	return rc;
 }
@@ -255,38 +226,6 @@ CRect CNoteWnd::GetRealNoteRect()
 	return rc;
 }
 
-/**
-Returns rollup button rect
-*/
-/*
-CRect CNoteWnd::GetRollupButtonRect()
-{
-#ifdef RIGHT_ROLLUP_BTN
- 	CRect rc(GetCloseButtonRect());
- 	rc.left -= s_nCaptionSize;
- 	rc.right -= s_nCaptionSize; 
-#else
-	CClientRect rc(m_hWnd);
-	rc.left = s_nCaptionSize + 2;
-	rc.right = rc.left + s_nCaptionSize;
-#endif
-	rc.bottom = s_nCaptionSize;
-
-	return rc;
-}
-*/
-/**
- Returns close button rect
- */
-/*
-CRect CNoteWnd::GetCloseButtonRect()
-{
-	CClientRect rc(m_hWnd);
-	rc.left = rc.right - s_nCaptionSize;
-	rc.bottom = s_nCaptionSize;
-	return rc;
-}
-*/
 /**
  Returns bottom right corner for window sizing
  */
@@ -357,19 +296,9 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	// images for menu icons
 	m_ImageList.CreateFromImage(IDB_TRAY_MENU, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 
-//	m_icon.Create(m_hWnd, GetIconRect(), NULL, WS_CHILD|WS_VISIBLE|SS_ICON|SS_CENTERIMAGE|SS_NOTIFY);
-//	m_icon.SetIcon(m_hIconSm);
-
 	AdjustSystemMenu();
-/*
-	CreateBitmapButton(m_btnClose, m_hWnd, ID_CLOSE, IDB_CLOSE_BTNS, 16, 16, IDS_CLOSE);
-	CreateBitmapButton(m_btnRollUp, m_hWnd, ID_ROLLUP, IDB_ROLLUP_BTNS, 16, 16, IDS_ROLLUP);
-	CreateBitmapButton(m_btnUnroll, m_hWnd, ID_UNROLL, IDB_UNROLL_BTNS, 16, 16, IDS_UNROLL);
-	m_btnUnroll.ShowWindow(SW_HIDE);
-*/
 	//add caption buttons
 	CImageList	il;
-//	il.Create(IDB_CLOSE_BTNS_3, 16, 5, RGB(255, 255, 255));
 	il.CreateFromImage(IDB_CLOSE_BTNS_3, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	AddButton(ID_CLOSE, 16, 16, il, _T("Close"));
 
@@ -384,7 +313,11 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	CImageList	il4;
 	il4.CreateFromImage(IDB_NOTES, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	AddButton(ID_SYSMENU, 16, 16, il4, _T("Menu"));
-
+/*
+	CImageList	il5;
+	il5.CreateFromImage(IDB_TAG_BTNS, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+	AddButton(ID_TAGS, 16, 16, il5, _T("Tags"));
+*/
 	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
  	m_editCreated.SetFont(m_hStatusFont);
 
@@ -475,7 +408,6 @@ LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 void CNoteWnd::OnNcPaint(HRGN wParam)
 {
 	CWindowDC dc(m_hWnd);
-//	dc = GetWindowDC();
 	ATLASSERT(dc.m_hDC != NULL);
 
 	CWindowRect rcWindow(m_hWnd);
@@ -509,9 +441,6 @@ void CNoteWnd::OnNcPaint(HRGN wParam)
 			DrawTextInCaption(memDc, CApplication::Get().GetNoteCaption(GetText().c_str()), RGB(0, 0, 0));
 		}
 	}	
-
-//	ReleaseDC(dc);
-//	SetMsgHandled(FALSE);
 }
 
 /**/
@@ -540,16 +469,8 @@ void CNoteWnd::OnPaint(HDC hdc)
 		memDc.FillRect(&rcClient, m_hBgBrush);
 		if (!m_bMinimized)
 		{
-			// show label in the caption
-//			DrawTextInCaption(memDc, GetLabel(), RGB(125, 125, 125));
-
 			// draw status bar
 			DrawStatusBar(memDc);
-		}
-		else
-		{
-//			_tstring s = CApplication::Get().GetNoteCaption(GetText().c_str());
-//			DrawTextInCaption(memDc, s, RGB(0, 0, 0));
 		}
 	}
 }
@@ -569,22 +490,8 @@ BOOL CNoteWnd::OnNcActivate(BOOL bActive)
  */
 void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 {
-/*
-	m_btnClose.SetImages(nState == 0 ? 3 : 0);
-	m_btnClose.Invalidate(FALSE);
-   	m_btnClose.UpdateWindow();
 
-	m_btnRollUp.SetImages(nState == 0 ? 3 : 0);
-	m_btnRollUp.Invalidate(FALSE);
-	m_btnRollUp.UpdateWindow();
-
-	m_btnUnroll.SetImages(nState == 0 ? 3 : 0);
-	m_btnUnroll.Invalidate(FALSE);
-	m_btnUnroll.UpdateWindow();
-
-	Invalidate(FALSE);
-	UpdateWindow();
-*/
+	SendMessage(WM_NCPAINT);
 
 	if (nState == WA_INACTIVE)
 	{
@@ -604,10 +511,6 @@ void CNoteWnd::OnGetMinMaxInfo(LPMINMAXINFO lParam)
 	{
 		lParam->ptMinTrackSize = CPoint(nMinWidth, nMinHeight);
 	}
-	else
-	{
-//		lParam->ptMinTrackSize = lParam->ptMaxTrackSize = CPoint(160, GetMinimizedHeight());
-	}
 }
 
 /**
@@ -615,11 +518,6 @@ void CNoteWnd::OnGetMinMaxInfo(LPMINMAXINFO lParam)
  */
 void CNoteWnd::OnSize(UINT wParam, CSize sz)
 {
-/*
-	m_btnClose.MoveWindow(&GetCloseButtonRect(), TRUE);
-	m_btnRollUp.MoveWindow(&GetRollupButtonRect(), TRUE);
-	m_btnUnroll.MoveWindow(&GetRollupButtonRect(), TRUE);
-*/
 	if (!m_bMinimized)
 	{
 		CClientRect rc(m_hWnd);
@@ -628,7 +526,7 @@ void CNoteWnd::OnSize(UINT wParam, CSize sz)
 
 		m_edit.MoveWindow(&(GetClientRect()));
 	}
-	CWindowRect wr(m_hWnd);
+
 	m_flagSave |= NM_POS;
 }
 
@@ -914,38 +812,24 @@ void CNoteWnd::OnContextMenu(CWindow wnd, CPoint point)
 	{
 		return;
 	}
-// 	if (GetDeletedDate() != 0 || IsMinimized())
-// 	{
-		ShowSystemMenu(point);
-// 	}
-// 	else
-// 	{
-// 		ShowLabelMenu(point);
-// 	}
+//	ShowSystemMenu(point);
+	ShowLabelMenu(point);
 }
 
-void CNoteWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
-{
-	POINT pt;
-	::GetCursorPos(&pt);
-
-	CMenu mnu;
-	mnu.CreatePopupMenu();
-	mnu.AppendMenu(MF_STRING, (UINT_PTR)0, _T("test"));
-	mnu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RECURSE /*| TPM_NOANIMATION*/, pt.x, pt.y, m_hWnd, NULL);
-}
-
+/**/
 int CNoteWnd::OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message)
 {
 	SetMsgHandled(FALSE);
 	return MA_ACTIVATE;
 }
 
+/**/
 void CNoteWnd::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	SetMsgHandled(FALSE);
 }
 
+/**/
 void CNoteWnd::OnEnterSizeMove()
 {
 	SetMsgHandled(FALSE);
@@ -978,10 +862,7 @@ void CNoteWnd::Rollup()
 
 		ShowButton(GetButtonIndex(ID_ROLLUP), false);
 		ShowButton(GetButtonIndex(ID_UNROLL), true);
-/*
-		m_btnRollUp.ShowWindow(SW_HIDE);
-		m_btnUnroll.ShowWindow(SW_SHOW);
-*/
+
 		GetWindowRect(m_rcRestored);
 		CRect rc(m_rcRestored);
 		rc.bottom = rc.top + GetMinimizedHeight();
@@ -990,10 +871,6 @@ void CNoteWnd::Rollup()
 		m_bMinimized = TRUE;
 
 		MoveWindow(rc);
-
-		CWindowRect wr(m_hWnd);
-//		Invalidate(FALSE);
-//		UpdateWindow();
 
 		EscapeFocus();
 	}
@@ -1011,18 +888,10 @@ void CNoteWnd::Unroll()
 		m_bMinimized = FALSE;
 		MoveWindow(rc);
 
-//		Invalidate(FALSE);
-//		UpdateWindow();
-
 		m_rcRestored.SetRectEmpty();
 
 		m_editCreated.ShowWindow(SW_SHOW);
 		m_edit.ShowWindow(SW_SHOW);
-
-/*
-		m_btnRollUp.ShowWindow(SW_SHOW);
-		m_btnUnroll.ShowWindow(SW_HIDE);
-*/
 
 		m_edit.PostMessage(WM_SETFOCUS);
 	}
@@ -1159,12 +1028,10 @@ void CNoteWnd::Refresh()
 {
 	if (GetDeletedDate() == 0)
 	{
-//		m_icon.SetIcon(m_hIconSm);
 		SetReadOnly(FALSE);
 	}
 	else
 	{
-//		m_icon.SetIcon(m_hIconTrash);
 		SetReadOnly(TRUE);
 	}
 }
@@ -1193,10 +1060,10 @@ void CNoteWnd::AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI)
 		pMI->iImage = 16;
 		break;
 	case ID_ROLLUP:
-		pMI->iImage = 8;
+		pMI->iImage = 17;//8;
 		break;
 	case ID_UNROLL:
-		pMI->iImage = 9;
+		pMI->iImage = 18;//9;
 		break;
 	case ID_EDIT_CUT:
 		pMI->iImage = 10;

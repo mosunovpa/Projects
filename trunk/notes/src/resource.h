@@ -21,15 +21,12 @@
 #define IDS_ROLLUP                      110
 #define IDD_DELETENOTECONFIRM           111
 #define IDS_UNROLL                      111
-#define IDB_CLOSE_BTNS                  112
 #define IDS_STRING112                   112
 #define IDS_NONE                        112
 #define IDS_NO_LABEL                    113
 #define IDR_TRAY_NOTE_MENU              114
 #define IDR_TRAY_NOTE_MENU1             115
 #define IDD_NOTE_SETTING_PAGE           116
-#define IDB_UNROLL_BTNS                 119
-#define IDB_ROLLUP_BTNS                 120
 #define IDD_NEW_LABEL                   121
 #define IDI_TRASH_SM                    122
 #define IDD_NOTEBOOKS_SETTING_PAGE      122
@@ -41,6 +38,7 @@
 #define IDB_ROLLUP_BTNS_3               126
 #define IDB_UNROLL_BTNS_3               127
 #define IDB_NOTES                       128
+#define IDB_TAG_BTNS                    129
 #define IDICON                          1001
 #define IDC_COMBO_NOTE_FONT_SIZE        1002
 #define IDC_EDIT_LABEL                  1003
@@ -139,7 +137,7 @@
 #define ID_NOTEBOOK_EMPTY               40121
 #define ID_MANAGE_NOTEBOOKS             40122
 #define ID_TRAYMENU_DOCUMENTS           40123
-#define ID_DOCUMENTS_OPENGOOGLEDOCUMENTS 40124
+#define ID_TAGS                         40124
 #define ID_DOCUMENTS_REFRESH            40125
 #define ID_TRAYNOTEMENU_MOVETONOTEBOOK  40126
 #define ID_MOVETONOTEBOOK_              40127
@@ -173,7 +171,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        129
+#define _APS_NEXT_RESOURCE_VALUE        130
 #define _APS_NEXT_COMMAND_VALUE         40153
 #define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           103
