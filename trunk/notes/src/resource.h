@@ -39,6 +39,7 @@
 #define IDB_UNROLL_BTNS_3               127
 #define IDB_NOTES                       128
 #define IDB_TAG_BTNS                    129
+#define IDB_TRASH_BTNS                  130
 #define IDICON                          1001
 #define IDC_COMBO_NOTE_FONT_SIZE        1002
 #define IDC_EDIT_LABEL                  1003
@@ -138,7 +139,7 @@
 #define ID_MANAGE_NOTEBOOKS             40122
 #define ID_TRAYMENU_DOCUMENTS           40123
 #define ID_TAGS                         40124
-#define ID_DOCUMENTS_REFRESH            40125
+#define ID_TRASHSYSMENU                 40125
 #define ID_TRAYNOTEMENU_MOVETONOTEBOOK  40126
 #define ID_MOVETONOTEBOOK_              40127
 #define ID_TNM_NOBOOKS                  40128
@@ -171,7 +172,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        130
+#define _APS_NEXT_RESOURCE_VALUE        131
 #define _APS_NEXT_COMMAND_VALUE         40153
 #define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           103

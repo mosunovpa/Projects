@@ -16,8 +16,10 @@ public:
 	void SetAlwaysOnTop(BOOL bVal);
 	FontSize GetFontSize() const;
 	void SetFontSize(FontSize fs);
+	SIZE GetNewNoteSize() const;
+	void SetNewNoteSize(SIZE const& newnote_size);
 private:
 	BOOL m_bAlwaysOnTop;
 	FontSize m_fs;
-
+	CSize m_newnote_size;
 };
