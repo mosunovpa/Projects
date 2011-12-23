@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Options.h"
 
-COptions::COptions(void) : m_bAlwaysOnTop(FALSE), m_fs(FS_SMALL)
+COptions::COptions(void) : m_bAlwaysOnTop(FALSE), m_fs(FS_SMALL), m_newnote_size(200, 160)
 {
 }
 
@@ -27,4 +27,14 @@ COptions::FontSize COptions::GetFontSize() const
 void COptions::SetFontSize( FontSize fs )
 {
 	m_fs = fs;
+}
+
+SIZE COptions::GetNewNoteSize() const
+{
+	return m_newnote_size;
+}
+
+void COptions::SetNewNoteSize(SIZE const& newnote_size)
+{
+	m_newnote_size = newnote_size;
 }

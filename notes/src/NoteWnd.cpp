@@ -66,7 +66,15 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 		return;
 	}
 	CMenuHandle menuPopup;
-	if (GetDeletedDate() == 0)
+	if (IsDeleted())
+	{
+		menuPopup = m_activeMenu.GetSubMenu(1);
+		if (menuPopup.m_hMenu == NULL)
+		{
+			return;
+		}
+	}
+	else
 	{
 		menuPopup = m_activeMenu.GetSubMenu(0);
 		if (menuPopup.m_hMenu == NULL)
@@ -75,14 +83,6 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 		}
 		CMenuHandle menuLabels = menuPopup.GetSubMenu(1);
 		PopulateLabelMenu(menuLabels);
-	}
-	else
-	{
-		menuPopup = m_activeMenu.GetSubMenu(1);
-		if (menuPopup.m_hMenu == NULL)
-		{
-			return;
-		}
 	}
 
 	menuPopup.SetMenuDefaultItem(ID_CLOSE);
@@ -201,7 +201,7 @@ int CNoteWnd::GetMinimizedHeight()
 /**/
 int CNoteWnd::GetMinimizedWidth()
 {
-	return 180;
+	return CApplication::Get().GetOptions().GetNewNoteSize().cx;
 }
 
 /**/
@@ -313,11 +313,11 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	CImageList	il4;
 	il4.CreateFromImage(IDB_NOTES, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	AddButton(ID_SYSMENU, 16, 16, il4, _T("Menu"));
-/*
+
 	CImageList	il5;
-	il5.CreateFromImage(IDB_TAG_BTNS, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
-	AddButton(ID_TAGS, 16, 16, il5, _T("Tags"));
-*/
+	il5.CreateFromImage(IDB_TRASH_BTNS, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+	AddButton(ID_TRASHSYSMENU, 16, 16, il5, _T("Menu"), CAPTION_BTN_HIDDEN);
+
 	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
  	m_editCreated.SetFont(m_hStatusFont);
 
@@ -652,16 +652,16 @@ void CNoteWnd::SetLabel(LPCTSTR label)
 		m_label = text;
 		m_flagSave |= (NM_LABEL | NM_MODIFIED);
 		SendMessage(WM_NCPAINT);
-//		Invalidate(FALSE);
-//		UpdateWindow();
 	}
 }
 
 /**/
+/*
 CNoteEdit& CNoteWnd::GetEditor()
 {
 	return m_edit;
 }
+*/
 
 /**/
 CMenuHandle CNoteWnd::AdjustSystemMenu()
@@ -948,6 +948,12 @@ BOOL CNoteWnd::IsMinimized()
 }
 
 /**/
+BOOL CNoteWnd::IsDeleted()
+{
+	return GetDeletedDate() != 0;
+}
+
+/**/
 void CNoteWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (nID == LABEL_CMD_FIRST)
@@ -1026,14 +1032,21 @@ void CNoteWnd::EscapeFocus()
 /**/
 void CNoteWnd::Refresh()
 {
-	if (GetDeletedDate() == 0)
+	if (IsDeleted())
 	{
-		SetReadOnly(FALSE);
+		ShowButton(GetButtonIndex(ID_SYSMENU), false);
+		ShowButton(GetButtonIndex(ID_TRASHSYSMENU), true);
+
+		SetReadOnly(TRUE);
 	}
 	else
 	{
-		SetReadOnly(TRUE);
+		ShowButton(GetButtonIndex(ID_SYSMENU), true);
+		ShowButton(GetButtonIndex(ID_TRASHSYSMENU), false);
+
+		SetReadOnly(FALSE);
 	}
+	SendMessage(WM_NCPAINT);
 }
 
 /**/
@@ -1104,13 +1117,14 @@ POINT CNoteWnd::GetButtonPos(int index)
 	{
 		// left aligment
 		pt = CPoint(rcWindow.left, rcWindow.top);
-
-		for (int i = leftAlignIdx + 1; i <= index; i++)
+		int right = rcWindow.left;
+		for (int i = leftAlignIdx; i <= index; i++)
 		{
 			if (IsButtonVisible(i))
 			{
-				pt.x += GetButtonSize(i).cx;
-				pt.x += CAPTION_BTN_INTERVAL;
+				pt.x = right;
+				right = pt.x + GetButtonSize(i).cx;
+				right += CAPTION_BTN_INTERVAL;
 			}
 		}
 	}

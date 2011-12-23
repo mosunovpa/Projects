@@ -291,7 +291,7 @@ public:
 		CPoint	pt(rcWnd.right, rcWnd.top);
 
 		//calculate button position
-		for (int i=0; i<=index; i++)
+		for (int i = 0; i <= index; i++)
 		{
 			if (IsButtonVisible(i))
 			{
@@ -308,17 +308,19 @@ public:
 	// get the rect of given button in window coordinate
 	RECT GetButtonRect(int index)
 	{
-		T* pT = static_cast<T*>(this);
+		CRect	rc;
+		if (IsButtonVisible(index))
+		{		
+			T* pT = static_cast<T*>(this);
 
-		_button btn = m_buttons[index];
+			_button btn = m_buttons[index];
 
-		POINT	pt = pT->GetButtonPos(index);
-		RECT	rc;
-		rc.left = pt.x;
-		rc.top  = pt.y;
-		rc.right = rc.left + btn.cx;
-		rc.bottom = rc.top + btn.cy;
-
+			POINT	pt = pT->GetButtonPos(index);
+			rc.left = pt.x;
+			rc.top  = pt.y;
+			rc.right = rc.left + btn.cx;
+			rc.bottom = rc.top + btn.cy;
+		}
 		return rc;
 	}
 
@@ -327,7 +329,7 @@ public:
 	int GetButtonAtPos(POINT pt)
 	{
 		T* pT = static_cast<T*>(this);
-		for (int i=0; i<(int)m_buttons.size(); i++)
+		for (int i = 0; i < (int)m_buttons.size(); i++)
 		{
 			CRect	rc = pT->GetButtonRect(i);
 			if (rc.PtInRect(pt))

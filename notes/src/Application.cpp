@@ -140,8 +140,7 @@ CRect CApplication::GetOptimumPosition(std::vector<CRect> const& vPossiblePositi
 /**/
 CRect CApplication::CalcNewNoteRect()
 {
-	const int nNewNoteWidth = 200;
-	const int nNewNoteHeight = 160;
+	SIZE sz = CApplication::Get().GetOptions().GetNewNoteSize();
 
 	// collect all notes positions
 	CNote::List notes;
@@ -157,6 +156,8 @@ CRect CApplication::CalcNewNoteRect()
 
 		// select minimum overlapped window
 		CRect rc(GetOptimumPosition(vPossiblePositions, notes));
+		rc.right = rc.left + sz.cx;
+		rc.bottom = rc.top + sz.cy;
 		if (!rc.IsRectNull())
 		{
 			return rc;
@@ -167,7 +168,7 @@ CRect CApplication::CalcNewNoteRect()
 	CRect war;
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &war, 0);
 	CPoint center(war.right / 2, war.bottom / 2);
-	return CRect(center.x, center.y, center.x + nNewNoteWidth, center.y + nNewNoteHeight);
+	return CRect(center.x, center.y, center.x + sz.cx, center.y + sz.cy);
 }
 
 /**/

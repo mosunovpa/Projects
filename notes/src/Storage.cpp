@@ -382,6 +382,8 @@ void CStorage::ReadOptions( COptions& opt )
 		spNode->get_text(&s);
 		opt.SetAlwaysOnTop(_ttoi(s));
 	}
+
+	// font-size
 	CComPtr<IXMLDOMNode> spFontNode;
 	CHECK_HR(spOptions->selectSingleNode(CComBSTR(_T("font-size")),&spFontNode));
 	if (spFontNode)
@@ -390,6 +392,37 @@ void CStorage::ReadOptions( COptions& opt )
 		spFontNode->get_text(&s);
 		opt.SetFontSize((COptions::FontSize)_ttoi(s));
 	}
+
+	// new-note
+	CComPtr<IXMLDOMNode> spNewNode;
+	CHECK_HR(spOptions->selectSingleNode(CComBSTR(_T("new-note")), &spNewNode));
+	if (spNewNode)
+	{
+		CComPtr<IXMLDOMElement> spElement;
+		CHECK_HR(spNewNode.QueryInterface(&spElement));
+		
+		CComVariant val;
+		SIZE sz;
+		CHECK_HR(spElement->getAttribute(L"width", &val));
+		if (val.vt != VT_BSTR)
+		{
+			sz.cx = 200;
+		}
+		else
+		{
+			sz.cx = _ttoi(val.bstrVal);
+		}
+		CHECK_HR(spElement->getAttribute(L"height", &val));
+		if (val.vt != VT_BSTR)
+		{
+			sz.cy = 160;
+		}
+		else
+		{
+			sz.cy = _ttoi(val.bstrVal);
+		}
+		opt.SetNewNoteSize(sz);
+	}
 }
 
 void CStorage::WriteOptions( COptions const& opt ) 
@@ -397,7 +430,6 @@ void CStorage::WriteOptions( COptions const& opt )
 	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	CComPtr<IXMLDOMNode> spOptions = _GetOptionsNode(spDoc);
 	CComPtr<IXMLDOMNode> spNode;
-	CComPtr<IXMLDOMNode> spChild;
 	CHECK_HR(spOptions->selectSingleNode(CComBSTR(_T("always-on-top")), &spNode));
 	if (!spNode)
 	{
@@ -407,8 +439,8 @@ void CStorage::WriteOptions( COptions const& opt )
 	}
 	spNode->put_text(CComBSTR(strutils::to_string(opt.GetAlwaysOnTop()).c_str()));
 
+	// font-size
 	CComPtr<IXMLDOMNode> spFontNode;
-
 	CHECK_HR(spOptions->selectSingleNode(CComBSTR(_T("font-size")), &spFontNode));
 	if (!spFontNode)
 	{
@@ -417,6 +449,20 @@ void CStorage::WriteOptions( COptions const& opt )
 		CHECK_HR(spOptions->appendChild(spElem, &spFontNode));
 	}
 	spFontNode->put_text(CComBSTR(strutils::to_string(opt.GetFontSize()).c_str()));
+
+	// new-note
+	CComPtr<IXMLDOMNode> spNewNode;
+	CHECK_HR(spOptions->selectSingleNode(CComBSTR(_T("new-note")), &spNewNode));
+	if (!spNewNode)
+	{
+		CComPtr<IXMLDOMElement> spElem;
+		CHECK_HR(spDoc->createElement(L"new-note", &spElem));
+		CHECK_HR(spOptions->appendChild(spElem, &spNewNode));
+	}
+	CComPtr<IXMLDOMElement> spElement;
+	CHECK_HR(spNewNode.QueryInterface(&spElement));
+	CHECK_HR(spElement->setAttribute(L"width", CComVariant(strutils::to_string(opt.GetNewNoteSize().cx).c_str())));
+	CHECK_HR(spElement->setAttribute(L"height", CComVariant(strutils::to_string(opt.GetNewNoteSize().cy).c_str())));
 
 	CHECK_HR(spDoc->save(CComVariant(m_fileName.c_str())));
 }
