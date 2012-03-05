@@ -310,6 +310,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ScintillaNoteEdit.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SettingsSheet.h"
 				>
 			</File>
@@ -405,6 +409,10 @@
 			</File>
 			<File
 				RelativePath="..\..\common\apputils.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\atlscintilla.h"
 				>
 			</File>
 			<File
