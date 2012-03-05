@@ -812,8 +812,8 @@ void CNoteWnd::OnContextMenu(CWindow wnd, CPoint point)
 	{
 		return;
 	}
-//	ShowSystemMenu(point);
-	ShowLabelMenu(point);
+	ShowSystemMenu(point);
+//	ShowLabelMenu(point);
 }
 
 /**/
