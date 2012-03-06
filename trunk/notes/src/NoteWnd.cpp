@@ -6,7 +6,6 @@
  */
 
 #include "stdafx.h"
-#include <boost/algorithm/string/trim.hpp>
 #include "Application.h"
 #include "NoteWnd.h"
 #include "resource.h"
@@ -321,36 +320,10 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
  	m_editCreated.SetFont(m_hStatusFont);
 
-	m_edit.Create(m_hWnd, NULL, NULL, 
-		WS_CHILD | WS_VISIBLE | ES_AUTOVSCROLL | ES_MULTILINE | WS_VSCROLL, 
-		WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR | WS_EX_NOPARENTNOTIFY, 20000);
-	m_edit.SetBackgroundColor(RGB(255, 255, 204));
 
-	COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
-	CHARFORMAT cf;
-	ZeroMemory(&cf, sizeof(CHARFORMAT));
-	cf.cbSize = sizeof(CHARFORMAT);
-	cf.dwMask = CFM_SIZE | CFM_BOLD | CFM_FACE;
-	m_edit.GetDefaultCharFormat(cf);
-	cf.yHeight = (fs == COptions::FS_SMALL ? 160 : (fs == COptions::FS_MEDIUM ? 200 : 240));
-	cf.dwEffects = 0;
-	lstrcpy(cf.szFaceName, _T("MS Shell Dlg"));
-	m_edit.SetDefaultCharFormat(cf);
-
-	// format changing lead to increase undo queue
-
-	PARAFORMAT pf;
-	ZeroMemory(&pf, sizeof(PARAFORMAT));
-	pf.cbSize = sizeof(PARAFORMAT);
-	pf.dwMask = PFM_OFFSETINDENT;
-	pf.dxStartIndent = 100;
-	m_edit.SetParaFormat(pf);
-
-	m_edit.SetOleCallback(&m_edit.m_OleCallback);
-	m_edit.SetEventMask(ENM_LINK);
-	m_edit.SetAutoURLDetect();
-	m_edit.SetFocus();
-
+	m_edit.Create(m_hWnd);
+	m_edit.Init();
+	static_cast<CWindow>(m_edit).SetFocus();
 	PostMessage(WMU_INITNOTE);
 
 	return 0;
@@ -535,7 +508,7 @@ WM_SETFOCUS
 */
 void CNoteWnd::OnFocus(HWND hWnd)
 {
-	m_edit.SetFocus();
+	static_cast<CWindow>(m_edit).SetFocus();
 	SetMsgHandled(FALSE);
 }
 
@@ -594,18 +567,9 @@ int CNoteWnd::GetId() const
 }
 
 /**/
-_tstring CNoteWnd::GetText() const
+_tstring CNoteWnd::GetText()
 {
-	_tstring s;
-	int len = m_edit.GetWindowTextLength() + 1;
-	s.resize(len);
-	m_edit.GetWindowText(&s[0],len);
-	boost::trim(s);
-	if (s[0] == 0)
-	{
-		s.clear();
-	}
-	return _tstring(s.c_str());
+	return m_edit.GetText();
 }
 
 /**/
@@ -617,7 +581,7 @@ void CNoteWnd::SetId( int id )
 /**/
 void CNoteWnd::SetText(_tstring const& text)
 {
-		m_edit.SetWindowText(text.c_str());
+	m_edit.SetText(text);
 }
 
 /**/
@@ -901,6 +865,7 @@ void CNoteWnd::Unroll()
 /**/
 LRESULT CNoteWnd::OnLink(LPNMHDR pnmh)
 {
+#ifdef RICHEDIT	
 	ENLINK* pLinkInfo = (ENLINK*)pnmh;
 	if (pLinkInfo->msg == WM_LBUTTONUP)
 	{
@@ -909,6 +874,7 @@ LRESULT CNoteWnd::OnLink(LPNMHDR pnmh)
 		m_edit.GetTextRange(pLinkInfo->chrg.cpMin, pLinkInfo->chrg.cpMax, &txt[0]);
 		ShellExecute(NULL, NULL, txt.c_str(), NULL, NULL, SW_SHOW);
 	}
+#endif
 	return 0;
 }
 
@@ -930,15 +896,7 @@ void CNoteWnd::SetDeletedDate( time_t dt )
 void CNoteWnd::OptionsUpdated()
 {
 	COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
-	CHARFORMAT cf;
-	ZeroMemory(&cf, sizeof(CHARFORMAT));
-	cf.cbSize = sizeof(CHARFORMAT);
-	cf.dwMask = CFM_SIZE | CFM_BOLD | CFM_FACE;
-	m_edit.GetDefaultCharFormat(cf);
-	cf.yHeight = (fs == COptions::FS_SMALL ? 160 : (fs == COptions::FS_MEDIUM ? 200 : 240));
-	cf.dwEffects = 0;
-	lstrcpy(cf.szFaceName, _T("MS Shell Dlg"));
-	m_edit.SetDefaultCharFormat(cf);
+	m_edit.SetFontSize(fs == COptions::FS_SMALL ? 160 : (fs == COptions::FS_MEDIUM ? 200 : 240));
 }
 
 /**/
