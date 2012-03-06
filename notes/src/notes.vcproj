@@ -318,10 +318,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SimpleNoteEdit.h"
-				>
-			</File>
-			<File
 				RelativePath=".\StaticSysIcon.h"
 				>
 			</File>

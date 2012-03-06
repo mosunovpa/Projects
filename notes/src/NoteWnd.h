@@ -39,7 +39,7 @@ public:
 
 	int GetId() const;
 	void SetId(int id);
-	_tstring GetText() const;
+	_tstring GetText();
 	void SetText(_tstring const& text);
 	time_t GetCreatedDate() const;
 	void SetCreatedDate(time_t dt);
