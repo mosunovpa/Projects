@@ -49,17 +49,16 @@ std::wstring strutils::toWideString(char const* pStr, int len)
 	}
 
 	// figure out how many wide characters we are going to get 
-	size_t nChars;
-	mbstowcs_s(&nChars, NULL, 0, pStr, len); 
+	int nChars = MultiByteToWideChar(CP_UTF8, 0, pStr, len, NULL, 0);
+
 	assert(nChars != -1);
 	if (nChars == 0 || nChars == 1)
 		return L"" ;
 
-	// convert the narrow string to a wide string 
-	// nb: slightly naughty to write directly into the string like this
-	std::wstring buf ;
+	std::wstring buf;
 	buf.resize(nChars);
-	mbstowcs_s(&nChars, &buf[0], nChars, pStr, len); 
+
+	MultiByteToWideChar(CP_UTF8, 0, pStr, len, &buf[0], nChars);
 	return std::wstring(&buf[0]); // invoke constructor for adjusting of buffer length
 }
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -74,18 +73,14 @@ std::string strutils::toNarrowString(wchar_t const* pStr, int len)
 	}
 
 	// figure out how many narrow characters we are going to get 
-	size_t nChars;
-	wcstombs_s(&nChars, NULL, 0, pStr, len);
-	assert(nChars != -1);
-	if (nChars == 0 || nChars == 1)
-		return "" ;
+	int bytes = (len/* + 1*/) * sizeof(wchar_t);
 
 	// convert the wide string to a narrow string
 	// nb: slightly naughty to write directly into the string like this
 	std::string buf ;
-	buf.resize(nChars) ;
-	wcstombs_s(&nChars, &buf[0], nChars, pStr, len);
-	return std::string(&buf[0]); // invoke constructor for adjusting of buffer length
+	buf.resize(bytes) ;
+	WideCharToMultiByte(CP_UTF8, 0, pStr, len, &buf[0], buf.size(), NULL, NULL);
+	return std::string(buf.c_str()); // invoke constructor for adjusting of buffer length
 }
 
 _tstring strutils::trim_string(LPCTSTR text, UINT nLimit /*= 256*/)
