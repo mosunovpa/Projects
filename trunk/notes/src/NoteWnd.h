@@ -111,6 +111,8 @@ public:
 
 		CHAIN_MSG_MAP(CCoolContextMenu<CNoteWnd>)
 		CHAIN_MSG_MAP(CCaptionButton<CNoteWnd>)
+		
+		REFLECT_NOTIFICATIONS();
 
 	END_MSG_MAP()
 

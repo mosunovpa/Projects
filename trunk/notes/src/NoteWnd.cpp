@@ -348,7 +348,6 @@ void CNoteWnd::OnDestroy()
 LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	m_flagSave = NM_NONE;
-	m_edit.SetModify(GetId() == 0);
 	m_edit.EmptyUndoBuffer();
 	m_bInitialized = TRUE;
 
@@ -550,7 +549,7 @@ void CNoteWnd::StoreNote()
 		if (m_edit.GetModify()) // save all if note content has been changed
 		{
 			m_nNoteId = CApplication::Get().SaveNote(this, NM_ALL);
-			m_edit.SetModify(FALSE);
+			m_edit.SetSavePoint();
 		}
 		else if (m_flagSave != NM_NONE)
 		{

@@ -29,32 +29,36 @@ public:
 	{
 	}
 
-	void SetModify(BOOL bModified = TRUE)
+	void GetSel(long& nStartChar, long& nEndChar)
 	{
-	}
-
-	void GetSel(long& nStartChar, long& nEndChar) const
-	{
+		nStartChar = GetSelectionStart();
+		nEndChar = GetSelectionEnd();
 	}
 
 	_tstring GetText()
 	{
 		string s;
 		int len = GetLength();
+
 		s.resize(len + 1);
 		CScintillaWindowImpl<CScintillaNoteEdit>::GetText(s.size(), &s[0]);
 		boost::trim(s);
 		if (s[0] == 0)
 		{
-			s.clear();
+			return _tstring();
 		}
+		
 		_tstring ws = ATOT(s.c_str(), s.size());
 		return ws;
 	}
 
 	void SetText(_tstring const& text)
 	{
-		string s = TTOA(text.c_str(), text.size());
+		string s;
+		if (!text.empty())
+		{
+			s = TTOA(text.c_str(), text.size());
+		}
 		CScintillaWindowImpl<CScintillaNoteEdit>::SetText(s.c_str());
 	}
 

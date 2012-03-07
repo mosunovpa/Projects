@@ -165,4 +165,8 @@ public:
 		SetWindowText(text.c_str());
 	}
 
+	void SetSavePoint()
+	{
+		SetModify(FALSE);
+	}
 };
