@@ -1,6 +1,7 @@
 #pragma once
 
 #define COOL_CONTEXT_MENU
+#define SCINTILLA 
 
 #define NOTE_WND_CLASS_NAME _T("MyNoteWnd")
 

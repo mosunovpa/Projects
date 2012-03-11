@@ -19,6 +19,10 @@
 const INT s_nCornerSize = 14;
 const INT s_nStatusBarSize = 15;
 
+const COLORREF black = RGB(0,0,0);
+const COLORREF gray = RGB(128, 128, 128);
+const COLORREF yellow = RGB(255, 255, 204);
+
 CBrush CNoteWnd::m_hBgBrush = CreateSolidBrush(RGB(255, 255, 204));
 CIcon CNoteWnd::m_hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
 								  IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
@@ -322,7 +326,7 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 
 
 	m_edit.Create(m_hWnd);
-	m_edit.Init();
+	m_edit.Init(yellow);
 	static_cast<CWindow>(m_edit).SetFocus();
 	PostMessage(WMU_INITNOTE);
 

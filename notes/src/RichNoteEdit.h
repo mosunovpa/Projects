@@ -104,9 +104,9 @@ public:
 			WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR | WS_EX_NOPARENTNOTIFY, 20000);
 	}
 
-	void Init()
+	void Init(COLORREF bgColor)
 	{
-		SetBackgroundColor(RGB(255, 255, 204));
+		SetBackgroundColor(bgColor);
 
 		COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
 		CHARFORMAT cf;

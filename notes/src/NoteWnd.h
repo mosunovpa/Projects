@@ -14,16 +14,12 @@
 #include "CoolContextMenu.h"
 #include "CaptionButton.h"
 
-//#define RICHEDIT 
-#define SCINTILLA 
-
-
-#if defined(RICHEDIT)
-	#include "RichNoteEdit.h"
-	typedef CRichNoteEdit CNoteEdit;
-#elif defined(SCINTILLA)
+#if defined(SCINTILLA)
 	#include "ScintillaNoteEdit.h"
 	typedef CScintillaNoteEdit CNoteEdit;
+#else 
+	#include "RichNoteEdit.h"
+	typedef CRichNoteEdit CNoteEdit;
 #endif
 
 //////////////////////////////////////////////////////////////////////////

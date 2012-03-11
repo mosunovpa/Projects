@@ -64,10 +64,12 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	hRes = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hRes));
 
+#ifdef SCINTILLA
+	CScintillaAutoRegister ScintillaReg;
+#else
 	HINSTANCE hInstRich = ::LoadLibrary(CRichEditCtrl::GetLibraryName());
 	ATLASSERT(hInstRich != NULL);
-
-	CScintillaAutoRegister ScintillaReg;
+#endif
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 
