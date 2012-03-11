@@ -21,11 +21,18 @@ public:
 			WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR | WS_EX_NOPARENTNOTIFY, 20000);
 	}
 
-	void Init()
+	void Init(COLORREF bgColor)
 	{
 		SetCodePage(SC_CP_UTF8);//SC_CP_UTF8
 		SetWrapMode(SC_WRAP_WORD);
 		SetWrapIndentMode(SC_WRAPINDENT_SAME);
+		SetWrapVisualFlags(SC_WRAPVISUALFLAG_END);
+		COptions::FontSize fs = CApplication::Get().GetOptions().GetFontSize();
+		SetAStyle(STYLE_DEFAULT, bgColor, RGB(0,0,0), 
+			(fs == COptions::FS_SMALL ? 8 : (fs == COptions::FS_MEDIUM ? 10 : 12))
+			, NULL/*"MS Shell Dlg"*/);
+		StyleClearAll();
+		SetMarginTypeN(1, SC_MARGIN_BACK);
 	}
 
 	void SetFontSize(LONG lHeight)
@@ -67,9 +74,9 @@ public:
 
 private:
 
-	void SetAStyle(int style, COLORREF fore, COLORREF back, int size, const char *face) {
-		StyleSetFore(style, fore);
+	void SetAStyle(int style, COLORREF back, COLORREF fore = RGB(0,0,0), int size = 0, const char *face = NULL) {
 		StyleSetBack(style, back);
+		StyleSetFore(style, fore);
 		if (size >= 1)
 			StyleSetSize(style, size);
 		if (face) 
