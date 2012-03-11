@@ -30,14 +30,40 @@
 //! Block size for disk reading and writing.
 const int blockSize = 131072;
 
-class ScintillaIFBase
-{
-	protected:
 
-		//! Handle of the loaded scilexer.dll
-		static HMODULE scidll;
-		//! Reference counter.
-		static int refs;
+class CScintillaAutoRegister
+{
+	long    m_refCount;
+	HMODULE m_scintilla;
+public:
+	CScintillaAutoRegister( HINSTANCE instance = ATL::_AtlBaseModule.GetModuleInstance()) : 
+	  m_refCount(0), m_scintilla(NULL)
+	{
+		if( !m_refCount )
+		{
+#ifndef STATIC_SCILEXER
+			m_scintilla = ::LoadLibrary( _T("SciLexer.dll"));
+			ATLASSERT(m_scintilla);
+#else
+			Scintilla_RegisterClasses( instance );
+#endif
+		}
+		++m_refCount;
+	}
+
+	~CScintillaAutoRegister()
+	{
+		--m_refCount;
+		if( m_refCount == 0 )
+		{
+#ifndef STATIC_SCILEXER
+			::FreeLibrary( m_scintilla );
+			m_scintilla = NULL;
+#else
+			Scintilla_ReleaseResources();
+#endif
+		}
+	}
 };
 
 /**
@@ -46,7 +72,7 @@ class ScintillaIFBase
  * many methods is derived from / taken from code found in Scite.
  */
 template <class T>
-class CScintillaIF : public ScintillaIFBase
+class CScintillaIF 
 {
 	public:
 		//! Scintilla direct message function.
@@ -57,16 +83,6 @@ class CScintillaIF : public ScintillaIFBase
 		/// Default constructor
 		CScintillaIF()
 		{
-		#ifndef STATIC_SCILEXER
-			if(!scidll)
-			{
-				scidll = LoadLibrary(_T("SciLexer.dll"));
-			}
-		#else
-			if(!refs)
-				Scintilla_RegisterClasses(GetModuleHandle(NULL));
-		#endif
-			refs++;
 			m_Modified = false;
 			Perform = NULL;
 			m_TabWidth = 4;
@@ -76,17 +92,6 @@ class CScintillaIF : public ScintillaIFBase
 		/// Destructor
 		~CScintillaIF()
 		{
-			refs--;
-		#ifndef STATIC_SCILEXER
-			if(!refs)
-			{
-				FreeLibrary(scidll);
-				scidll = NULL;
-			}
-		#else
-			if(!refs)
-				Scintilla_ReleaseResources();
-		#endif
 		}
 
 		/**
@@ -2530,6 +2535,16 @@ class CScintillaIF : public ScintillaIFBase
 			return (int)SPerform(SCI_GETWRAPMODE, 0, 0);
 		}
 
+		void SetWrapIndentMode(int mode)
+		{
+			SPerform(SCI_SETWRAPINDENTMODE, (long)mode, 0);
+		}
+
+		int GetWrapIndentMode()
+		{
+			return (int)SPerform(GCI_SETWRAPINDENTMODE, 0, 0);
+		}
+
 		/**
 		 * Sets the degree of caching of layout information.
 		 */
@@ -3518,10 +3533,6 @@ class CScintillaIF : public ScintillaIFBase
 	//@}
 #endif //_WTL_NOSCINTILLAMETHODS
 };
-
-// Static variable initialisation...
-__declspec( selectany ) HMODULE ScintillaIFBase::scidll = NULL;
-__declspec( selectany ) int ScintillaIFBase::refs = 0;
 
 template <class TBase = CWindow>
 class CScintillaT : public TBase, 
