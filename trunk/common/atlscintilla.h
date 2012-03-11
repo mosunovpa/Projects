@@ -2545,6 +2545,11 @@ class CScintillaIF
 			return (int)SPerform(GCI_SETWRAPINDENTMODE, 0, 0);
 		}
 
+		void SetWrapVisualFlags(int wrapVisualFlags)
+		{
+			SPerform(SCI_SETWRAPVISUALFLAGS, (long)wrapVisualFlags, 0);
+		}
+
 		/**
 		 * Sets the degree of caching of layout information.
 		 */
