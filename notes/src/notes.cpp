@@ -4,6 +4,7 @@
 #include "resutils.h"
 #include "Application.h"
 #include "apputils.h"
+#include "atlscintilla.h"
 
 CAppModule _Module;
 
@@ -65,6 +66,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	HINSTANCE hInstRich = ::LoadLibrary(CRichEditCtrl::GetLibraryName());
 	ATLASSERT(hInstRich != NULL);
+
+	CScintillaAutoRegister ScintillaReg;
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 
