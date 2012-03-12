@@ -41,7 +41,7 @@ public:
 	void SaveOptions();
 	void ReleaseStorage();
 	void NoteTextToClipboard(int nNoteId);
-	_tstring GetNoteCaption(_tstring text);
+	_tstring GetNoteCaption(_tstring const& text);
 	void OptionsUpdated();
 	void GetLabels(std::list<_tstring>& list) ;
 	_tstring GetNoteLabel(int nNoteId) ;

@@ -138,7 +138,14 @@ CNote CStorage::_GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 	{
 		CComBSTR bstr;
 		CHECK_HR(spElement->get_text(&bstr));
-		note.SetText((LPCTSTR)bstr);
+		_tstring s((LPCTSTR)bstr);
+		int len = s.size();
+		if (len >= 2 && s[0] == _T('"') && s[len - 1] == _T('"'))
+		{
+			s.erase(len - 1);
+			s.erase(0, 1);
+		}
+		note.SetText(s);
 	}
 	if ((nMask & NM_CREATED) == NM_CREATED)
 	{
@@ -263,7 +270,10 @@ void CStorage::_SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& 
 	}
 	if ((nMask & NM_TEXT) == NM_TEXT)
 	{
-		CHECK_HR(spElement->put_text(CComBSTR(note.GetText().c_str())));
+		_tstring s(note.GetText());
+		s.insert(0, 1, _T('"'));
+		s.append(1, _T('"'));
+		CHECK_HR(spElement->put_text(CComBSTR(s.c_str())));
 	}
 	if ((nMask & NM_CREATED) == NM_CREATED)
 	{

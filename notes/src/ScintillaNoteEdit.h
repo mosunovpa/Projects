@@ -33,6 +33,11 @@ public:
 			, NULL/*"MS Shell Dlg"*/);
 		StyleClearAll();
 		SetMarginTypeN(1, SC_MARGIN_BACK);
+
+		AssignCmdKey(SCK_HOME, SCI_VCHOMEWRAP);
+		AssignCmdKey(SCK_END, SCI_LINEENDWRAP);
+		AssignCmdKey(SCK_HOME + (SCMOD_SHIFT << 16), SCI_VCHOMEWRAPEXTEND);
+		AssignCmdKey(SCK_END + (SCMOD_SHIFT << 16), SCI_LINEENDWRAPEXTEND);
 	}
 
 	void SetFontSize(LONG lHeight)
@@ -52,8 +57,9 @@ public:
 
 		s.resize(len + 1);
 		CScintillaWindowImpl<CScintillaNoteEdit>::GetText(s.size(), &s[0]);
-		boost::trim(s);
-		if (s[0] == 0)
+		string trimed(s);
+		boost::trim(trimed);
+		if (trimed.empty())
 		{
 			return _tstring();
 		}
