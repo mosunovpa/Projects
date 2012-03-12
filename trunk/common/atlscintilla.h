@@ -2535,21 +2535,6 @@ class CScintillaIF
 			return (int)SPerform(SCI_GETWRAPMODE, 0, 0);
 		}
 
-		void SetWrapIndentMode(int mode)
-		{
-			SPerform(SCI_SETWRAPINDENTMODE, (long)mode, 0);
-		}
-
-		int GetWrapIndentMode()
-		{
-			return (int)SPerform(GCI_SETWRAPINDENTMODE, 0, 0);
-		}
-
-		void SetWrapVisualFlags(int wrapVisualFlags)
-		{
-			SPerform(SCI_SETWRAPVISUALFLAGS, (long)wrapVisualFlags, 0);
-		}
-
 		/**
 		 * Sets the degree of caching of layout information.
 		 */
@@ -3533,6 +3518,37 @@ class CScintillaIF
 		{
 			SPerform(SCI_SETLEXERLANGUAGE, 0, (long)language);
 		}
+
+		void SetWrapIndentMode(int mode)
+		{
+			SPerform(SCI_SETWRAPINDENTMODE, (long)mode, 0);
+		}
+
+		int GetWrapIndentMode()
+		{
+			return (int)SPerform(SCI_GETWRAPINDENTMODE, 0, 0);
+		}
+
+		void SetWrapVisualFlags(int wrapVisualFlags)
+		{
+			SPerform(SCI_SETWRAPVISUALFLAGS, (long)wrapVisualFlags, 0);
+		}
+
+		int GetWrapVisualFlags()
+		{
+			return (int)SPerform(SCI_GETWRAPVISUALFLAGS, 0, 0);
+		}
+
+		void SetCaretSticky(int useCaretStickyBehaviour)
+		{
+			SPerform(SCI_SETCARETSTICKY, (long)useCaretStickyBehaviour, 0);
+		}
+
+		int GetCaretSticky()
+		{
+			return (int)SPerform(SCI_GETCARETSTICKY, 0, 0);
+		}
+
 
 	//--
 	//@}
