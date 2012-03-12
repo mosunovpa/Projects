@@ -545,11 +545,13 @@ BOOL CApplication::IsNoteExists( int nNoteId )
 
 
 /**/
-_tstring CApplication::GetNoteCaption(_tstring text)
+_tstring CApplication::GetNoteCaption(_tstring const& text)
 {
-	_tstring sCaption = strutils::trim_string(text.c_str(), 64);
+	_tstring trimed(text);
+	boost::trim(trimed);
+	_tstring sCaption = strutils::trim_string(trimed.c_str(), 64);
 	std::replace(sCaption.begin(), sCaption.end(), _T('\t'), _T(' '));
-	if (sCaption.size() > 0 && sCaption.size() < text.size())
+	if (sCaption.size() > 0 && sCaption.size() < trimed.size())
 	{
 		sCaption += _T("...");
 	}
