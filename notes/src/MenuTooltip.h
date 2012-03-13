@@ -3,6 +3,12 @@
 #include "atlwinmisc.h"
 #include "winutils.h"
 
+#define MENU_TOOLTIP_TIMER_ID 654
+#define MENU_TOOLTIP_TIMER_INTERVAL 10
+#define MENU_TOOLTIP_DELAY 100
+
+
+
 /**/
 template <class T>
 class CMenuTooltip
@@ -97,10 +103,12 @@ private:
 		CMenuHandle menu(pT->GetTooltipMenu());
 		if (menu.m_hMenu != NULL && menuPopup.m_hMenu == menu.m_hMenu)
 		{
-			m_tooltip.Create(m_hParent, CWindow::rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
+			m_tooltip.Create(m_hParent, CWindow::rcDefault, NULL, 
+				WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP | TTS_NOANIMATE | TTS_NOFADE , 
+				WS_EX_TOPMOST);
 			m_tooltip.AddTool(&CToolInfo( TTF_IDISHWND | TTF_TRACK | TTF_ABSOLUTE | TTF_TRANSPARENT, m_hParent, (UINT)m_hParent));
 			m_tooltip.SetMaxTipWidth(300);
-			m_nTimer = SetTimer(m_hParent, 654, 50, NULL);
+			m_nTimer = SetTimer(m_hParent, MENU_TOOLTIP_TIMER_ID, MENU_TOOLTIP_TIMER_INTERVAL, NULL);
 		}
 		bHandled = FALSE;
 		return 0;
@@ -171,7 +179,7 @@ private:
 	{
 		UINT_PTR nIDEvent = (UINT_PTR)wParam;
 
-		if (nIDEvent == 654 && m_nSelectedMenuItemId)
+		if (nIDEvent == MENU_TOOLTIP_TIMER_ID && m_nSelectedMenuItemId)
 		{
 			CPoint ptCursorPos;
 			::GetCursorPos(&ptCursorPos);
@@ -185,7 +193,7 @@ private:
 					HideTooltip();
 				}
 			}
-			else if (nTime - m_tmLastTime >= 300)
+			else if (nTime - m_tmLastTime >= MENU_TOOLTIP_DELAY)
 			{
 				if (m_nShownMenuItemId != m_nSelectedMenuItemId)
 				{
