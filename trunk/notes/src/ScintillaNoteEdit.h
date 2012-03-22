@@ -38,6 +38,8 @@ public:
 		AssignCmdKey(SCK_END, SCI_LINEENDWRAP);
 		AssignCmdKey(SCK_HOME + (SCMOD_SHIFT << 16), SCI_VCHOMEWRAPEXTEND);
 		AssignCmdKey(SCK_END + (SCMOD_SHIFT << 16), SCI_LINEENDWRAPEXTEND);
+		AssignCmdKey(83 + (SCMOD_CTRL << 16), SCI_NULL); // Ctrl+S
+
 	}
 
 	void SetFontSize(LONG lHeight)
@@ -95,10 +97,6 @@ private:
 		if (wParam == VK_ESCAPE)
 		{
 			GetParent().PostMessage(WM_CLOSE);
-		}
-		if (wParam == 68 && GetKeyState(VK_CONTROL) & 0x8000) // Ctrl+D
-		{
-			GetParent().PostMessage(WM_COMMAND, ID_REMOVE);
 		}
 		SetMsgHandled(FALSE);
 		return 0;
