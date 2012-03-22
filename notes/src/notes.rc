@@ -105,7 +105,7 @@ BEGIN
             MENUITEM "(Empty)",                     ID_NOBOOKS
         END
         MENUITEM SEPARATOR
-        MENUITEM "&Delete \tCtrl+D",            ID_REMOVE
+        MENUITEM "&Delete",                     ID_REMOVE
         MENUITEM SEPARATOR
         MENUITEM "Roll &Up",                    ID_ROLLUP
         MENUITEM "U&nroll",                     ID_UNROLL
