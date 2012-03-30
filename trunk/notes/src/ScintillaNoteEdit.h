@@ -38,7 +38,27 @@ public:
 		AssignCmdKey(SCK_END, SCI_LINEENDWRAP);
 		AssignCmdKey(SCK_HOME + (SCMOD_SHIFT << 16), SCI_VCHOMEWRAPEXTEND);
 		AssignCmdKey(SCK_END + (SCMOD_SHIFT << 16), SCI_LINEENDWRAPEXTEND);
-		AssignCmdKey(83 + (SCMOD_CTRL << 16), SCI_NULL); // Ctrl+S
+
+		DWORD spec_chars[] = 
+		{
+			66, //  Ctrl+B
+			69, //  Ctrl+E
+			70, //  Ctrl+F
+			71, //  Ctrl+G
+			72, //  Ctrl+H
+			75, //  Ctrl+K
+			78, //  Ctrl+N
+			79, //  Ctrl+O
+			80, //  Ctrl+P
+			81, //  Ctrl+Q
+			82, //  Ctrl+R
+			83, //  Ctrl+S
+			87  //  Ctrl+W
+		};
+		for (int i = 0; i < sizeof(spec_chars) / sizeof(DWORD); ++i)
+		{
+			AssignCmdKey(spec_chars[i] + (SCMOD_CTRL << 16), SCI_NULL); 
+		}
 
 	}
 
