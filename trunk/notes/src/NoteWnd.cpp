@@ -18,6 +18,7 @@
 
 const INT s_nCornerSize = 14;
 const INT s_nStatusBarSize = 15;
+const INT s_nCaptionDelta = 4;
 
 const COLORREF black = RGB(0,0,0);
 const COLORREF gray = RGB(128, 128, 128);
@@ -168,9 +169,9 @@ void CNoteWnd::PopulateLabelMenu(CMenuHandle menuLabels)
 
 
 /**
- Returns caption coordinates
+ Returns caption coordinates between caption buttons
  */
-CRect CNoteWnd::GetCaptionRect()
+CRect CNoteWnd::GetInnerCaptionRect()
 {
 	int leftAlignIdx = GetButtonIndex(ID_SYSMENU);
 	CRect rc;
@@ -193,6 +194,18 @@ CRect CNoteWnd::GetCaptionRect()
 	return rc;
 }
 
+/*
+Return full caption coordinates
+*/
+CRect CNoteWnd::GetOutterCaptionRect()
+{
+	CWindowRect rc(m_hWnd);
+	rc.DeflateRect(GetSystemMetrics(SM_CYSIZEFRAME), GetSystemMetrics(SM_CYSIZEFRAME));
+	rc.bottom = rc.top + GetSystemMetrics(SM_CYSMCAPTION) + s_nCaptionDelta;
+
+	return rc;
+}
+
 /**/
 int CNoteWnd::GetMinimizedHeight()
 {
@@ -211,7 +224,7 @@ int CNoteWnd::GetMinimizedWidth()
 CRect CNoteWnd::GetClientRect()
 {
 	CClientRect rc(m_hWnd);
-	rc.top += 4;
+	rc.top += s_nCaptionDelta;
 	rc.bottom -= (s_nStatusBarSize + 2);
 	return rc;
 }
@@ -363,13 +376,14 @@ WM_NCHITTEST
 */
 LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 {
-	ScreenToClient(&pt);
-	if (m_bMinimized)
+	if (m_bMinimized || GetOutterCaptionRect().PtInRect(pt))
 	{
 		return HTCAPTION;
 	}
 
-	if (GetBottomRightRect().PtInRect(pt))
+	CPoint client_pt(pt);
+	ScreenToClient(&client_pt);
+	if (GetBottomRightRect().PtInRect(client_pt))
 	{
 		return HTBOTTOMRIGHT;
 	}
@@ -426,7 +440,7 @@ void CNoteWnd::DrawTextInCaption(CDC& dc, const _tstring& text, COLORREF color)
 	dc.SetBkColor(RGB(255, 255, 204));
 	dc.SetTextColor(color);
 
-	CRect rc = GetCaptionRect();
+	CRect rc = GetInnerCaptionRect();
 	rc.top += 1;
 	rc.left += 2;
 	dc.DrawText(text.c_str(), -1, rc, DT_LEFT | DT_VCENTER| DT_END_ELLIPSIS);
@@ -757,6 +771,13 @@ void CNoteWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu
 /**/
 void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 {
+/* тут обработку клика на иконке
+	if (GetButtonAtPos(point) == GetButtonIndex(ID_SYSMENU))
+	{
+		PostMessage(WM_CLOSE);
+		return;
+	}
+*/
 	ScreenToClient(&point);
 	if (nHitTest = HTCAPTION)
 	{
@@ -771,16 +792,18 @@ void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 	}
 }
 
+
 /**/
 
 void CNoteWnd::OnContextMenu(CWindow wnd, CPoint point)
 {
-	if (m_activeMenu.IsMenu())
-	{
-		return;
-	}
 	ShowSystemMenu(point);
-//	ShowLabelMenu(point);
+}
+
+/**/
+void CNoteWnd::OnNcRButtonUp(UINT nHitTest, CPoint point)
+{
+	ShowSystemMenu(point);
 }
 
 /**/

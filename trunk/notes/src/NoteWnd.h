@@ -79,6 +79,7 @@ public:
 		MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 		MSG_WM_NCLBUTTONDBLCLK(OnNcLButtonDblClk)
 		MSG_WM_CONTEXTMENU(OnContextMenu)
+		MSG_WM_NCRBUTTONUP(OnNcRButtonUp)
 
 		MSG_WM_MOUSEACTIVATE(OnMouseActivate)
 		MSG_WM_LBUTTONUP(OnLButtonUp)
@@ -133,6 +134,7 @@ public:
 	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
 	void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
 	void OnContextMenu(CWindow wnd, CPoint point);
+	void OnNcRButtonUp(UINT nHitTest, CPoint point);
 
 	int OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message);
 	void OnLButtonUp(UINT nFlags, CPoint point);
@@ -161,7 +163,8 @@ public:
 private:
 	void PopulateLabelMenu(CMenuHandle menuLabels);
 
-	CRect GetCaptionRect();
+	CRect GetInnerCaptionRect();
+	CRect GetOutterCaptionRect();
 	int GetMinimizedHeight();
 	int GetMinimizedWidth();
 	CRect GetBottomRightRect();
