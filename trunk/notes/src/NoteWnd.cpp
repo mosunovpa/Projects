@@ -841,6 +841,12 @@ void CNoteWnd::OnNcLButtonDown(UINT nHitTest, CPoint point)
 	SetMsgHandled(FALSE);
 }
 
+void CNoteWnd::OnNcLButtonUp(UINT nHitTest, CPoint point)
+{
+	// почему то никогда не приходит 8-(
+	SetMsgHandled(FALSE);
+}
+
 
 /**/
 void CNoteWnd::Rollup()

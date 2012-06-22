@@ -86,6 +86,7 @@ public:
 		MSG_WM_ENTERSIZEMOVE(OnEnterSizeMove)
 		MSG_WM_EXITSIZEMOVE(OnExitSizeMove)
 		MSG_WM_NCLBUTTONDOWN(OnNcLButtonDown)
+		MSG_WM_NCLBUTTONUP(OnNcLButtonUp)
 
 		COMMAND_ID_HANDLER_EX(ID_CLIPBRD_COPY, OnCopyToClipboard)
 		COMMAND_ID_HANDLER_EX(ID_RESTORE, OnRestore)
@@ -141,6 +142,7 @@ public:
 	void OnEnterSizeMove();
 	void OnExitSizeMove();
 	void OnNcLButtonDown(UINT nHitTest, CPoint point);
+	void OnNcLButtonUp(UINT nHitTest, CPoint point);
 
 	void OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnRestore(UINT uNotifyCode, int nID, CWindow wndCtl);

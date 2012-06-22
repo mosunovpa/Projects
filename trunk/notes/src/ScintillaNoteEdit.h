@@ -121,5 +121,5 @@ private:
 		SetMsgHandled(FALSE);
 		return 0;
 	}
-
+	
 };
