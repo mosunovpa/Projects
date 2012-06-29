@@ -5,6 +5,7 @@
 #include "Application.h"
 #include "apputils.h"
 #include "atlscintilla.h"
+#include "notebase.h"
 
 CAppModule _Module;
 
@@ -70,6 +71,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	HINSTANCE hInstRich = ::LoadLibrary(CRichEditCtrl::GetLibraryName());
 	ATLASSERT(hInstRich != NULL);
 #endif
+
+	CNotebaseAutoRegister notebase_dll;
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 
