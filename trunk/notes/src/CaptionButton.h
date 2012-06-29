@@ -267,6 +267,17 @@ public:
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////
+	// Get button size
+	UINT GetButtonId(int index) 
+	{
+		if (index >= 0 && index < m_buttons.size())
+		{
+			return m_buttons[index].uID;
+		}
+		return -1;
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////
 	// Get buttons count
 	int GetButtonCount()
 	{
@@ -322,6 +333,19 @@ public:
 			rc.bottom = rc.top + btn.cy;
 		}
 		return rc;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////
+	// get button under point, in screen coordinate
+	int GetButtonAtScreenPos(POINT pt)
+	{
+		T* pT = static_cast<T*>(this);
+		CPoint p(pt);
+		CRect	rcWnd;
+		pT->GetWindowRect(&rcWnd);
+		p.Offset(-rcWnd.TopLeft());
+
+		return GetButtonAtPos(p);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////

@@ -200,8 +200,11 @@ Return full caption coordinates
 CRect CNoteWnd::GetOutterCaptionRect()
 {
 	CWindowRect rc(m_hWnd);
-	rc.DeflateRect(GetSystemMetrics(SM_CYSIZEFRAME), GetSystemMetrics(SM_CYSIZEFRAME));
-	rc.bottom = rc.top + GetSystemMetrics(SM_CYSMCAPTION) + s_nCaptionDelta;
+	if (!m_bMinimized)
+	{
+		rc.DeflateRect(GetSystemMetrics(SM_CYSIZEFRAME), GetSystemMetrics(SM_CYSIZEFRAME));
+		rc.bottom = rc.top + GetSystemMetrics(SM_CYSMCAPTION) + s_nCaptionDelta;
+	}
 
 	return rc;
 }
@@ -317,7 +320,7 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	CImageList	il;
 	il.CreateFromImage(IDB_CLOSE_BTNS_3, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	AddButton(ID_CLOSE, 16, 16, il, _T("Close"));
-
+/*
 	CImageList	il2;
 	il2.CreateFromImage(IDB_ROLLUP_BTNS_3, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	AddButton(ID_ROLLUP, 16, 16, il2, _T("Roll Up"));
@@ -325,7 +328,7 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	CImageList	il3;
 	il3.CreateFromImage(IDB_UNROLL_BTNS_3, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	AddButton(ID_UNROLL, 16, 16, il3, _T("Unroll"), CAPTION_BTN_HIDDEN);
-
+*/
 	CImageList	il4;
 	il4.CreateFromImage(IDB_NOTES, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	AddButton(ID_SYSMENU, 16, 16, il4, _T("Menu"));
@@ -375,8 +378,16 @@ LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 WM_NCHITTEST
 */
 LRESULT CNoteWnd::OnNcHittest(CPoint pt)
-{
-	if (m_bMinimized || GetOutterCaptionRect().PtInRect(pt))
+{	
+	if (ID_SYSMENU == GetButtonId(GetButtonAtScreenPos(pt)))
+	{
+		return HTSYSMENU;
+	}
+	if (ID_CLOSE == GetButtonId(GetButtonAtScreenPos(pt)))
+	{
+		return HTCLOSE;
+	}
+	if (GetOutterCaptionRect().PtInRect(pt))
 	{
 		return HTCAPTION;
 	}
@@ -778,8 +789,9 @@ void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 		return;
 	}
 */
-	ScreenToClient(&point);
-	if (nHitTest = HTCAPTION)
+//	ScreenToClient(&point);
+	
+	if (nHitTest == HTCAPTION)
 	{
 		if (m_bMinimized)
 		{
@@ -790,6 +802,7 @@ void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 			Rollup();
 		}
 	}
+	
 }
 
 
@@ -841,9 +854,33 @@ void CNoteWnd::OnNcLButtonDown(UINT nHitTest, CPoint point)
 	SetMsgHandled(FALSE);
 }
 
+void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
+{
+	SetMsgHandled(FALSE);
+	if (nHitTest == HTCAPTION)
+	{
+		DefWindowProc();
+
+		CPoint pos_after;
+		GetCursorPos(&pos_after);
+		if (point == pos_after)
+		{
+			if (m_bMinimized)
+			{
+				Unroll();
+			}
+			else
+			{
+				Rollup();
+			}
+		}
+		SetMsgHandled(TRUE);
+	}
+}
+
 void CNoteWnd::OnNcLButtonUp(UINT nHitTest, CPoint point)
 {
-	// почему то никогда не приходит 8-(
+	// приходит только после dblclk
 	SetMsgHandled(FALSE);
 }
 
@@ -855,10 +892,10 @@ void CNoteWnd::Rollup()
 	{
 		m_editCreated.ShowWindow(SW_HIDE);
 		m_edit.ShowWindow(SW_HIDE);
-
+/*
 		ShowButton(GetButtonIndex(ID_ROLLUP), false);
 		ShowButton(GetButtonIndex(ID_UNROLL), true);
-
+*/
 		GetWindowRect(m_rcRestored);
 		CRect rc(m_rcRestored);
 		rc.bottom = rc.top + GetMinimizedHeight();
@@ -877,9 +914,10 @@ void CNoteWnd::Unroll()
 {
 	if (m_bMinimized)
 	{
+/*
 		ShowButton(GetButtonIndex(ID_ROLLUP), true);
 		ShowButton(GetButtonIndex(ID_UNROLL), false);
-
+*/
 		CRect rc(GetRealNoteRect());
 		m_bMinimized = FALSE;
 		MoveWindow(rc);

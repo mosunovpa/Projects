@@ -112,6 +112,8 @@ public:
 		
 		REFLECT_NOTIFICATIONS();
 
+		MSG_WM_NCLBUTTONDOWN(OnNcLButtonDownDef)
+
 	END_MSG_MAP()
 
 
@@ -142,6 +144,7 @@ public:
 	void OnEnterSizeMove();
 	void OnExitSizeMove();
 	void OnNcLButtonDown(UINT nHitTest, CPoint point);
+	void OnNcLButtonDownDef(UINT nHitTest, CPoint point);
 	void OnNcLButtonUp(UINT nHitTest, CPoint point);
 
 	void OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
