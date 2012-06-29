@@ -208,4 +208,5 @@ private:
 
 	BOOL m_bPrevActive;
 	CMenuHandle m_activeMenu;
+	BOOL m_bCaptionClick;
 };
