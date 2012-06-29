@@ -1,35 +1,35 @@
 #pragma once
 
-class CNotebaseAutoRegister
+class CNotesHookAutoRegister
 {
 private:
 	HMODULE m_basemodule;
 public:
-	CNotebaseAutoRegister()
+	CNotesHookAutoRegister()
 	{
-		m_basemodule = LoadLibrary( _T("notebase.dll"));
+		m_basemodule = LoadLibrary( _T("noteshook.dll"));
 		ATLASSERT(m_basemodule);
 	}
 
-	~CNotebaseAutoRegister()
+	~CNotesHookAutoRegister()
 	{
 		FreeLibrary(m_basemodule);
 	}
 };
 
 #ifdef NOTEBASE_EXPORTS
-#define NOTEBASE_API __declspec(dllexport)
+#define NOTESHOOK_API __declspec(dllexport)
 #else
-#define NOTEBASE_API __declspec(dllimport)
+#define NOTESHOOK_API __declspec(dllimport)
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-NOTEBASE_API HWND GetPrevActiveWindow();
-NOTEBASE_API void SetHook(HWND hwnd, DWORD cmd);
-NOTEBASE_API void RemoveHook();
+NOTESHOOK_API HWND GetPrevActiveWindow();
+NOTESHOOK_API void SetHook(HWND hwnd, DWORD cmd);
+NOTESHOOK_API void RemoveHook();
 
 #ifdef __cplusplus
 }
