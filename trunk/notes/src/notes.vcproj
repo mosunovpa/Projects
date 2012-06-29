@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\common;.\notebase"
+				AdditionalIncludeDirectories="..\..\common;.\noteshook"
 				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;_DEBUG;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -111,7 +111,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\common;.\notebase"
+				AdditionalIncludeDirectories="..\..\common;.\noteshook"
 				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"

@@ -17,7 +17,7 @@ public:
 	}
 };
 
-#ifdef NOTEBASE_EXPORTS
+#ifdef NOTESHOOK_EXPORTS
 #define NOTESHOOK_API __declspec(dllexport)
 #else
 #define NOTESHOOK_API __declspec(dllimport)
