@@ -1,8 +1,8 @@
-// notebase.cpp : Defines the entry point for the DLL application.
+// noteshook.cpp : Defines the entry point for the DLL application.
 //
 
 #include "stdafx.h"
-#include "notebase.h"
+#include "noteshook.h"
 
 
 #ifdef _MANAGED
@@ -48,12 +48,12 @@ HWND GetPrevActiveWindow()
 	return 0;
 }
 
-NOTEBASE_API void SetHook(HWND hwnd, DWORD cmd)
+NOTESHOOK_API void SetHook(HWND hwnd, DWORD cmd)
 {
 	g_hook = SetWindowsHookEx(WH_SHELL, ShellProc, g_hModule, 0);
 }
 
-NOTEBASE_API void RemoveHook()
+NOTESHOOK_API void RemoveHook()
 {
 	if (g_hook)
 	{

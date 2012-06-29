@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="notebase"
+	Name="noteshook"
 	ProjectGUID="{60FC1521-E7EE-4C22-B756-D65FB1BADB4F}"
-	RootNamespace="notebase"
+	RootNamespace="noteshook"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -19,7 +19,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)..\$(ConfigurationName)"
-			IntermediateDirectory="..\..\$(ConfigurationName)\notebase"
+			IntermediateDirectory="..\..\$(ConfigurationName)\noteshook"
 			ConfigurationType="2"
 			UseOfATL="0"
 			CharacterSet="1"
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NOTEBASE_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NOTESHOOK_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -95,7 +95,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)..\$(ConfigurationName)"
-			IntermediateDirectory="..\..\$(ConfigurationName)\notebase"
+			IntermediateDirectory="..\..\$(ConfigurationName)\noteshook"
 			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NOTEBASE_EXPORTS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NOTESHOOK_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -177,7 +177,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\notebase.cpp"
+				RelativePath=".\noteshook.cpp"
 				>
 			</File>
 			<File
@@ -207,7 +207,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\notebase.h"
+				RelativePath=".\noteshook.h"
 				>
 			</File>
 			<File
