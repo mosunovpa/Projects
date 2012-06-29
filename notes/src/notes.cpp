@@ -5,7 +5,7 @@
 #include "Application.h"
 #include "apputils.h"
 #include "atlscintilla.h"
-#include "notebase.h"
+#include "noteshook.h"
 
 CAppModule _Module;
 
@@ -72,7 +72,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ATLASSERT(hInstRich != NULL);
 #endif
 
-	CNotebaseAutoRegister notebase_dll;
+	CNotesHookAutoRegister noteshook_dll;
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 
