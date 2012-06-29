@@ -44,7 +44,8 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_bActive(FALSE),
 	m_flagSave(NM_NONE),
 	m_flagInit(NF_NONE),
-	m_bPrevActive(FALSE)
+	m_bPrevActive(FALSE),
+	m_bCaptionClick(FALSE)
 {
 }
 
@@ -835,8 +836,8 @@ void CNoteWnd::OnLButtonUp(UINT nFlags, CPoint point)
 /**/
 void CNoteWnd::OnEnterSizeMove()
 {
+	m_bCaptionClick = FALSE; 
 	SetMsgHandled(FALSE);
-
 }
 
 void CNoteWnd::OnExitSizeMove()
@@ -859,11 +860,13 @@ void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
 	SetMsgHandled(FALSE);
 	if (nHitTest == HTCAPTION)
 	{
+		m_bCaptionClick = TRUE;
 		DefWindowProc();
 
-		CPoint pos_after;
-		GetCursorPos(&pos_after);
-		if (point == pos_after)
+//		CPoint pos_after;
+//		GetCursorPos(&pos_after);
+		// если окно дачнут двигать m_bCaptionClick станет FALSE в OnEnterSizeMove()
+		if (m_bCaptionClick == TRUE /*point == pos_after*/)
 		{
 			if (m_bMinimized)
 			{
