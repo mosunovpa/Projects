@@ -247,13 +247,22 @@ CRect CNoteWnd::GetRealNoteRect()
 }
 
 /**
+ Returns bottom border for window sizing
+ */
+CRect CNoteWnd::GetBottomBorderRect()
+{
+	CClientRect rc(m_hWnd);
+	rc.top = rc.bottom - s_nCornerSize;
+	return rc;
+}
+
+/**
  Returns bottom right corner for window sizing
  */
 CRect CNoteWnd::GetBottomRightRect()
 {
-	CClientRect rc(m_hWnd);
+	CRect rc = GetBottomBorderRect();
 	rc.left = rc.right - s_nCornerSize;
-	rc.top = rc.bottom - s_nCornerSize;
 	return rc;
 }
 
@@ -286,6 +295,24 @@ void CNoteWnd::DrawStatusBar(CDC& dc)
 
 	// Clean up
 	dc.SelectPen(hOldPen);
+
+
+	// draw text
+	if (m_dtCreated!= 0)
+	{
+		_tstring sDate = dateutils::ToString(m_dtCreated, _T("%#d %b %Y, %H:%M"));
+
+		CFontHandle hOldFont = dc.SelectFont(m_hStatusFont);
+		dc.SetBkColor(RGB(255, 255, 204));
+		dc.SetTextColor(RGB(125, 125, 125));
+
+		CRect rc = GetBottomBorderRect();
+		rc.top += 1;
+		rc.left += 2;
+		rc.right -= s_nCornerSize - 2;
+		dc.DrawText(RESSTR_FMT(IDS_CREATED_FRM, sDate.c_str()).c_str(), -1, rc, DT_LEFT | DT_VCENTER| DT_END_ELLIPSIS);
+		dc.SelectFont(hOldFont);
+	}
 }
 
 /**/
@@ -337,10 +364,10 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	CImageList	il5;
 	il5.CreateFromImage(IDB_TRASH_BTNS, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	AddButton(ID_TRASHSYSMENU, 16, 16, il5, _T("Menu"), CAPTION_BTN_HIDDEN);
-
+/*
 	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
  	m_editCreated.SetFont(m_hStatusFont);
-
+*/
 
 	m_edit.Create(m_hWnd);
 	m_edit.Init(yellow);
@@ -395,9 +422,22 @@ LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 
 	CPoint client_pt(pt);
 	ScreenToClient(&client_pt);
-	if (GetBottomRightRect().PtInRect(client_pt))
+
+	CRect rc = GetBottomBorderRect();
+	if (rc.PtInRect(client_pt))
 	{
-		return HTBOTTOMRIGHT;
+		if (client_pt.x >= rc.right - s_nCornerSize)
+		{
+			return HTBOTTOMRIGHT;
+		}
+		else if (client_pt.x <= s_nCornerSize)
+		{
+			return HTBOTTOMLEFT;
+		}
+		else
+		{
+			return HTBOTTOM;
+		}
 	}
 
 	SetMsgHandled(FALSE);
@@ -524,7 +564,7 @@ void CNoteWnd::OnSize(UINT wParam, CSize sz)
 	{
 		CClientRect rc(m_hWnd);
 		CRect rcCreated(0, rc.bottom - s_nStatusBarSize + 1, 135, rc.bottom);
-		m_editCreated.MoveWindow(&rcCreated);
+//		m_editCreated.MoveWindow(&rcCreated);
 
 		m_edit.MoveWindow(&(GetClientRect()));
 	}
@@ -554,11 +594,13 @@ WM_CTLCOLORSTATIC
 */
 HBRUSH CNoteWnd::OnCtlColorStatic(CDCHandle dc, CStatic wndStatic)
 {
+/*
 	if (wndStatic.m_hWnd == m_editCreated.m_hWnd)
 	{
 		dc.SetBkColor(RGB(255, 255, 204));
 		dc.SetTextColor(RGB(125, 125, 125));
 	}
+*/
 	return m_hBgBrush;
 }
 
@@ -623,11 +665,13 @@ time_t CNoteWnd::GetCreatedDate() const
 void CNoteWnd::SetCreatedDate(time_t dt)
 {
 	m_dtCreated = dt;
+	/*
 	if (dt != 0)
 	{
 		_tstring sDate = dateutils::ToString(dt, _T("%#d %b %Y, %H:%M"));
 		m_editCreated.SetWindowText(RESSTR_FMT(IDS_CREATED_FRM, sDate.c_str()).c_str());
 	}
+	*/
 }
 
 /**/
@@ -893,7 +937,7 @@ void CNoteWnd::Rollup()
 {
 	if (!m_bMinimized)
 	{
-		m_editCreated.ShowWindow(SW_HIDE);
+//		m_editCreated.ShowWindow(SW_HIDE);
 		m_edit.ShowWindow(SW_HIDE);
 /*
 		ShowButton(GetButtonIndex(ID_ROLLUP), false);
@@ -927,7 +971,7 @@ void CNoteWnd::Unroll()
 
 		m_rcRestored.SetRectEmpty();
 
-		m_editCreated.ShowWindow(SW_SHOW);
+//		m_editCreated.ShowWindow(SW_SHOW);
 		m_edit.ShowWindow(SW_SHOW);
 
 		m_edit.PostMessage(WM_SETFOCUS);

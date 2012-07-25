@@ -172,6 +172,7 @@ private:
 	CRect GetOutterCaptionRect();
 	int GetMinimizedHeight();
 	int GetMinimizedWidth();
+	CRect GetBottomBorderRect();
 	CRect GetBottomRightRect();
 	CRect GetClientRect();
 	CMenuHandle AdjustSystemMenu();
@@ -188,7 +189,7 @@ private:
 	static CFont m_hStatusFont;
 
 	CNoteEdit m_edit;
-	CEdit m_editCreated;
+//	CEdit m_editCreated;
 
 	int m_nNoteId;
 	

@@ -6,6 +6,7 @@
 #include "apputils.h"
 #include "atlscintilla.h"
 #include "noteshook.h"
+#include "fileutils.h"
 
 CAppModule _Module;
 
@@ -72,11 +73,13 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ATLASSERT(hInstRich != NULL);
 #endif
 
-	CNotesHookAutoRegister noteshook_dll;
+	SetHook();
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 
 	_Module.Term();
+
+	RemoveHook();
 	::CoUninitialize();
 
 	return nRet;

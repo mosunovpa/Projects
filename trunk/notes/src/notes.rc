@@ -100,10 +100,6 @@ BEGIN
         BEGIN
             MENUITEM "&New Label...",               ID_LABEL_NEWLABEL
         END
-        POPUP "&Move To Notebook"
-        BEGIN
-            MENUITEM "(Empty)",                     ID_NOBOOKS
-        END
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_REMOVE
         MENUITEM SEPARATOR
@@ -113,6 +109,11 @@ BEGIN
         MENUITEM "&Close\tEsc",                 ID_CLOSE
         MENUITEM "Close &All",                  ID_CLOSEALL
         MENUITEM "Close All But &This",         ID_CLOSEALLBUTTHIS
+        MENUITEM SEPARATOR
+        POPUP "&Move To Notebook"
+        BEGIN
+            MENUITEM "(Empty)",                     ID_NOBOOKS
+        END
     END
     POPUP "NoteMenuDeleted"
     BEGIN

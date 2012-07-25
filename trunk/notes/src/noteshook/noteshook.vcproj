@@ -42,6 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="..\..\..\common"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NOTESHOOK_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -117,6 +118,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\..\..\common"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NOTESHOOK_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -220,6 +222,26 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+		</Filter>
+		<Filter
+			Name="common"
+			>
+			<File
+				RelativePath="..\..\..\common\fileutils.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\common\fileutils.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\common\strutils.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\common\strutils.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
