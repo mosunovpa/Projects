@@ -79,7 +79,7 @@ std::string strutils::toNarrowString(wchar_t const* pStr, int len)
 	// nb: slightly naughty to write directly into the string like this
 	std::string buf ;
 	buf.resize(bytes) ;
-	WideCharToMultiByte(CP_UTF8, 0, pStr, len, &buf[0], buf.size(), NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, pStr, len, &buf[0], (int)buf.size(), NULL, NULL);
 	return std::string(buf.c_str()); // invoke constructor for adjusting of buffer length
 }
 

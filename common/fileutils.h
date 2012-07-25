@@ -14,6 +14,8 @@ namespace fileutils
 BOOL CreateDirectoryRecursive(LPCTSTR szPath, LPSECURITY_ATTRIBUTES lpSecurityAttributes = NULL);
 ULONGLONG GetFileSize(LPCTSTR szFilepath);
 _tstring file_name(LPCTSTR szFilePath);
+BOOL Write(LPCTSTR szFilepath, _tstring s);
+BOOL WriteLn(LPCTSTR szFilepath, _tstring s);
 
 } // namespace fileutils
 
