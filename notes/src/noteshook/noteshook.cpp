@@ -3,14 +3,15 @@
 
 #include "stdafx.h"
 #include "noteshook.h"
-
+#include "strutils.h"
+#include "fileutils.h"
 
 #ifdef _MANAGED
 #pragma managed(push, off)
 #endif
 
-HWND g_hwnd = 0;
-DWORD g_cmd = 0;
+HWND g_prevwnd = 0;
+HWND g_curwnd = 0;
 HMODULE g_hModule = 0;
 HHOOK g_hook = 0;
 
@@ -36,19 +37,21 @@ LRESULT CALLBACK ShellProc(
   __in  LPARAM lParam
 )
 {
-	if (nCode == HSHELL_WINDOWACTIVATED) 
+	if ((nCode == HSHELL_WINDOWACTIVATED) && wParam) 
 	{
-        // snip 
+        g_prevwnd = g_curwnd;
+		g_curwnd = (HWND)wParam;
+//		fileutils::WriteLn(_T("C:\\log.log"), strutils::to_string((int)wParam));
     }
     return CallNextHookEx(0, nCode, wParam, lParam); 
 }
 
-HWND GetPrevActiveWindow()
+NOTESHOOK_API HWND GetPrevActiveWindow()
 {
-	return 0;
+	return g_prevwnd;
 }
 
-NOTESHOOK_API void SetHook(HWND hwnd, DWORD cmd)
+NOTESHOOK_API void SetHook()
 {
 	g_hook = SetWindowsHookEx(WH_SHELL, ShellProc, g_hModule, 0);
 }
