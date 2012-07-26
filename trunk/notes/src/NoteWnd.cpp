@@ -15,6 +15,7 @@
 #include "dateutils.h"
 #include "Clipboard.h"
 #include "NewLabelDialog.h"
+#include "noteshook.h"
 
 const INT s_nCornerSize = 14;
 const INT s_nStatusBarSize = 15;
@@ -272,6 +273,7 @@ CRect CNoteWnd::GetBottomRightRect()
 void CNoteWnd::OnFinalMessage(HWND hWnd)
 {
 	CApplication::Get().OnNoteClosed(this);
+	EscapeFocus();
 }
 
 /* draw status bar */
@@ -734,7 +736,7 @@ void CNoteWnd::OnCopyToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 		m_edit.Copy();
 		m_edit.SetSel(nStart, nEnd);
 
-		EscapeFocus();
+//		EscapeFocus();
 	}
 }
 
@@ -886,7 +888,7 @@ void CNoteWnd::OnEnterSizeMove()
 
 void CNoteWnd::OnExitSizeMove()
 {
-	if (m_bPrevActive == FALSE && (m_flagSave & NM_POS) && m_bMinimized)
+	if (/*m_bPrevActive == FALSE && (m_flagSave & NM_POS) &&*/ m_bMinimized)
 	{
 		EscapeFocus();
 	}
@@ -1085,6 +1087,12 @@ void CNoteWnd::SetInitFlags(DWORD nFlags)
 /**/
 void CNoteWnd::EscapeFocus()
 {
+	HWND prevwnd = GetPrevActiveWindow();
+	if (prevwnd)
+	{
+		::SetForegroundWindow(prevwnd);
+	}
+
 	return;
 
 	// set focus to the top window in z-order
