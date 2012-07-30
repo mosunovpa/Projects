@@ -348,13 +348,13 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	AdjustSystemMenu();
 	//add caption buttons
 	CImageList	il;
-	il.CreateFromImage(IDB_CLOSE_BTNS_3, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
-	AddButton(ID_CLOSE, 16, 16, il, _T("Close"));
-/*
-	CImageList	il2;
-	il2.CreateFromImage(IDB_ROLLUP_BTNS_3, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
-	AddButton(ID_ROLLUP, 16, 16, il2, _T("Roll Up"));
+	il.CreateFromImage(IDB_CLOSE_BTNS_3, 24, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+	AddButton(ID_CLOSE, 24, 16, il, /*_T("Close")*/NULL);
 
+	CImageList	il2;
+	il2.CreateFromImage(IDB_ROLLUP_BTNS_3, 24, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+	AddButton(ID_ROLLUP, 24, 16, il2, _T("Roll Up"));
+/*
 	CImageList	il3;
 	il3.CreateFromImage(IDB_UNROLL_BTNS_3, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	AddButton(ID_UNROLL, 16, 16, il3, _T("Unroll"), CAPTION_BTN_HIDDEN);
@@ -842,7 +842,7 @@ void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 	{
 		if (m_bMinimized)
 		{
-			Unroll();
+			//Unroll();
 		}
 		else
 		{
@@ -907,20 +907,20 @@ void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
 	if (nHitTest == HTCAPTION)
 	{
 		m_bCaptionClick = TRUE;
+
 		DefWindowProc();
 
-//		CPoint pos_after;
-//		GetCursorPos(&pos_after);
 		// если окно дачнут двигать m_bCaptionClick станет FALSE в OnEnterSizeMove()
-		if (m_bCaptionClick == TRUE /*point == pos_after*/)
+		if (m_bCaptionClick == TRUE)
 		{
+			CWindowRect wrc(m_hWnd);
 			if (m_bMinimized)
 			{
 				Unroll();
 			}
 			else
 			{
-				Rollup();
+				//Rollup();
 			}
 		}
 		SetMsgHandled(TRUE);
@@ -941,10 +941,11 @@ void CNoteWnd::Rollup()
 	{
 //		m_editCreated.ShowWindow(SW_HIDE);
 		m_edit.ShowWindow(SW_HIDE);
-/*
+
 		ShowButton(GetButtonIndex(ID_ROLLUP), false);
+/*	
 		ShowButton(GetButtonIndex(ID_UNROLL), true);
-*/
+*/	
 		GetWindowRect(m_rcRestored);
 		CRect rc(m_rcRestored);
 		rc.bottom = rc.top + GetMinimizedHeight();
@@ -963,8 +964,8 @@ void CNoteWnd::Unroll()
 {
 	if (m_bMinimized)
 	{
-/*
 		ShowButton(GetButtonIndex(ID_ROLLUP), true);
+/*
 		ShowButton(GetButtonIndex(ID_UNROLL), false);
 */
 		CRect rc(GetRealNoteRect());
@@ -976,7 +977,8 @@ void CNoteWnd::Unroll()
 //		m_editCreated.ShowWindow(SW_SHOW);
 		m_edit.ShowWindow(SW_SHOW);
 
-		m_edit.PostMessage(WM_SETFOCUS);
+//		m_edit.PostMessage(WM_SETFOCUS);
+		EscapeFocus();
 	}
 }
 
