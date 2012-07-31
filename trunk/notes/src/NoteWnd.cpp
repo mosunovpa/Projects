@@ -954,8 +954,8 @@ void CNoteWnd::Unroll()
 
 		m_edit.ShowWindow(SW_SHOW);
 
-		m_edit.PostMessage(WM_SETFOCUS);
-//		PostMessage(WMU_ESCAPEFOCUS);
+//		m_edit.PostMessage(WM_SETFOCUS);
+		PostMessage(WMU_ESCAPEFOCUS);
 	}
 }
 
