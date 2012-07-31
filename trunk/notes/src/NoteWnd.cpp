@@ -45,7 +45,6 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_bActive(FALSE),
 	m_flagSave(NM_NONE),
 	m_flagInit(NF_NONE),
-	m_bPrevActive(FALSE),
 	m_bCaptionClick(FALSE)
 {
 }
@@ -274,6 +273,7 @@ void CNoteWnd::OnFinalMessage(HWND hWnd)
 {
 	CApplication::Get().OnNoteClosed(this);
 	EscapeFocus();
+	
 }
 
 /* draw status bar */
@@ -366,10 +366,6 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	CImageList	il5;
 	il5.CreateFromImage(IDB_TRASH_BTNS, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	AddButton(ID_TRASHSYSMENU, 16, 16, il5, _T("Menu"), CAPTION_BTN_HIDDEN);
-/*
-	m_editCreated.Create(m_hWnd, NULL, NULL, WS_CHILD | WS_VISIBLE | ES_READONLY);
- 	m_editCreated.SetFont(m_hStatusFont);
-*/
 
 	m_edit.Create(m_hWnd);
 	m_edit.Init(yellow);
@@ -525,6 +521,7 @@ WM_NCACTIVATE
 BOOL CNoteWnd::OnNcActivate(BOOL bActive)
 {
 	m_bActive = bActive;
+	SendMessage(WM_NCPAINT);
 	SetMsgHandled(FALSE);
 	return TRUE;
 }
@@ -535,13 +532,21 @@ BOOL CNoteWnd::OnNcActivate(BOOL bActive)
 void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 {
 
-	SendMessage(WM_NCPAINT);
+	//SendMessage(WM_NCPAINT);
 
 	if (nState == WA_INACTIVE)
 	{
 		StoreNote();
 	}
 
+}
+
+/* WM_MOUSEACTIVATE */
+int CNoteWnd::OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message)
+{
+
+	SetMsgHandled(FALSE);
+	return MA_ACTIVATE;
 }
 
 /**
@@ -557,6 +562,25 @@ void CNoteWnd::OnGetMinMaxInfo(LPMINMAXINFO lParam)
 	}
 }
 
+/* WM_NCRBUTTONUP */
+void CNoteWnd::OnNcRButtonUp(UINT nHitTest, CPoint point)
+{
+	ShowSystemMenu(point);
+}
+
+/* WM_LBUTTONUP */
+void CNoteWnd::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	SetMsgHandled(FALSE);
+}
+
+/* WM_ENTERSIZEMOVE */
+void CNoteWnd::OnEnterSizeMove()
+{
+	m_bCaptionClick = FALSE; // начали двигать, сбросить флаг клика на заголовке
+	SetMsgHandled(FALSE);
+}
+
 /**
  WM_SIZE
  */
@@ -565,13 +589,61 @@ void CNoteWnd::OnSize(UINT wParam, CSize sz)
 	if (!m_bMinimized)
 	{
 		CClientRect rc(m_hWnd);
-		CRect rcCreated(0, rc.bottom - s_nStatusBarSize + 1, 135, rc.bottom);
-//		m_editCreated.MoveWindow(&rcCreated);
-
 		m_edit.MoveWindow(&(GetClientRect()));
 	}
 
 	m_flagSave |= NM_POS;
+}
+
+/*
+WM_MOVE
+*/
+void CNoteWnd::OnMove(CPoint pt)
+{
+	m_flagSave |= NM_POS;
+}
+
+/* WM_EXITSIZEMOVE */
+void CNoteWnd::OnExitSizeMove()
+{
+	SetMsgHandled(FALSE);
+}
+
+/* WM_NCLBUTTONDOWN */
+void CNoteWnd::OnNcLButtonDown(UINT nHitTest, CPoint point)
+{
+	SetMsgHandled(FALSE);
+}
+
+/* WM_NCLBUTTONDOWN */
+void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
+{
+	SetMsgHandled(FALSE);
+	if (nHitTest == HTCAPTION)
+	{
+		m_bCaptionClick = TRUE;
+		BOOL bAlreadyActive = m_bActive; //установить флаг сброса фокуса при активации окна. m_bActive изменяется в OnNcActivate. 
+	
+		SetMsgHandled(TRUE);
+		DefWindowProc(); // обработка по умолчанию, здесь придут OnEnterSizeMove, OnExitSizeMove и другие сообщения
+
+		// если окно начнут двигать m_bCaptionClick станет FALSE в OnEnterSizeMove()
+		if (m_bCaptionClick == TRUE && m_bMinimized)
+		{
+			Unroll();
+		}
+		if (!bAlreadyActive  && !m_bCaptionClick || m_bMinimized)
+		{
+			PostMessage(WMU_ESCAPEFOCUS);
+		}
+	}
+}
+
+/*WM_NCLBUTTONUP*/
+void CNoteWnd::OnNcLButtonUp(UINT nHitTest, CPoint point)
+{
+	// приходит только после dblclk
+	SetMsgHandled(FALSE);
 }
 
 /*
@@ -583,26 +655,13 @@ void CNoteWnd::OnFocus(HWND hWnd)
 	SetMsgHandled(FALSE);
 }
 
-/*
-WM_MOVE
-*/
-void CNoteWnd::OnMove(CPoint pt)
-{
-	m_flagSave |= NM_POS;
-}
+
 
 /*
 WM_CTLCOLORSTATIC
 */
 HBRUSH CNoteWnd::OnCtlColorStatic(CDCHandle dc, CStatic wndStatic)
 {
-/*
-	if (wndStatic.m_hWnd == m_editCreated.m_hWnd)
-	{
-		dc.SetBkColor(RGB(255, 255, 204));
-		dc.SetTextColor(RGB(125, 125, 125));
-	}
-*/
 	return m_hBgBrush;
 }
 
@@ -667,13 +726,6 @@ time_t CNoteWnd::GetCreatedDate() const
 void CNoteWnd::SetCreatedDate(time_t dt)
 {
 	m_dtCreated = dt;
-	/*
-	if (dt != 0)
-	{
-		_tstring sDate = dateutils::ToString(dt, _T("%#d %b %Y, %H:%M"));
-		m_editCreated.SetWindowText(RESSTR_FMT(IDS_CREATED_FRM, sDate.c_str()).c_str());
-	}
-	*/
 }
 
 /**/
@@ -860,86 +912,12 @@ void CNoteWnd::OnContextMenu(CWindow wnd, CPoint point)
 	ShowSystemMenu(point);
 }
 
-/**/
-void CNoteWnd::OnNcRButtonUp(UINT nHitTest, CPoint point)
-{
-	ShowSystemMenu(point);
-}
-
-/**/
-int CNoteWnd::OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message)
-{
-	SetMsgHandled(FALSE);
-	return MA_ACTIVATE;
-}
-
-/**/
-void CNoteWnd::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	SetMsgHandled(FALSE);
-}
-
-/**/
-void CNoteWnd::OnEnterSizeMove()
-{
-	m_bCaptionClick = FALSE; 
-	SetMsgHandled(FALSE);
-}
-
-void CNoteWnd::OnExitSizeMove()
-{
-	if (/*m_bPrevActive == FALSE && (m_flagSave & NM_POS) &&*/ m_bMinimized)
-	{
-		EscapeFocus();
-	}
-	SetMsgHandled(FALSE);
-}
-
-void CNoteWnd::OnNcLButtonDown(UINT nHitTest, CPoint point)
-{
-	m_bPrevActive = m_bActive;
-	SetMsgHandled(FALSE);
-}
-
-void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
-{
-	SetMsgHandled(FALSE);
-	if (nHitTest == HTCAPTION)
-	{
-		m_bCaptionClick = TRUE;
-
-		DefWindowProc();
-
-		// если окно дачнут двигать m_bCaptionClick станет FALSE в OnEnterSizeMove()
-		if (m_bCaptionClick == TRUE)
-		{
-			CWindowRect wrc(m_hWnd);
-			if (m_bMinimized)
-			{
-				Unroll();
-			}
-			else
-			{
-				//Rollup();
-			}
-		}
-		SetMsgHandled(TRUE);
-	}
-}
-
-void CNoteWnd::OnNcLButtonUp(UINT nHitTest, CPoint point)
-{
-	// приходит только после dblclk
-	SetMsgHandled(FALSE);
-}
-
 
 /**/
 void CNoteWnd::Rollup()
 {
 	if (!m_bMinimized)
 	{
-//		m_editCreated.ShowWindow(SW_HIDE);
 		m_edit.ShowWindow(SW_HIDE);
 
 		ShowButton(GetButtonIndex(ID_ROLLUP), false);
@@ -955,7 +933,7 @@ void CNoteWnd::Rollup()
 
 		MoveWindow(rc);
 
-		EscapeFocus();
+		PostMessage(WMU_ESCAPEFOCUS);
 	}
 }
 
@@ -974,11 +952,10 @@ void CNoteWnd::Unroll()
 
 		m_rcRestored.SetRectEmpty();
 
-//		m_editCreated.ShowWindow(SW_SHOW);
 		m_edit.ShowWindow(SW_SHOW);
 
-//		m_edit.PostMessage(WM_SETFOCUS);
-		EscapeFocus();
+		m_edit.PostMessage(WM_SETFOCUS);
+//		PostMessage(WMU_ESCAPEFOCUS);
 	}
 }
 
@@ -1084,6 +1061,13 @@ void CNoteWnd::OnLabelClear(UINT uNotifyCode, int nID, CWindow wndCtl)
 void CNoteWnd::SetInitFlags(DWORD nFlags)
 {
 	m_flagInit = nFlags;
+}
+
+/*WMU_ESCAPEFOCUS*/
+LRESULT CNoteWnd::OnEscapeFocus(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	EscapeFocus();
+	return 0;
 }
 
 /**/
