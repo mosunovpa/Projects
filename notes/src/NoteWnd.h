@@ -64,11 +64,13 @@ public:
 		MSG_WM_CREATE(OnCreate)
 		MSG_WM_DESTROY(OnDestroy)
 		MESSAGE_HANDLER_EX(WMU_INITNOTE, OnInitNote)
+		MESSAGE_HANDLER_EX(WMU_ESCAPEFOCUS, OnEscapeFocus)
 		MSG_WM_NCHITTEST(OnNcHittest)
 		MSG_WM_NCPAINT(OnNcPaint)
 		MSG_WM_PAINT(OnPaint)
 		MSG_WM_NCACTIVATE(OnNcActivate)
 		MSG_WM_ACTIVATE(OnActivate)
+		MSG_WM_MOUSEACTIVATE(OnMouseActivate)
 		MSG_WM_ERASEBKGND(OnErasebkgnd)
 		MSG_WM_GETMINMAXINFO(OnGetMinMaxInfo)
 		MSG_WM_SIZE(OnSize)
@@ -81,7 +83,6 @@ public:
 		MSG_WM_CONTEXTMENU(OnContextMenu)
 		MSG_WM_NCRBUTTONUP(OnNcRButtonUp)
 
-		MSG_WM_MOUSEACTIVATE(OnMouseActivate)
 		MSG_WM_LBUTTONUP(OnLButtonUp)
 		MSG_WM_ENTERSIZEMOVE(OnEnterSizeMove)
 		MSG_WM_EXITSIZEMOVE(OnExitSizeMove)
@@ -122,10 +123,12 @@ public:
 	LRESULT OnCreate(LPCREATESTRUCT lParam);
 	void OnDestroy();
 	LRESULT OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT OnEscapeFocus(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcHittest(CPoint pt);
 	void OnPaint(HDC hdc);
 	BOOL OnNcActivate(BOOL bActive);
 	void OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther);
+	int OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message);
 	void OnNcPaint(HRGN wParam);
 	BOOL OnErasebkgnd(HDC hdc) { return TRUE; }
 	void OnGetMinMaxInfo(LPMINMAXINFO lParam);
@@ -139,7 +142,6 @@ public:
 	void OnContextMenu(CWindow wnd, CPoint point);
 	void OnNcRButtonUp(UINT nHitTest, CPoint point);
 
-	int OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message);
 	void OnLButtonUp(UINT nFlags, CPoint point);
 	void OnEnterSizeMove();
 	void OnExitSizeMove();
@@ -189,7 +191,6 @@ private:
 	static CFont m_hStatusFont;
 
 	CNoteEdit m_edit;
-//	CEdit m_editCreated;
 
 	int m_nNoteId;
 	
@@ -207,7 +208,6 @@ private:
 	std::list<_tstring> m_listLabels;
 	DWORD m_flagInit;
 
-	BOOL m_bPrevActive;
 	CMenuHandle m_activeMenu;
 	BOOL m_bCaptionClick;
 };
