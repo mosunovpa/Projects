@@ -71,6 +71,7 @@ public:
 		MSG_WM_NCACTIVATE(OnNcActivate)
 		MSG_WM_ACTIVATE(OnActivate)
 		MSG_WM_MOUSEACTIVATE(OnMouseActivate)
+		MSG_WM_ACTIVATEAPP(OnActivateApp)
 		MSG_WM_ERASEBKGND(OnErasebkgnd)
 		MSG_WM_GETMINMAXINFO(OnGetMinMaxInfo)
 		MSG_WM_SIZE(OnSize)
@@ -129,6 +130,7 @@ public:
 	BOOL OnNcActivate(BOOL bActive);
 	void OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther);
 	int OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message);
+	void OnActivateApp(BOOL bActive, DWORD dwThreadID);
 	void OnNcPaint(HRGN wParam);
 	BOOL OnErasebkgnd(HDC hdc) { return TRUE; }
 	void OnGetMinMaxInfo(LPMINMAXINFO lParam);
@@ -205,6 +207,7 @@ private:
 	BOOL m_bInitialized;
 
 	BOOL m_bActive;
+	BOOL m_bActiveApp;
 	std::list<_tstring> m_listLabels;
 	DWORD m_flagInit;
 
