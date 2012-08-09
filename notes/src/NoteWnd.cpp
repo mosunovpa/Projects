@@ -43,6 +43,7 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_bMinimized(FALSE),
 	m_bInitialized(FALSE),
 	m_bActive(FALSE),
+	m_bActiveApp(TRUE),
 	m_flagSave(NM_NONE),
 	m_flagInit(NF_NONE),
 	m_bCaptionClick(FALSE)
@@ -396,7 +397,10 @@ LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	m_flagSave = NM_NONE;
 	m_edit.EmptyUndoBuffer();
 	m_bInitialized = TRUE;
-
+	if (!GetText().empty())
+	{
+		PostMessage(WMU_ESCAPEFOCUS);
+	}
 	return 0;
 }
 
@@ -549,6 +553,13 @@ int CNoteWnd::OnMouseActivate(CWindow wndTopLevel, UINT nHitTest, UINT message)
 	return MA_ACTIVATE;
 }
 
+/* WM_ACTIVATEAPP */
+void CNoteWnd::OnActivateApp(BOOL bActive, DWORD dwThreadID)
+{
+	m_bActiveApp = bActive;
+	SetMsgHandled(FALSE);
+}
+
 /**
  WM_GETMINMAXINFO
  */
@@ -622,19 +633,31 @@ void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
 	if (nHitTest == HTCAPTION)
 	{
 		m_bCaptionClick = TRUE;
-		BOOL bAlreadyActive = m_bActive; //установить флаг сброса фокуса при активации окна. m_bActive изменяется в OnNcActivate. 
-	
+		BOOL bAlreadyActive = m_bActive;
+//		BOOL bAlreadyActiveApp = m_bActiveApp;
+
 		SetMsgHandled(TRUE);
 		DefWindowProc(); // обработка по умолчанию, здесь придут OnEnterSizeMove, OnExitSizeMove и другие сообщения
 
 		// если окно начнут двигать m_bCaptionClick станет FALSE в OnEnterSizeMove()
-		if (m_bCaptionClick == TRUE && m_bMinimized)
+		if (m_bCaptionClick == TRUE) // слик на минимизированном окне
 		{
-			Unroll();
+			if (m_bMinimized)
+			{
+				Unroll();
+//				if (!bAlreadyActive/*App*/)
+//				{
+//					PostMessage(WMU_ESCAPEFOCUS);
+//				}
+			}
 		}
-		if (!bAlreadyActive  && !m_bCaptionClick || m_bMinimized)
+		else 
 		{
-			PostMessage(WMU_ESCAPEFOCUS);
+//			if (!bAlreadyActive/*App /*|| m_bMinimized*/) // перемещение окна за заголовок
+			if (!GetText().empty())
+			{
+				PostMessage(WMU_ESCAPEFOCUS);
+			}
 		}
 	}
 }
@@ -954,8 +977,11 @@ void CNoteWnd::Unroll()
 
 		m_edit.ShowWindow(SW_SHOW);
 
-//		m_edit.PostMessage(WM_SETFOCUS);
-		PostMessage(WMU_ESCAPEFOCUS);
+		m_edit.PostMessage(WM_SETFOCUS);
+		if (!GetText().empty())
+		{
+//			PostMessage(WMU_ESCAPEFOCUS);
+		}
 	}
 }
 

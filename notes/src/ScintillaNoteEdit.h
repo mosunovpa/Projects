@@ -116,7 +116,7 @@ private:
 	{
 		if (wParam == VK_ESCAPE)
 		{
-			GetParent().PostMessage(WM_CLOSE);
+			GetParent().PostMessage(/*WM_CLOSE*/WMU_ESCAPEFOCUS);
 		}
 		SetMsgHandled(FALSE);
 		return 0;
