@@ -399,7 +399,7 @@ LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	m_bInitialized = TRUE;
 	if (!GetText().empty())
 	{
-		PostMessage(WMU_ESCAPEFOCUS);
+//		PostMessage(WMU_ESCAPEFOCUS);
 	}
 	return 0;
 }
@@ -542,7 +542,7 @@ void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 	{
 		StoreNote();
 	}
-
+	PostMessage(WMU_ACTIVATEPOST);
 }
 
 /* WM_MOUSEACTIVATE */
@@ -618,6 +618,12 @@ void CNoteWnd::OnMove(CPoint pt)
 void CNoteWnd::OnExitSizeMove()
 {
 	SetMsgHandled(FALSE);
+/*
+	if (!GetText().empty() && !m_edit.GetModify())
+	{
+		PostMessage(WMU_ESCAPEFOCUS);
+	}
+	*/
 }
 
 /* WM_NCLBUTTONDOWN */
@@ -630,6 +636,7 @@ void CNoteWnd::OnNcLButtonDown(UINT nHitTest, CPoint point)
 void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
 {
 	SetMsgHandled(FALSE);
+//	return;
 	if (nHitTest == HTCAPTION)
 	{
 		m_bCaptionClick = TRUE;
@@ -654,9 +661,9 @@ void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
 		else 
 		{
 //			if (!bAlreadyActive/*App /*|| m_bMinimized*/) // перемещение окна за заголовок
-			if (!GetText().empty())
+			if (!GetText().empty() && !m_edit.GetModify())
 			{
-				PostMessage(WMU_ESCAPEFOCUS);
+//				PostMessage(WMU_ESCAPEFOCUS);
 			}
 		}
 	}
@@ -977,7 +984,7 @@ void CNoteWnd::Unroll()
 
 		m_edit.ShowWindow(SW_SHOW);
 
-		m_edit.PostMessage(WM_SETFOCUS);
+//		m_edit.PostMessage(WM_SETFOCUS);
 		if (!GetText().empty())
 		{
 //			PostMessage(WMU_ESCAPEFOCUS);
@@ -1093,6 +1100,12 @@ void CNoteWnd::SetInitFlags(DWORD nFlags)
 LRESULT CNoteWnd::OnEscapeFocus(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	EscapeFocus();
+	return 0;
+}
+
+/* WMU_ACTIVATEPOST */
+LRESULT CNoteWnd::OnActivatePost(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
 	return 0;
 }
 
