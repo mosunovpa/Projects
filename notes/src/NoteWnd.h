@@ -65,6 +65,7 @@ public:
 		MSG_WM_DESTROY(OnDestroy)
 		MESSAGE_HANDLER_EX(WMU_INITNOTE, OnInitNote)
 		MESSAGE_HANDLER_EX(WMU_ESCAPEFOCUS, OnEscapeFocus)
+		MESSAGE_HANDLER_EX(WMU_ACTIVATEPOST, OnActivatePost)
 		MSG_WM_NCHITTEST(OnNcHittest)
 		MSG_WM_NCPAINT(OnNcPaint)
 		MSG_WM_PAINT(OnPaint)
@@ -125,6 +126,7 @@ public:
 	void OnDestroy();
 	LRESULT OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnEscapeFocus(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT OnActivatePost(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcHittest(CPoint pt);
 	void OnPaint(HDC hdc);
 	BOOL OnNcActivate(BOOL bActive);
