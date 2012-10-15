@@ -60,6 +60,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(OutDir)\noteshook.lib"
+				AdditionalLibraryDirectories="$(OutDir)"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -114,7 +115,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\common;.\noteshook"
 				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG;"
-				RuntimeLibrary="1"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
 			/>
 			<Tool
@@ -129,6 +130,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(OutDir)\noteshook.lib"
+				AdditionalLibraryDirectories="$(OutDir)"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"

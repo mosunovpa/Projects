@@ -11,6 +11,15 @@
 #include <math.h>
 #include "Clipboard.h"
 
+#ifdef _DEBUG
+#define DATAFILE _T("notesd.dat")
+#else
+#define DATAFILE _T("notes.dat")
+#endif
+
+
+using namespace dateutils;
+
 /**/
 CApplication::CApplication()
 {
@@ -20,7 +29,7 @@ CApplication::CApplication()
 		fileutils::CreateDirectoryRecursive(sDataFile.c_str());
 	}
 	TCHAR destBuf[MAX_PATH] = _T("");
-	::PathCombine(destBuf, sDataFile.c_str(), _T("notes.dat"));
+	::PathCombine(destBuf, sDataFile.c_str(), DATAFILE);
 
 	m_sDataFile = destBuf;
 	m_storage.SetDataFile(m_sDataFile.c_str());
@@ -178,7 +187,7 @@ HWND CApplication::CreateNote(_tstring const& sText /*= _tstring()*/, DWORD nFla
 	if (pWnd)
 	{
 		pWnd->SetInitFlags(nFlag);
-		pWnd->SetCreatedDate(dateutils::GetCurrentDate());
+		pWnd->SetCreatedDate(dateutils::GetCurrentDateTime());
 		pWnd->SetFocus();
 
 		if (!sText.empty())
@@ -271,7 +280,7 @@ int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 	note.SetCreatedDate(pWnd->GetCreatedDate());
 	if (nMask & NM_MODIFIED)
 	{
-		note.SetModifiedDate(dateutils::GetCurrentDate());
+		note.SetModifiedDate(dateutils::GetCurrentDateTime());
 	}
 	note.SetDeletedDate(pWnd->GetDeletedDate());
 	note.SetLabel(pWnd->GetLabel().c_str());
@@ -284,7 +293,7 @@ int CApplication::SaveNote(CNote const& note, UINT nMask)
 	CNote nt = note;
 	if (nMask & NM_MODIFIED)
 	{
-		nt.SetModifiedDate(dateutils::GetCurrentDate());
+		nt.SetModifiedDate(dateutils::GetCurrentDateTime());
 	}
 	return m_storage.SaveNote(nt, nMask);
 }
@@ -325,10 +334,10 @@ void CApplication::DeleteFromStorage(int nNoteId)
 	{
 		CNote note = m_storage.GetNote(nNoteId);
 //		note.SetLabel(_tstring());
-		if (note.GetDeletedDate() == 0)
+		if (note.GetDeletedDate().time == 0)
 		{
-			note.SetDeletedDate(dateutils::GetCurrentDate());
-			note.SetModifiedDate(dateutils::GetCurrentDate());
+			note.SetDeletedDate(dateutils::GetCurrentDateTime());
+			note.SetModifiedDate(dateutils::GetCurrentDateTime());
 			m_storage.SaveNote(note, NM_DELETED | NM_LABEL | NM_MODIFIED);
 		}
 		else
@@ -491,8 +500,8 @@ void CApplication::RestoreNote(int nNoteId)
 	if (nNoteId > 0)
 	{
 		CNote note = m_storage.GetNote(nNoteId);
-		note.SetDeletedDate(0);
-		note.SetModifiedDate(dateutils::GetCurrentDate());
+		note.SetDeletedDate(timebn::getempty());
+		note.SetModifiedDate(dateutils::GetCurrentDateTime());
 //		note.SetLabel(_tstring());
 		m_storage.SaveNote(note, NM_DELETED | NM_MODIFIED | NM_LABEL);
 		ShowNote(nNoteId);
@@ -526,7 +535,7 @@ void CApplication::Command(int nCmd, HWND hWnd)
 BOOL CApplication::IsNoteDeleted( int nNoteId )
 {
 	CNote note = m_storage.GetNote(nNoteId);
-	return (note.GetDeletedDate() == 0);
+	return (timebn::isempty(note.GetDeletedDate()));
 }
 
 /**/
@@ -590,7 +599,7 @@ void CApplication::SetNoteLabel(int nNoteId, LPCTSTR label)
 {
 	CNote note = FindNote(nNoteId);
 	note.SetLabel(label);
-	note.SetModifiedDate(dateutils::GetCurrentDate());
+	note.SetModifiedDate(dateutils::GetCurrentDateTime());
 	CApplication::Get().SaveNote(note, NM_LABEL | NM_MODIFIED);
 
 	CNoteWnd* pWnd = FindNoteWnd(nNoteId);

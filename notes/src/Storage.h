@@ -21,6 +21,8 @@ public:
 	void WriteOptions(COptions const& opt);
 
 private:
+	bool ArchiveFile();
+
 	CComPtr<IXMLDOMDocument> s_spDoc;
 
 	CComPtr<IXMLDOMDocument> _GetDocument();
@@ -34,4 +36,5 @@ private:
 	void _UpdateNote(CNote const& note, UINT nMask);
 	CComPtr<IXMLDOMNode> _GetOptionsNode(CComPtr<IXMLDOMDocument>& spDoc);
 	_tstring m_fileName;
+	time_t m_archtime;
 };
