@@ -12,6 +12,7 @@ public:
 		MESSAGE_HANDLER_EX(WM_KEYDOWN, OnKeyDown)
 		CHAIN_MSG_MAP(CScintillaWindowImpl<CScintillaNoteEdit>)
 		CHAIN_MSG_MAP_ALT(CEditCommands<CScintillaNoteEdit>, 1)
+		COMMAND_ID_HANDLER(ID_EDIT_REDO, OnEditRedo)
 	END_MSG_MAP()
 
     void Create(HWND hWndParent) 
@@ -59,6 +60,8 @@ public:
 		{
 			AssignCmdKey(spec_chars[i] + (SCMOD_CTRL << 16), SCI_NULL); 
 		}
+
+		UsePopUp(false);
 
 	}
 
@@ -111,7 +114,6 @@ private:
 			StyleSetFont(style, face);
 	}
 
-
 	LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (wParam == VK_ESCAPE)
@@ -119,6 +121,12 @@ private:
 			GetParent().PostMessage(/*WM_CLOSE*/WMU_ESCAPEFOCUS);
 		}
 		SetMsgHandled(FALSE);
+		return 0;
+	}
+
+	LRESULT OnEditRedo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		Redo();
 		return 0;
 	}
 	

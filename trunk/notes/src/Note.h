@@ -12,24 +12,24 @@ public:
 	_tstring GetText() const;
 	int GetTextLen() const;
 	CRect GetPos() const;
-	time_t GetCreatedDate() const;
-	time_t GetModifiedDate() const;
-	time_t GetDeletedDate() const;
+	_timeb GetCreatedDate() const;
+	_timeb GetModifiedDate() const;
+	_timeb GetDeletedDate() const;
 	_tstring GetLabel() const;
 
 	void SetId(int id);
 	void SetText(_tstring const& text);
 	void SetPos(CRect const& pos);
-	void SetCreatedDate(time_t dt);
-	void SetModifiedDate(time_t dt);
-	void SetDeletedDate(time_t dt);
+	void SetCreatedDate(_timeb dt);
+	void SetModifiedDate(_timeb dt);
+	void SetDeletedDate(_timeb dt);
 	void SetLabel(LPCTSTR label);
 private:
 	int m_id;
 	_tstring m_text;
 	CRect m_pos;
-	time_t m_dtCreated;
-	time_t m_dtModified;
-	time_t m_dtDeleted;
+	_timeb m_dtCreated;
+	_timeb m_dtModified;
+	_timeb m_dtDeleted;
 	_tstring m_label;
 };

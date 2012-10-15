@@ -7,8 +7,12 @@
 #include "NewLabelDialog.h"
 #include "Clipboard.h"
 #include "defines.h"
+#include "dateutils.h"
 
 #define MFT_EX_DELETED 0x00000001L
+
+using namespace dateutils;
+
 
 ///////////////////////////////////////////////////////////
 // CTrayWnd
@@ -278,6 +282,7 @@ void CTrayWnd::ProcessCheckedMenu(Actions action)
 		int i = m_menuWithChecked.GetMenuItemCount() - 1;
 		for (; i >= 0 ; --i)
 		{
+			Sleep(1); // пауза в 1 милисек, чтобы времена модификации (или удаления) заметок отличались 
 			UINT state  = m_menuWithChecked.GetMenuState(i, MF_BYPOSITION);
 			if ((state & MF_CHECKED) == MF_CHECKED)
 			{
@@ -305,6 +310,9 @@ void CTrayWnd::ProcessCheckedMenu(Actions action)
 							}
 							clipboartText += s;
 						}
+						break;
+					case acRestore:
+						CApplication::Get().RestoreNote(noteId);
 						break;
 					}
 				}
@@ -685,7 +693,15 @@ void CTrayWnd::OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		CApplication::Get().RestoreNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		UINT state = m_selectedMenu.GetMenuState(m_nSelectedNoteCmd, MF_BYCOMMAND);
+		if ((state & MF_CHECKED) == MF_CHECKED)
+		{
+			ProcessCheckedMenu(acRestore);
+		}
+		else
+		{
+			CApplication::Get().RestoreNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
+		}
 		EndMenu();
 	}
 }
@@ -701,18 +717,12 @@ void CTrayWnd::OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
 /**/
 bool compare_by_modify_date(CNote const& left, CNote const& right)
 {
-	time_t leftModifDate = left.GetModifiedDate();
-	time_t rigthModifDate = right.GetModifiedDate();
-	if (leftModifDate == rigthModifDate)
-	{
-		return left.GetCreatedDate() < right.GetCreatedDate();
-	}
-	return leftModifDate < rigthModifDate;
+	return timebn::compare(left.GetModifiedDate(), right.GetModifiedDate()) < 0;
 }
 /**/
 bool compare_by_deleted_date(CNote const& left, CNote const& right)
 {
-	return left.GetDeletedDate() > right.GetDeletedDate();
+	return timebn::compare(left.GetDeletedDate(), right.GetDeletedDate()) > 0;
 }
 
 /* */
@@ -754,8 +764,8 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	BOOL bIsDeletedNotesExists = FALSE;
 	for (int i = 0; i < notes.size(); ++i)
 	{
-		bIsNotesExists = bIsNotesExists || (notes[i].GetDeletedDate() == 0);
-		bIsDeletedNotesExists = bIsDeletedNotesExists || (notes[i].GetDeletedDate() != 0);
+		bIsNotesExists = bIsNotesExists || timebn::isempty((notes[i].GetDeletedDate()));
+		bIsDeletedNotesExists = bIsDeletedNotesExists || !timebn::isempty((notes[i].GetDeletedDate()));
 		if (bIsNotesExists && bIsDeletedNotesExists)
 			break;
 	}
@@ -783,7 +793,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 		menuLabel.CreatePopupMenu();
 		for (int i = 0; i < notes.size(); ++i)
 		{
-			if (notes[i].GetDeletedDate() == 0 && notes[i].GetLabel() == sLabel)
+			if (timebn::isempty(notes[i].GetDeletedDate()) && notes[i].GetLabel() == sLabel)
 			{
 				bLabels = true;
 				_tstring sCaption = CApplication::Get().GetNoteCaption(notes[i].GetText());
@@ -798,7 +808,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	bool bSeparator = false;
 	for (int i = 0; i < notes.size(); ++i)
 	{
-		if (notes[i].GetDeletedDate() == 0 && notes[i].GetLabel().empty())
+		if (timebn::isempty(notes[i].GetDeletedDate()) && notes[i].GetLabel().empty())
 		{
 			if (bSeparator == false && bLabels == true)
 			{
@@ -823,7 +833,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	int nMaxDelCnt = 30;
 	for (int i = 0; i < notes.size(); ++i)
 	{
-		if (notes[i].GetDeletedDate() != 0)
+		if (!timebn::isempty(notes[i].GetDeletedDate()))
 		{
 			if (nMaxDelCnt < 0 && 
 				(CApplication::Get().IsNoteVisible(notes[i].GetId()) == FALSE) )// note is not opened

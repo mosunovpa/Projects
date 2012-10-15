@@ -4,6 +4,9 @@
 #include "fileutils.h"
 #include "Application.h"
 #include "Options.h"
+#include "dateutils.h"
+
+using namespace dateutils;
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -14,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 
-CStorage::CStorage(void)
+CStorage::CStorage(void) : m_archtime(0)
 {
 }
 
@@ -150,54 +153,69 @@ CNote CStorage::_GetNote(CComPtr<IXMLDOMNode> spNode, UINT nMask)
 	if ((nMask & NM_CREATED) == NM_CREATED)
 	{
 		CHECK_HR(spElement->getAttribute(L"created", &val));
-		time_t t;
-		if (val.vt == VT_NULL) // attribute not found
+		_timeb t = timebn::getempty();
+		if (val.vt == VT_BSTR)
 		{
-			t = 0;
+			t.time =_ttoi(val.bstrVal);
 		}
-		else if (val.vt == VT_BSTR)
-		{
-			t =_ttoi(val.bstrVal);
-		}
-		else
+		else if (val.vt != VT_NULL)
 		{
 			ThrowError(_T("Attribute created not found"));
+		}
+		CHECK_HR(spElement->getAttribute(L"created_ms", &val));
+		if (val.vt == VT_BSTR)
+		{
+			t.millitm =_ttoi(val.bstrVal);
+		}
+		else if (val.vt != VT_NULL) 
+		{
+			ThrowError(_T("Attribute created_ms not found"));
 		}
 		note.SetCreatedDate(t);
 	}
 	if ((nMask & NM_MODIFIED) == NM_MODIFIED)
 	{
 		CHECK_HR(spElement->getAttribute(L"modified", &val));
-		time_t t;
-		if (val.vt == VT_NULL) // attribute not found
+		_timeb t = timebn::getempty();
+		if (val.vt == VT_BSTR)
 		{
-			t = 0;
+			t.time =_ttoi(val.bstrVal);
 		}
-		else if (val.vt == VT_BSTR)
-		{
-			t =_ttoi(val.bstrVal);
-		}
-		else
+		else if (val.vt != VT_NULL)
 		{
 			ThrowError(_T("Attribute modified not found"));
+		}
+		CHECK_HR(spElement->getAttribute(L"modified_ms", &val));
+		if (val.vt == VT_BSTR)
+		{
+			t.millitm =_ttoi(val.bstrVal);
+		}
+		else if (val.vt != VT_NULL)
+		{
+			ThrowError(_T("Attribute modified_ms not found"));
 		}
 		note.SetModifiedDate(t);
 	}
 	if ((nMask & NM_DELETED) == NM_DELETED)
 	{
 		CHECK_HR(spElement->getAttribute(L"deleted", &val));
-		time_t t;
-		if (val.vt == VT_NULL) // attribute not found
+		_timeb t = timebn::getempty();
+		if (val.vt == VT_BSTR)
 		{
-			t = 0;
+			t.time =_ttoi(val.bstrVal);
 		}
-		else if (val.vt == VT_BSTR)
-		{
-			t =_ttoi(val.bstrVal);
-		}
-		else
+		else if (val.vt != VT_NULL)
 		{
 			ThrowError(_T("Attribute deleted not found"));
+		}
+		CHECK_HR(spElement->getAttribute(L"deleted_ms", &val));
+		if (val.vt == VT_BSTR)
+		{
+			t.millitm =_ttoi(val.bstrVal);
+		}
+		else if (val.vt != VT_NULL)
+		{
+			ThrowError(_T("Attribute deleted_ms not found"));
 		}
 		note.SetDeletedDate(t);
 	}
@@ -277,15 +295,21 @@ void CStorage::_SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& 
 	}
 	if ((nMask & NM_CREATED) == NM_CREATED)
 	{
-		CHECK_HR(spElement->setAttribute(L"created", CComVariant(note.GetCreatedDate())));
+		_timeb tb = note.GetCreatedDate();
+		CHECK_HR(spElement->setAttribute(L"created", CComVariant(tb.time)));
+		CHECK_HR(spElement->setAttribute(L"created_ms", CComVariant(tb.millitm)));
 	}
 	if ((nMask & NM_MODIFIED) == NM_MODIFIED)
 	{
-		CHECK_HR(spElement->setAttribute(L"modified", CComVariant(note.GetModifiedDate())));
+		_timeb tb = note.GetModifiedDate();
+		CHECK_HR(spElement->setAttribute(L"modified", CComVariant(tb.time)));
+		CHECK_HR(spElement->setAttribute(L"modified_ms", CComVariant(tb.millitm)));
 	}
 	if ((nMask & NM_DELETED) == NM_DELETED)
 	{
-		CHECK_HR(spElement->setAttribute(L"deleted", CComVariant(note.GetDeletedDate())));
+		_timeb tb = note.GetDeletedDate();
+		CHECK_HR(spElement->setAttribute(L"deleted", CComVariant(tb.time)));
+		CHECK_HR(spElement->setAttribute(L"deleted_ms", CComVariant(tb.millitm)));
 	}
 	if ((nMask & NM_LABEL) == NM_LABEL)
 	{
@@ -350,6 +374,17 @@ int CStorage::SaveNote(CNote const& note, UINT nMask)
 	{
 		_UpdateNote(note, nMask);
 		id = note.GetId();
+	}
+	if ((nMask & NM_MODIFIED) == NM_MODIFIED)
+	{
+		time_t t = GetDate(GetCurrentDateTime().time);
+		if (t != m_archtime)
+		{
+			if (ArchiveFile())
+			{
+				m_archtime = t;
+			}
+		}
 	}
 	return id;
 }
@@ -501,11 +536,67 @@ void CStorage::GetLabels(std::list<_tstring>& list)
 		CComPtr<IXMLDOMNode> spNode;
 		CHECK_HR(spNotes->get_item(i, &spNode));
 		CNote note = _GetNote(spNode, NM_DELETED | NM_LABEL);
-		if (!note.GetLabel().empty() && note.GetDeletedDate() == 0)
+		if (!note.GetLabel().empty() && timebn::isempty(note.GetDeletedDate()))
 		{
 			list.push_back(note.GetLabel());
 		}
 	}
 	list.sort();
 	list.unique();
+}
+
+bool CStorage::ArchiveFile()
+{
+	// формируем имя архива
+
+	_tstring arch_path(m_fileName.c_str(), ::PathFindFileName(m_fileName.c_str()) - m_fileName.c_str());
+	const _tstring extension = _T(".dar");
+	const int arch_files_count = 7;
+	
+	LPTSTR filename_ptr = ::PathFindFileName(m_fileName.c_str());
+	_tstring filename(filename_ptr, ::PathFindExtension(filename_ptr) - filename_ptr);
+
+	time_t t; time(&t);
+	_tstring curdate_s = ToString(t, _T("%Y%m%d"));
+
+	_tstring dest_filename(filename + curdate_s + extension);
+
+	if (!::PathFileExists((arch_path + dest_filename).c_str()))
+	{
+		// берем существующие файлы архивов
+
+		std::list<_tstring> arch_files;
+		fileutils::GetFileList(arch_path, filename + _T("*") + extension, arch_files);
+
+		// проверяем изменен ли файл после последнего архивирования
+
+		bool file_changed = true;
+		if (!arch_files.empty())
+		{
+			ULONGLONG fs1 = fileutils::GetFileSize(arch_files.rbegin()->c_str());
+			ULONGLONG fs2 = fileutils::GetFileSize(m_fileName.c_str());
+			file_changed = (fs1 != fs2);
+		}
+
+		// копируем
+
+		if (file_changed && ::CopyFile(m_fileName.c_str(), (arch_path + dest_filename).c_str(), FALSE))
+		{
+			// удаляем старые архивы
+			
+			int recent_files_cnt = 0;
+			for (std::list<_tstring>::reverse_iterator it = arch_files.rbegin();
+				it != arch_files.rend(); ++it)
+			{
+				++recent_files_cnt;
+				if (recent_files_cnt >= arch_files_count)
+				{
+					::DeleteFile(it->c_str());
+				}
+			}
+
+			return true;
+		}
+	}
+	return false;
 }

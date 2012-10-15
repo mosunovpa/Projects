@@ -37,10 +37,10 @@ public:
 	void SetId(int id);
 	_tstring GetText();
 	void SetText(_tstring const& text);
-	time_t GetCreatedDate() const;
-	void SetCreatedDate(time_t dt);
-	time_t GetDeletedDate() const;
-	void SetDeletedDate(time_t dt);
+	_timeb GetCreatedDate() const;
+	void SetCreatedDate(_timeb dt);
+	_timeb GetDeletedDate() const;
+	void SetDeletedDate(_timeb dt);
 	_tstring GetLabel() const;
 	void SetLabel(LPCTSTR label);
 	void SetInitFlags(DWORD nFlags);
@@ -200,8 +200,8 @@ private:
 	
 	DWORD m_flagSave;
 
-	time_t m_dtCreated;
-	time_t m_dtDeleted;
+	_timeb m_dtCreated;
+	_timeb m_dtDeleted;
 	_tstring m_label;
 
 	BOOL m_bMinimized;

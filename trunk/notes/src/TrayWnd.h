@@ -109,7 +109,7 @@ public:
 	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
 
 private:
-	enum Actions { acNone = 0, acDelete, acOpen, acLabel, acClipboard };
+	enum Actions { acNone = 0, acDelete, acOpen, acLabel, acClipboard, acRestore };
 
 
 	LRESULT DisplayShortcutMenu();

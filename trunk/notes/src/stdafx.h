@@ -38,7 +38,7 @@ extern CAppModule _Module;
 #include <atlpath.h>
 #include <atlsplit.h>
 #include <atlcrack.h>
-
+#include <sys/timeb.h>
 /**
 * std headers
 */
@@ -49,6 +49,7 @@ extern CAppModule _Module;
 #include <algorithm>
 #include <functional>
 #include <string>
+
 
 #include "errors_ex.h"
 

@@ -1,8 +1,14 @@
 #include "StdAfx.h"
 #include "Note.h"
+#include "dateutils.h"
 
-CNote::CNote(void) : m_id(0), m_dtCreated(0), m_dtModified(0), m_dtDeleted(0)
+using namespace dateutils;
+
+CNote::CNote(void) : m_id(0)
 {
+	timebn::clear(m_dtCreated);
+	timebn::clear(m_dtModified);
+	timebn::clear(m_dtDeleted);
 }
 
 CNote::~CNote(void)
@@ -29,17 +35,17 @@ CRect CNote::GetPos() const
 	return m_pos;
 }
 
-time_t CNote::GetCreatedDate() const
+_timeb CNote::GetCreatedDate() const
 {
 	return m_dtCreated;
 }
 
-time_t CNote::GetDeletedDate() const
+_timeb CNote::GetDeletedDate() const
 {
 	return m_dtDeleted;
 }
 
-time_t CNote::GetModifiedDate() const
+_timeb CNote::GetModifiedDate() const
 {
 	return m_dtModified;
 }
@@ -64,12 +70,12 @@ void CNote::SetPos( CRect const& pos )
 	m_pos = pos;
 }
 
-void CNote::SetCreatedDate(time_t dt)
+void CNote::SetCreatedDate(_timeb dt)
 {
 	m_dtCreated = dt;
 }
 
-void CNote::SetModifiedDate(time_t dt)
+void CNote::SetModifiedDate(_timeb dt)
 {
 	m_dtModified = dt;
 }
@@ -79,7 +85,7 @@ void CNote::SetLabel(LPCTSTR label)
 	m_label = label;
 }
 
-void CNote::SetDeletedDate( time_t dt )
+void CNote::SetDeletedDate( _timeb dt )
 {
 	m_dtDeleted = dt;
 }

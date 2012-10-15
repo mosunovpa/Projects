@@ -16,6 +16,17 @@
 #include "Clipboard.h"
 #include "NewLabelDialog.h"
 #include "noteshook.h"
+/*
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include "boost/date_time/c_local_time_adjustor.hpp"
+*/
+#include <sys/types.h>
+#include <sys/timeb.h>
+
+#include "dateutils.h"
+
+using namespace dateutils;
+
 
 const INT s_nCornerSize = 14;
 const INT s_nStatusBarSize = 15;
@@ -38,8 +49,6 @@ CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell D
  */
 CNoteWnd::CNoteWnd(int nNoteId /*= 0*/) 
 :	m_nNoteId(nNoteId),
-	m_dtCreated(0),
-	m_dtDeleted(0),
 	m_bMinimized(FALSE),
 	m_bInitialized(FALSE),
 	m_bActive(FALSE),
@@ -48,6 +57,67 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 	m_flagInit(NF_NONE),
 	m_bCaptionClick(FALSE)
 {
+	timebn::clear(m_dtCreated);
+	timebn::clear(m_dtDeleted);
+
+
+
+	 struct _timeb timebuffer;
+	 struct _timeb timebuffer2;
+	 struct _timeb timebuffer3;
+	 struct _timeb timebuffer4;
+	 struct _timeb timebuffer5;
+
+	 time_t tt;
+	 time(&tt);
+	_ftime_s(&timebuffer);
+	Sleep(1);
+	_ftime_s(&timebuffer2);
+	Sleep(1);
+	_ftime_s(&timebuffer3);
+	Sleep(1);
+	_ftime_s(&timebuffer4);
+	Sleep(1);
+	_ftime_s(&timebuffer5);
+
+	_tstring s4 = ToString(timebuffer.time, TRUE);
+	_tstring s5 = ToString(timebuffer.time, FALSE);
+
+
+    long timezone;
+    _get_timezone( &timezone );
+/*
+	
+	using namespace boost::posix_time;
+//	using namespace boost::date_time;
+
+	ptime t(microsec_clock::universal_time());
+
+	ptime lt = boost::date_time::c_local_adjustor<ptime>::utc_to_local(t);
+	
+	string s = to_iso_string(t);
+	string s2 = to_iso_string(t);
+	string ls = to_iso_string(lt);
+	ptime lt2 = from_iso_string(ls);
+
+	wtime_facet* ltf = new wtime_facet();
+
+	wstringstream ss;
+	ss.imbue(locale(locale::classic(), ltf));
+//	ss.imbue(locale(ss.getloc(), ltf));
+
+	ltf->format(L"%a %b %d, %H:%M %z");
+
+	ss << t;
+
+	wstring s3 = ss.str();
+	*/
+/*
+	  local_time_facet* output_facet = new local_time_facet();
+  local_time_input_facet* input_facet = new local_time_input_facet();
+  ss.imbue(locale(locale::classic(), output_facet));
+  ss.imbue(locale(ss.getloc(), input_facet));
+  */
 }
 
 /**
@@ -301,9 +371,9 @@ void CNoteWnd::DrawStatusBar(CDC& dc)
 
 
 	// draw text
-	if (m_dtCreated!= 0)
+	if (!timebn::isempty(m_dtCreated))
 	{
-		_tstring sDate = dateutils::ToString(m_dtCreated, _T("%#d %b %Y, %H:%M"));
+		_tstring sDate = ToString(m_dtCreated.time, _T("%#d %b %Y, %H:%M"));
 
 		CFontHandle hOldFont = dc.SelectFont(m_hStatusFont);
 		dc.SetBkColor(RGB(255, 255, 204));
@@ -661,9 +731,10 @@ void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
 		else 
 		{
 //			if (!bAlreadyActive/*App /*|| m_bMinimized*/) // перемещение окна за заголовок
-			if (!GetText().empty() && !m_edit.GetModify())
+//			if (!GetText().empty() && !m_edit.GetModify())
+			if (m_bMinimized)
 			{
-//				PostMessage(WMU_ESCAPEFOCUS);
+				PostMessage(WMU_ESCAPEFOCUS);
 			}
 		}
 	}
@@ -747,13 +818,13 @@ void CNoteWnd::SetText(_tstring const& text)
 }
 
 /**/
-time_t CNoteWnd::GetCreatedDate() const
+_timeb CNoteWnd::GetCreatedDate() const
 {
 	return m_dtCreated;
 }
 
 /**/
-void CNoteWnd::SetCreatedDate(time_t dt)
+void CNoteWnd::SetCreatedDate(_timeb dt)
 {
 	m_dtCreated = dt;
 }
@@ -939,7 +1010,18 @@ void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 
 void CNoteWnd::OnContextMenu(CWindow wnd, CPoint point)
 {
-	ShowSystemMenu(point);
+	if (wnd == m_edit.m_hWnd)
+	{
+		CMenu hEditMenu;
+		hEditMenu.LoadMenu(IDR_EDIT);
+		CMenuHandle menuPopup = hEditMenu.GetSubMenu(0);
+		menuPopup.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
+			point.x, point.y, m_hWnd);
+	}
+	else
+	{
+		ShowSystemMenu(point);
+	}
 }
 
 
@@ -1011,14 +1093,14 @@ LRESULT CNoteWnd::OnLink(LPNMHDR pnmh)
 
 
 /**/
-time_t CNoteWnd::GetDeletedDate() const
+_timeb CNoteWnd::GetDeletedDate() const
 {
 	return m_dtDeleted;
 
 }
 
 /**/
-void CNoteWnd::SetDeletedDate( time_t dt )
+void CNoteWnd::SetDeletedDate( _timeb dt )
 {
 	m_dtDeleted = dt;
 }
@@ -1039,7 +1121,7 @@ BOOL CNoteWnd::IsMinimized()
 /**/
 BOOL CNoteWnd::IsDeleted()
 {
-	return GetDeletedDate() != 0;
+	return !timebn::isempty(m_dtDeleted);
 }
 
 /**/
