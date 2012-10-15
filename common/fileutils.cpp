@@ -112,3 +112,23 @@ BOOL fileutils::WriteLn(LPCTSTR szFilepath, _tstring s)
 {
 	return fileutils::Write(szFilepath, s + _T("\r\n"));
 }
+
+/**
+*/
+void fileutils::GetFileList(_tstring const& dir, _tstring const& mask, std::list<_tstring>& filelist)
+{
+	HANDLE hFind;
+	WIN32_FIND_DATA FindData;
+	hFind = FindFirstFile((dir + mask).c_str(), &FindData);
+	if (hFind != INVALID_HANDLE_VALUE) 
+	{
+		do
+		{
+			filelist.push_back(dir + FindData.cFileName);
+
+		} while (FindNextFile(hFind, &FindData) != 0) ;
+
+		FindClose(hFind);
+	}
+	filelist.sort();
+}
