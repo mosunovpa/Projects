@@ -555,6 +555,7 @@ bool CStorage::ArchiveFile()
 	
 	LPTSTR filename_ptr = ::PathFindFileName(m_fileName.c_str());
 	_tstring filename(filename_ptr, ::PathFindExtension(filename_ptr) - filename_ptr);
+	filename += _T("_");
 
 	time_t t; time(&t);
 	_tstring curdate_s = ToString(t, _T("%Y%m%d"));

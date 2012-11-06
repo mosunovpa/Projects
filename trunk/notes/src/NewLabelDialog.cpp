@@ -76,6 +76,8 @@ LRESULT CNewLabelDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 	FindLabelInList(m_sLabel.c_str());
 
+	DlgResize_Init();
+
 	return TRUE;
 }
 
