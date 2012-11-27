@@ -4,9 +4,6 @@
 #include "winutils.h"
 
 #define MENU_TOOLTIP_TIMER_ID 654
-#define MENU_TOOLTIP_TIMER_INTERVAL 50
-#define MENU_TOOLTIP_DELAY 200
-
 
 
 /**/
@@ -22,6 +19,8 @@ public:
 		m_hParent(NULL),
 		m_nShownMenuItemId(0)
 	{
+		SystemParametersInfo(SPI_GETMENUSHOWDELAY, 0, &MENU_TOOLTIP_DELAY, 0);
+		MENU_TOOLTIP_TIMER_INTERVAL = MENU_TOOLTIP_DELAY / 4;
 	}
 
 	/**/
@@ -248,4 +247,7 @@ private:
 	int m_nShownMenuItemId;
 	CPoint m_ptLastCursorPos;
 	DWORD m_tmLastTime;
+	DWORD MENU_TOOLTIP_TIMER_INTERVAL;
+	DWORD MENU_TOOLTIP_DELAY;
+
 };
