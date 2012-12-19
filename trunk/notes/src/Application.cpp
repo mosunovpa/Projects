@@ -260,14 +260,17 @@ void CApplication::OnNoteClosed(CNoteWnd* pWnd)
 	}
 	else
 	{
-		ActivateTopNote();
+		//ActivateTopNote(); // активировать предыдущее окно, закоментарил, т.к. лучше активировать пред. приложение
 	}
 }
 
 /**/
 void CApplication::ActivateTopNote()
 {
-	::SetFocus(winutils::GetTopWnd(NOTE_WND_CLASS_NAME));
+	if (!m_listNotes.empty())
+	{
+		::SetFocus(winutils::GetTopWnd(NOTE_WND_CLASS_NAME));
+	}
 }
 
 /**/

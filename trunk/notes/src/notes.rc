@@ -81,13 +81,9 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "&Manage...",                  40122
         END
-        POPUP "More &Actions"
-        BEGIN
-            MENUITEM "&Settings...",                ID_SETTINGS
-            MENUITEM "&Help",                       ID_MORE_HELP
-            MENUITEM SEPARATOR
-            MENUITEM "&Exit",                       ID_POPUP_EXIT
-        END
+        MENUITEM "&Settings...",                ID_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit",                       ID_POPUP_EXIT
     END
 END
 
