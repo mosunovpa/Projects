@@ -53,6 +53,15 @@ _tstring CApplication::GetDataFileFolder()
 }
 
 /**/
+void CApplication::EnumNoteWnds(NotesProcessFunc func)
+{
+	for (std::list<CNoteWnd*>::iterator it = m_listNotes.begin(); it != m_listNotes.end(); ++it)
+	{
+		((*it)->*func)();
+	}
+}
+
+/**/
 void CApplication::CreateAppWindow()
 {
 	if (!::IsWindow(m_TrayWnd.m_hWnd))
