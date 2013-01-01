@@ -8,13 +8,13 @@
 #include "defines.h"
 
 class CNoteWnd;
+typedef void (CNoteWnd::* NotesProcessFunc)();
 
 /* CApplication */
 
 class CApplication : public CSimpleSinglton<CApplication>
 {
 	friend class CSimpleSinglton<CApplication>;
-
 public:
 	void CreateAppWindow();
 	HWND CreateNote(_tstring const& sText = _tstring(), DWORD nFlag = NF_NONE);
@@ -49,6 +49,7 @@ public:
 	_tstring GetNoteText(int nNoteId) ;
 	void DuplicateNote(int nNoteId);
 	_tstring GetDataFileFolder();
+	void EnumNoteWnds(NotesProcessFunc func);
 protected:
 	CApplication();
 	virtual ~CApplication();

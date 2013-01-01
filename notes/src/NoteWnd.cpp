@@ -927,7 +927,14 @@ void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 /* ID_ROLLUP */
 void CNoteWnd::OnRollUp(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	Rollup();
+	if (GetKeyState(VK_CONTROL) & 0x8000)
+	{
+		CApplication::Get().EnumNoteWnds(&CNoteWnd::Rollup); // close all but this
+	}
+	else
+	{
+		Rollup();
+	}
 }
 
 /* ID_UNROLL */
