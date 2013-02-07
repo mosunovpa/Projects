@@ -124,7 +124,7 @@ LRESULT CTrayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 /* WM_DESTROY */
 LRESULT CTrayWnd::OnDestroy(void)
 {
-	CApplication::Get().ReleaseStorage();
+	CApplication::Get().OnAppClosed();
 
 	// Delete the icon from the taskbar status area
 	if (!m_TrayIcon.RemoveIconFromTaskBar(m_hWnd, IDR_MAINFRAME))

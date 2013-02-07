@@ -172,7 +172,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Config.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\KeyboardSettingPage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LocalStorage.cpp"
 				>
 			</File>
 			<File
@@ -262,6 +270,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Config.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CoolContextMenu.h"
 				>
 			</File>
@@ -271,6 +283,10 @@
 			</File>
 			<File
 				RelativePath=".\KeyboardSettingPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LocalStorage.h"
 				>
 			</File>
 			<File

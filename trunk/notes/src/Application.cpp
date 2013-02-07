@@ -11,30 +11,41 @@
 #include <math.h>
 #include "Clipboard.h"
 
-#ifdef _DEBUG
-#define DATAFILE _T("notesd.dat")
-#else
+//#ifdef _DEBUG
+//#define DATAFILE _T("notesd.dat")
+//#define LOCALOPTIONS_DATAFILE _T("notesd.cfg")
+//#else
 #define DATAFILE _T("notes.dat")
-#endif
-
+#define LOCALSTORAGE_DATAFILE _T("notes.cfg")
+//#endif
 
 using namespace dateutils;
+
+CDataFile::CDataFile(LPCTSTR file_name)
+{
+	m_datafile_storage.SetDataFile(file_name);
+	m_datafile_storage.ReadOptions(m_options);
+}
 
 /**/
 CApplication::CApplication()
 {
-	_tstring sDataFile = GetDataFileFolder();
-	if (!::PathFileExists(sDataFile.c_str()))
-	{
-		fileutils::CreateDirectoryRecursive(sDataFile.c_str());
-	}
+	_tstring sAppFolder = GetAppFolder();
+
 	TCHAR destBuf[MAX_PATH] = _T("");
-	::PathCombine(destBuf, sDataFile.c_str(), DATAFILE);
+	::PathCombine(destBuf, sAppFolder.c_str(), LOCALSTORAGE_DATAFILE);
 
-	m_sDataFile = destBuf;
-	m_storage.SetDataFile(m_sDataFile.c_str());
-	m_storage.ReadOptions(m_options);
+	m_local_storage.SetDataFile(destBuf);
+	m_local_storage.Read(m_config);
 
+	_tstring last_datafile_name = m_config.GetLastDataFileName();
+	if (last_datafile_name.empty())
+	{
+		last_datafile_name.resize(MAX_PATH);
+		::PathCombine(&last_datafile_name[0], sAppFolder.c_str(), DATAFILE);
+	}
+
+	OpenDataFile(last_datafile_name.c_str());
 }
 
 /**/
@@ -43,13 +54,28 @@ CApplication::~CApplication()
 }
 
 /**/
-_tstring CApplication::GetDataFileFolder()
+_tstring CApplication::GetAppFolder()
 {
 	TCHAR destBuf[MAX_PATH] = _T("");
 	TCHAR pathBuf[MAX_PATH] = _T("");
+	_tstring app_name = RESSTR(IDS_APP_NAME);
+#ifdef _DEBUG
+	app_name += _T("_DEBUG");
+#endif
 	::SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_DEFAULT, pathBuf);
-	::PathCombine(destBuf, pathBuf, RESSTR(IDS_APP_NAME));
+	::PathCombine(destBuf, pathBuf, app_name.c_str());
+	if (!::PathFileExists(destBuf))
+	{
+		fileutils::CreateDirectoryRecursive(destBuf);
+	}
 	return _tstring(destBuf);
+}
+
+/**/
+void CApplication::OpenDataFile(LPCTSTR file_name)
+{
+	m_datafile = std::auto_ptr<CDataFile>(new CDataFile(file_name));
+	m_config.SetLastDataFileName(m_datafile->GetStorage().GetFileName());
 }
 
 /**/
@@ -77,7 +103,7 @@ void CApplication::CreateAppWindow()
 /**/
 void CApplication::GetAllNotesPositions(CNote::List& notes)
 {
-	m_storage.GetAllNotes(notes, NM_POS);
+	m_datafile->GetStorage().GetAllNotes(notes, NM_POS);
 	for (std::list<CNoteWnd*>::iterator it = m_listNotes.begin(); it != m_listNotes.end(); ++it)
 	{
 		if ((*it)->GetId() == 0) // new not saved note
@@ -158,7 +184,7 @@ CRect CApplication::GetOptimumPosition(std::vector<CRect> const& vPossiblePositi
 /**/
 CRect CApplication::CalcNewNoteRect()
 {
-	SIZE sz = CApplication::Get().GetOptions().GetNewNoteSize();
+	SIZE sz = m_datafile->GetOptions().GetNewNoteSize();
 
 	// collect all notes positions
 	CNote::List notes;
@@ -239,7 +265,7 @@ void CApplication::CloseAllNotes(CNoteWnd* pExceptWnd /*= NULL*/)
 void CApplication::ShowAllNotes()
 {
 	CNote::List list;
-	m_storage.GetAllNotes(list, NM_ALL);
+	m_datafile->GetStorage().GetAllNotes(list, NM_ALL);
 	for (int i = 0; i < list.size(); ++i)
 	{
 		CNoteWnd* pNoteWnd = FindNoteWnd(list[i].GetId());
@@ -296,7 +322,7 @@ int CApplication::SaveNote(CNoteWnd* pWnd, UINT nMask)
 	}
 	note.SetDeletedDate(pWnd->GetDeletedDate());
 	note.SetLabel(pWnd->GetLabel().c_str());
-	return m_storage.SaveNote(note, nMask);
+	return m_datafile->GetStorage().SaveNote(note, nMask);
 }
 
 /**/
@@ -307,7 +333,7 @@ int CApplication::SaveNote(CNote const& note, UINT nMask)
 	{
 		nt.SetModifiedDate(dateutils::GetCurrentDateTime());
 	}
-	return m_storage.SaveNote(nt, nMask);
+	return m_datafile->GetStorage().SaveNote(nt, nMask);
 }
 
 /**/
@@ -319,7 +345,7 @@ int CApplication::GetOpenedNotesCount() const
 /**/
 int CApplication::GetAllNotes(CNote::List& notes, UINT nMask) 
 {
-	m_storage.GetAllNotes(notes, nMask);
+	m_datafile->GetStorage().GetAllNotes(notes, nMask);
 	return notes.size();
 }
 
@@ -327,7 +353,7 @@ int CApplication::GetAllNotes(CNote::List& notes, UINT nMask)
 int CApplication::GetHiddenNotesCount() 
 {
 	CNote::List notes;
-	m_storage.GetAllNotes(notes, NM_ID);
+	m_datafile->GetStorage().GetAllNotes(notes, NM_ID);
 	int nCount = 0;
 	for (int i = 0; i < notes.size(); ++i)
 	{
@@ -344,17 +370,17 @@ void CApplication::DeleteFromStorage(int nNoteId)
 {
 	if (nNoteId > 0)
 	{
-		CNote note = m_storage.GetNote(nNoteId);
+		CNote note = m_datafile->GetStorage().GetNote(nNoteId);
 //		note.SetLabel(_tstring());
 		if (note.GetDeletedDate().time == 0)
 		{
 			note.SetDeletedDate(dateutils::GetCurrentDateTime());
 			note.SetModifiedDate(dateutils::GetCurrentDateTime());
-			m_storage.SaveNote(note, NM_DELETED | NM_LABEL | NM_MODIFIED);
+			m_datafile->GetStorage().SaveNote(note, NM_DELETED | NM_LABEL | NM_MODIFIED);
 		}
 		else
 		{
-			m_storage.DeleteNote(nNoteId);
+			m_datafile->GetStorage().DeleteNote(nNoteId);
 		}
 	}
 }
@@ -377,7 +403,7 @@ CNoteWnd* CApplication::FindNoteWnd(int nNoteId) const
 /**/
 CNote CApplication::FindNote(int nNoteId) 
 {
-	return m_storage.GetNote(nNoteId);
+	return m_datafile->GetStorage().GetNote(nNoteId);
 }
 
 /**/
@@ -437,13 +463,13 @@ void CApplication::DeleteNoteWnd(CNoteWnd* pNoteWnd)
 /**/
 COptions& CApplication::GetOptions()
 {
-	return m_options;
+	return m_datafile->GetOptions();
 }
 
 /**/
 void CApplication::SaveOptions()
 {
-	m_storage.WriteOptions(m_options);
+	m_datafile->GetStorage().WriteOptions(m_datafile->GetOptions());
 }
 
 /**/
@@ -452,14 +478,14 @@ void CApplication::ShowNote(int nNoteId)
 	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
 	if (pNoteWnd)
 	{
-		CNote note = m_storage.GetNote(nNoteId);
+		CNote note = m_datafile->GetStorage().GetNote(nNoteId);
 		UpdateNoteWnd(pNoteWnd, note);
 		pNoteWnd->Unroll();
 		pNoteWnd->SetFocus();
 	}
 	else
 	{
-		OpenNote(m_storage.GetNote(nNoteId));
+		OpenNote(m_datafile->GetStorage().GetNote(nNoteId));
 	}
 }
 
@@ -469,7 +495,7 @@ void CApplication::DuplicateNote(int nNoteId)
 	CNoteWnd* pWnd = CreateNoteWnd(CalcNewNoteRect());
 	if (pWnd && nNoteId)
 	{
-		CNote note = m_storage.GetNote(nNoteId);
+		CNote note = m_datafile->GetStorage().GetNote(nNoteId);
 		note.SetId(0);
 		UpdateNoteWnd(pWnd, note);
 		pWnd->Unroll();
@@ -487,7 +513,7 @@ void CApplication::NoteTextToClipboard(int nNoteId)
 	}
 	else
 	{
-		CNote note = m_storage.GetNote(nNoteId);
+		CNote note = m_datafile->GetStorage().GetNote(nNoteId);
 		CClipboard::SetText(note.GetText().c_str(), m_TrayWnd);
 	}
 }
@@ -511,19 +537,19 @@ void CApplication::RestoreNote(int nNoteId)
 {
 	if (nNoteId > 0)
 	{
-		CNote note = m_storage.GetNote(nNoteId);
+		CNote note = m_datafile->GetStorage().GetNote(nNoteId);
 		note.SetDeletedDate(timebn::getempty());
 		note.SetModifiedDate(dateutils::GetCurrentDateTime());
 //		note.SetLabel(_tstring());
-		m_storage.SaveNote(note, NM_DELETED | NM_MODIFIED | NM_LABEL);
+		m_datafile->GetStorage().SaveNote(note, NM_DELETED | NM_MODIFIED | NM_LABEL);
 		ShowNote(nNoteId);
 	}
 }
 
 /**/
-void CApplication::ReleaseStorage()
+void CApplication::OnAppClosed()
 {
-	m_storage.Release();
+	m_datafile->GetStorage().Release();
 }
 
 /**/
@@ -532,7 +558,7 @@ void CApplication::Command(int nCmd, int nNoteId)
 	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
 	if (!pNoteWnd)
 	{
-		pNoteWnd = OpenNote(m_storage.GetNote(nNoteId));
+		pNoteWnd = OpenNote(m_datafile->GetStorage().GetNote(nNoteId));
 	}
 	pNoteWnd->PostMessage(WM_COMMAND, nCmd);
 }
@@ -546,7 +572,7 @@ void CApplication::Command(int nCmd, HWND hWnd)
 /**/
 BOOL CApplication::IsNoteDeleted( int nNoteId )
 {
-	CNote note = m_storage.GetNote(nNoteId);
+	CNote note = m_datafile->GetStorage().GetNote(nNoteId);
 	return (timebn::isempty(note.GetDeletedDate()));
 }
 
@@ -555,7 +581,7 @@ BOOL CApplication::IsNoteExists( int nNoteId )
 {
 	try
 	{
-		CNote note = m_storage.GetNote(nNoteId);
+		CNote note = m_datafile->GetStorage().GetNote(nNoteId);
 		return TRUE;
 	}
 	catch(...)
@@ -592,7 +618,7 @@ void CApplication::OptionsUpdated()
 /**/
 void CApplication::GetLabels(std::list<_tstring>& list) 
 {
-	m_storage.GetLabels(list);
+	m_datafile->GetStorage().GetLabels(list);
 }
 
 /**/
@@ -612,7 +638,7 @@ void CApplication::SetNoteLabel(int nNoteId, LPCTSTR label)
 	CNote note = FindNote(nNoteId);
 	note.SetLabel(label);
 	note.SetModifiedDate(dateutils::GetCurrentDateTime());
-	CApplication::Get().SaveNote(note, NM_LABEL | NM_MODIFIED);
+	m_datafile->GetStorage().SaveNote(note, NM_LABEL | NM_MODIFIED);
 
 	CNoteWnd* pWnd = FindNoteWnd(nNoteId);
 	if (pWnd)

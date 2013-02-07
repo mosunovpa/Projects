@@ -23,6 +23,7 @@ CStorage::CStorage(void) : m_archtime(0)
 
 CStorage::~CStorage(void)
 {
+	Release();
 }
 
 /**/

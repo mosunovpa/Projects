@@ -4,11 +4,25 @@
 #include "simplesinglton.h"
 #include "TrayWnd.h"
 #include "Storage.h"
+#include "LocalStorage.h"
 #include "Options.h"
+#include "Config.h"
 #include "defines.h"
 
 class CNoteWnd;
 typedef void (CNoteWnd::* NotesProcessFunc)();
+
+class CDataFile
+{
+public:
+	CDataFile(LPCTSTR file_name);
+	COptions& GetOptions() { return m_options; }
+	CStorage& GetStorage() { return m_datafile_storage; }
+private:
+	CStorage m_datafile_storage;
+	COptions m_options;
+};
+
 
 /* CApplication */
 
@@ -36,24 +50,26 @@ public:
 	int GetHiddenNotesCount() ;
 	void ActivateTopNote();
 	LPCTSTR GetDataFileName();
-	void OnNoteClosed(CNoteWnd* pWnd);
 	COptions& GetOptions();
 	void SaveOptions();
-	void ReleaseStorage();
 	void NoteTextToClipboard(int nNoteId);
 	_tstring GetNoteCaption(_tstring const& text);
-	void OptionsUpdated();
 	void GetLabels(std::list<_tstring>& list) ;
 	_tstring GetNoteLabel(int nNoteId) ;
 	void SetNoteLabel(int nNoteId, LPCTSTR label);
 	_tstring GetNoteText(int nNoteId) ;
 	void DuplicateNote(int nNoteId);
-	_tstring GetDataFileFolder();
+	_tstring GetAppFolder();
 	void EnumNoteWnds(NotesProcessFunc func);
+
+	// events
+	void OnNoteClosed(CNoteWnd* pWnd);
+	void OptionsUpdated();
+	void OnAppClosed();
+
 protected:
 	CApplication();
 	virtual ~CApplication();
-
 
 private:
 	CNoteWnd* OpenNote(CNote const& note);
@@ -67,10 +83,12 @@ private:
 		CNote::List const& notes);
 	CNote FindNote(int nNoteId) ;
 	void UpdateNoteWnd( CNoteWnd* pWnd, CNote const& note );
+	void OpenDataFile(LPCTSTR file_name);
 
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;
-	CStorage m_storage;
-	_tstring m_sDataFile;
-	COptions m_options;
+	CLocalStorage m_local_storage;
+	CConfig m_config;
+
+	std::auto_ptr<CDataFile> m_datafile;
 };
