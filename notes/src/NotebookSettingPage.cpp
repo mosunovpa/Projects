@@ -13,7 +13,7 @@ LRESULT CNotebookSettingPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 	HANDLE hFind;
 	WIN32_FIND_DATA FindData;
 
-	_tstring folderMask = ( CApplication::Get().GetDataFileFolder() + _T("\\*") );
+	_tstring folderMask = ( CApplication::Get().GetAppFolder() + _T("\\*") );
 	hFind = FindFirstFile(folderMask.c_str(), &FindData);
 	if (hFind != INVALID_HANDLE_VALUE) 
 	{

@@ -9,8 +9,9 @@ class CStorage
 {
 public:
 	CStorage();
-	void SetDataFile(LPCTSTR fileName);
 	~CStorage(void);
+	void SetDataFile(LPCTSTR fileName);
+	_tstring GetFileName() { return m_fileName; }
 	void Release();
 	int SaveNote(CNote const& note, UINT nMask);
 	void DeleteNote(int nNoteId);
