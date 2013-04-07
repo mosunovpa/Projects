@@ -1029,11 +1029,11 @@ void CNoteWnd::OnContextMenu(CWindow wnd, CPoint point)
 	{
 		if (IsMinimized())
 		{
-			ShowLabelMenu(point);
+			ShowSystemMenu(point);
 		}
 		else
 		{
-			ShowSystemMenu(point);
+			ShowLabelMenu(point);
 		}
 	}
 }
