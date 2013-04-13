@@ -1,7 +1,7 @@
 #pragma once
 #include "NoteSettingPage.h"
-#include "NotebookSettingPage.h"
-#include "SyncSettingPage.h"
+//#include "NotebookSettingPage.h"
+//#include "SyncSettingPage.h"
 #include "KeyboardSettingPage.h"
 #include "user_messages.h"
 
@@ -25,8 +25,8 @@ public:
 	void OnDestroy();
 
 private:
-	CSyncSettingPage m_pageSyncSettings;
-	CNotebookSettingPage m_pageNotebookSettings;
+//	CSyncSettingPage m_pageSyncSettings;
+//	CNotebookSettingPage m_pageNotebookSettings;
 	CKeyboardSettingPage m_pageKeybSettings;
 	CNoteSettingPage m_pageNoteSettings;
 };

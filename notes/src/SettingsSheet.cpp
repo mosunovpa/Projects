@@ -8,8 +8,8 @@ CSettingsSheet::CSettingsSheet( _U_STRINGorID title /*= (LPCTSTR) NULL*/,
 							   : CPropertySheetImpl<CSettingsSheet> ( title, uStartPage, hWndParent )
 {
 	m_psh.dwFlags |= PSH_NOAPPLYNOW;
-	AddPage(m_pageSyncSettings);
-	AddPage(m_pageNotebookSettings);
+//	AddPage(m_pageSyncSettings);
+//	AddPage(m_pageNotebookSettings);
 	AddPage(m_pageKeybSettings);
 	AddPage(m_pageNoteSettings);
 }
