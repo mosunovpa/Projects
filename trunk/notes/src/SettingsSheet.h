@@ -5,6 +5,7 @@
 #include "KeyboardSettingPage.h"
 #include "user_messages.h"
 
+
 class CSettingsSheet : public CPropertySheetImpl<CSettingsSheet>
 {
 public:
