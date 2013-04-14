@@ -16,7 +16,7 @@
 //#define LOCALOPTIONS_DATAFILE _T("notesd.cfg")
 //#else
 #define DATAFILE _T("notes.dat")
-#define LOCALSTORAGE_DATAFILE _T("notes.cfg")
+
 //#endif
 
 using namespace dateutils;
@@ -30,18 +30,13 @@ CDataFile::CDataFile(LPCTSTR file_name)
 /**/
 CApplication::CApplication()
 {
-	_tstring sAppFolder = GetAppFolder();
-
-	TCHAR destBuf[MAX_PATH] = _T("");
-	::PathCombine(destBuf, sAppFolder.c_str(), LOCALSTORAGE_DATAFILE);
-
-	m_local_storage.SetDataFile(destBuf);
 	m_local_storage.Read(m_config);
 
 	_tstring last_datafile_name = m_config.GetLastDataFileName();
 	if (last_datafile_name.empty())
 	{
 		last_datafile_name.resize(MAX_PATH);
+		_tstring sAppFolder = GetAppFolder();
 		::PathCombine(&last_datafile_name[0], sAppFolder.c_str(), DATAFILE);
 	}
 
@@ -524,7 +519,8 @@ void CApplication::DeleteNote(int nNoteId)
 	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
 	if (pNoteWnd)
 	{
-		pNoteWnd->PostMessage(WM_COMMAND, ID_DELETE);
+		pNoteWnd->SendMessage(WM_COMMAND, ID_DELETE);
+//		pNoteWnd->PostMessage(WM_COMMAND, ID_DELETE);
 	}
 	else
 	{
@@ -550,6 +546,7 @@ void CApplication::RestoreNote(int nNoteId)
 void CApplication::OnAppClosed()
 {
 	m_datafile->GetStorage().Release();
+	m_local_storage.Release();
 }
 
 /**/
