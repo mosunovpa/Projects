@@ -921,7 +921,9 @@ void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 	CATCH_ALL_ERRORS(m_hWnd)
 
 	SetText(_T(""));
-	PostMessage(WM_CLOSE);
+	SendMessage(WM_CLOSE);
+//	PostMessage(WM_CLOSE);
+
 }
 
 /* ID_ROLLUP */

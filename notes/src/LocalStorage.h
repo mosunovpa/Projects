@@ -7,8 +7,7 @@ class CLocalStorage
 public:
 	CLocalStorage(void);
 	~CLocalStorage(void);
-
-	void SetDataFile(LPCTSTR fileName);
+	void Release();
 	void Read(CConfig& cfg);
 private:
 	_tstring m_fileName;

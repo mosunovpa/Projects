@@ -151,6 +151,7 @@ LRESULT CTrayWnd::OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		// Right mouse button click - display a popup menu
 	case WM_RBUTTONUP:
+		::GetCursorPos(&m_menupoint);
 		DisplayShortcutMenu();
 		break;
 	case WM_LBUTTONDBLCLK:
@@ -221,10 +222,6 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 	// See "PRB: Menus for Notification Icons Don't Work Correctly" in MSDN
 	::SetForegroundWindow(m_hWnd);
 
-	// Get cursor's position
-	POINT pt;
-	::GetCursorPos(&pt);
-	
 	BOOL bMenuAnim = FALSE;
 	SystemParametersInfo(SPI_GETMENUANIMATION, 0, &bMenuAnim, 0);
 	if (bMenuAnim)
@@ -232,7 +229,7 @@ LRESULT CTrayWnd::DisplayShortcutMenu()
 		SystemParametersInfo(SPI_SETMENUANIMATION, 0, (LPVOID)FALSE, 0);
 	}
 	
-	if (!menuTrackPopup.TrackPopupMenuEx(TPM_RIGHTALIGN | TPM_BOTTOMALIGN /*| TPM_NOANIMATION*/, pt.x, pt.y, m_hWnd, NULL))
+	if (!menuTrackPopup.TrackPopupMenuEx(TPM_RIGHTALIGN | TPM_BOTTOMALIGN /*| TPM_NOANIMATION*/, m_menupoint.x, m_menupoint.y, m_hWnd, NULL))
 	{
 		ATLTRACE(_T("Shortcut menu was not displayed!\n"));
 		m_menuPopup.DestroyMenu();
@@ -513,6 +510,13 @@ LRESULT CTrayWnd::OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+/* WMU_DISPLAY_SHORCUT_MENU */
+LRESULT CTrayWnd::OnDisplayShortcutMenu(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	DisplayShortcutMenu();
+	return 0;
+}
+
 /* ID_TNM_NEWLABEL */
 void CTrayWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
@@ -685,6 +689,7 @@ void CTrayWnd::OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl)
 			CApplication::Get().DeleteNote(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 		}
 		EndMenu();
+		PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 	}
 }
 

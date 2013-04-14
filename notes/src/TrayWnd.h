@@ -48,6 +48,7 @@ public:
 		MSG_WM_UNINITMENUPOPUP(OnUnInitMenuPopup)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
 		MESSAGE_HANDLER_EX(WMU_NEW_LABEL, OnWMUNewLabel)
+		MESSAGE_HANDLER_EX(WMU_DISPLAY_SHORCUT_MENU, OnDisplayShortcutMenu)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWANDPASTE, OnNewAndPaste)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
@@ -85,6 +86,7 @@ public:
 	void OnUnInitMenuPopup(UINT nID, CMenuHandle menu);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT OnDisplayShortcutMenu(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPopupAbout(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -133,4 +135,5 @@ private:
 
 	std::auto_ptr<CSettingsSheet> m_pSettingsDlg;
 	_tstring m_newLabel;
+	CPoint m_menupoint;
 };
