@@ -349,7 +349,8 @@ void CTrayWnd::OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 /**/
 void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel, BOOL bCheckPadio /*= TRUE*/)
 {
-	menuLabels.DeleteMenu(ID_DUMMY, MF_BYCOMMAND);
+//	menuLabels.DeleteMenu(ID_DUMMY, MF_BYCOMMAND);
+//	menuLabels.DeleteMenu(ID_TNM_NEWLABEL, MF_BYCOMMAND); // в контекстном меню  убрать новую метку чтобы не закрывалось меню
 
 	m_listLabels.clear();
 	CApplication::Get().GetLabels(m_listLabels);
@@ -357,22 +358,17 @@ void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel,
 	{
 		menuLabels.AppendMenu(MF_SEPARATOR);
 	}
-	int nSelCmd = LABEL_CMD_FIRST;
 	int pos = 1;
 	for (std::list<_tstring>::iterator it = m_listLabels.begin();
 		it != m_listLabels.end(); ++it)
 	{
 		int nCmd = CREATE_LABEL_CMD(pos);
 		menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
-		if (bCheckPadio && *it == sLabel)
+		if (*it == sLabel)
 		{
-			nSelCmd = nCmd;
+			menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nCmd, MF_BYCOMMAND);
 		}
 		++pos;
-	}
-	if (bCheckPadio)
-	{
-		menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
 	}
 }
 
@@ -507,6 +503,7 @@ LRESULT CTrayWnd::OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CApplication::Get().SetNoteLabel(nId, dlg.m_sLabel.c_str());
 		}
 	}
+	PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 	return 0;
 }
 
@@ -594,6 +591,7 @@ void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 			CApplication::Get().SetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), sLabel.c_str());
 		}
 		EndMenu();
+		PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 	}
 }
 

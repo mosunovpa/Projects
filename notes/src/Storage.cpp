@@ -255,22 +255,16 @@ int CStorage::_GetNextId(CComPtr<IXMLDOMDocument>& spDoc)
 {
 	CNote::List notes;
 	_GetAllNotes(notes, NM_ID);
-	std::vector<int> ids;
+	int nNextId = 1;
 	for (int j = 0; j < notes.size(); ++j)
 	{
-		ids.push_back(notes[j].GetId());
-	}
-	std::sort(ids.begin(), ids.end());
-	int nNextId = 1;
-	for (int i = 0; i < ids.size(); ++i)
-	{
-		if (nNextId != ids[i])
+		int id = notes[j].GetId();
+		if (nNextId < id)
 		{
-			return nNextId;
+			nNextId = id;
 		}
-		++nNextId;
 	}
-	return nNextId;
+	return ++nNextId;
 }
 
 void CStorage::_SetNoteContent(CComPtr<IXMLDOMElement>& spElement, CNote const& note, UINT nMask)
