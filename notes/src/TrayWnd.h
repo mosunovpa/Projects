@@ -67,6 +67,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_DELETE, OnNoteDelete);
 		COMMAND_ID_HANDLER_EX(ID_TNM_REMOVE, OnNoteDelete);
 		COMMAND_ID_HANDLER_EX(ID_TNM_RESTORE, OnNoteRestore);
+		COMMAND_ID_HANDLER_EX(ID_NOTEBOOK_OPEN, OnNotebookOpen);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
 //		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnOpenNote)
 
@@ -106,6 +107,7 @@ public:
 
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNotebookOpen(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl);
 
 	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);

@@ -9,11 +9,12 @@ CConfig::~CConfig(void)
 {
 }
 
-_tstring CConfig::GetLastDataFileName()
+_tstring CConfig::GetLastDataFileName() const
 {
-	return _tstring();
+	return m_last_datafile_name;
 }
 
 void CConfig::SetLastDataFileName (_tstring const& file_name)
 {
+	m_last_datafile_name = file_name;
 }

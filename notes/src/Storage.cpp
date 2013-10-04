@@ -11,12 +11,6 @@ using namespace dateutils;
 //////////////////////////////////////////////////////////////////////////
 //
 
-#define CHECK_HR_MSG(x, s) { HRESULT hr = x; if (FAILED(hr)) ThrowError(s); }
-#define CHECK_HR(x) CHECK_HR_MSG(x, _T("Xml operation error"))
-
-//////////////////////////////////////////////////////////////////////////
-//
-
 CStorage::CStorage(void) : m_archtime(0)
 {
 }
