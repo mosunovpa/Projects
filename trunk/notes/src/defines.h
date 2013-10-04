@@ -47,5 +47,5 @@ enum NoteFlags
 	NF_NOACTIVATE = 2
 };
 
-
-
+#define CHECK_HR_MSG(x, s) { HRESULT hr = x; if (FAILED(hr)) ThrowError(s); }
+#define CHECK_HR(x) CHECK_HR_MSG(x, _T("Xml operation error"))

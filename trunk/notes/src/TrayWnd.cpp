@@ -709,6 +709,11 @@ void CTrayWnd::OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 }
 
+/* ID_NOTEBOOK_OPEN */
+void CTrayWnd::OnNotebookOpen(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+}
+
 /* ID_POPUP_NEWANDPASTE */
 void CTrayWnd::OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl)
 {

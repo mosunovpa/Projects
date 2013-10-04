@@ -71,6 +71,7 @@ void CApplication::OpenDataFile(LPCTSTR file_name)
 {
 	m_datafile = std::auto_ptr<CDataFile>(new CDataFile(file_name));
 	m_config.SetLastDataFileName(m_datafile->GetStorage().GetFileName());
+	m_local_storage.Write(m_config);
 }
 
 /**/

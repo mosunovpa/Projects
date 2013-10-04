@@ -79,7 +79,7 @@ BEGIN
         BEGIN
             MENUITEM "(Empty)",                     ID_NOTEBOOK_EMPTY
             MENUITEM SEPARATOR
-            MENUITEM "&Manage...",                  40122
+            MENUITEM "&Open...",                    ID_NOTEBOOK_OPEN
         END
         MENUITEM "&Settings...",                ID_SETTINGS
         MENUITEM SEPARATOR
