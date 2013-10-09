@@ -349,14 +349,6 @@ void CTrayWnd::OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 	CApplication::Get().ShowNote(GET_NOTE_ID_FROM_CMD(nID));
 }
 
-/* NOTEBOOK_CMD_FIRST - NOTEBOOK_CMD_LAST */
-void CTrayWnd::OnNotebookSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	int index = GET_NOTEBOOK_ID_FROM_CMD(nID);
-	CApplication::Get().OpenDataFile(CApplication::Get().GetConfig().GetDataFile(index).GetName().c_str());
-	PostMessage(WMU_DISPLAY_SHORCUT_MENU);
-}
-
 /**/
 void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel, BOOL bCheckPadio /*= TRUE*/)
 {
@@ -606,6 +598,17 @@ void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 }
 
+/* ID_TNM_NOTEBOOK */
+void CTrayWnd::OnMoveToNotebook(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
+	{
+		if (nID == ID_TNM_NOTEBOOK)
+		{
+		}
+	}
+}
+
 /* ID_TNM_DUPLICATE */
 void CTrayWnd::OnNoteDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
@@ -720,10 +723,24 @@ void CTrayWnd::OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 }
 
-/* ID_NOTEBOOK_OPEN */
+/* ID_NOTEBOOK_OPEN */ /* NOTEBOOK_CMD_FIRST - NOTEBOOK_CMD_LAST */
 void CTrayWnd::OnNotebookOpen(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	CApplication::Get().OpenNotebook();
+	_tstring sFile;
+	if (nID == ID_NOTEBOOK_OPEN)
+	{
+		sFile = CApplication::Get().OpenNotebookDialog();
+	}
+	else
+	{
+		int index = GET_NOTEBOOK_ID_FROM_CMD(nID);
+		sFile = CApplication::Get().GetConfig().GetDataFile(index).GetName();
+	}
+
+	if (!sFile.empty() && CApplication::Get().GetDataFileName() != sFile)
+	{
+		CApplication::Get().OpenDataFile(sFile.c_str());
+	}
 	PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 }
 
@@ -879,13 +896,16 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	int pos = 0;
 	for (it = rf.begin(); it != rf.end(); ++it)
 	{
-		int nCmd = CREATE_NOTEBOOK_CMD(pos);
-		menuNotebooks.InsertMenu(pos, MF_BYPOSITION, nCmd, it->GetName().c_str());
-		if (CApplication::Get().GetDataFileName() == it->GetName())
+		if (::PathFileExists(it->GetName().c_str()))
 		{
-			menuNotebooks.CheckMenuRadioItem(NOTEBOOK_CMD_FIRST, NOTEBOOK_CMD_LAST, nCmd, MF_BYCOMMAND);
+			int nCmd = CREATE_NOTEBOOK_CMD(pos);
+			menuNotebooks.InsertMenu(pos, MF_BYPOSITION, nCmd, it->GetName().c_str());
+			if (CApplication::Get().GetDataFileName() == it->GetName())
+			{
+				menuNotebooks.CheckMenuRadioItem(NOTEBOOK_CMD_FIRST, NOTEBOOK_CMD_LAST, nCmd, MF_BYCOMMAND);
+			}
+			++pos;
 		}
-		++pos;
 	}
 }
 
@@ -966,3 +986,4 @@ void CTrayWnd::AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI)
 		}
 	}
 }
+
