@@ -59,6 +59,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_NEWLABEL, OnNewLabel)
 		COMMAND_ID_HANDLER_EX(ID_TNM_CLEARLABEL, OnClearLabel)
 		COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
+		COMMAND_ID_HANDLER_EX(ID_TNM_NOTEBOOK, OnMoveToNotebook)
 		COMMAND_ID_HANDLER_EX(ID_TNM_DUPLICATE, OnNoteDuplicate);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECK, OnNoteCheck);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKALL, OnNoteCheckAll);
@@ -68,11 +69,10 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_REMOVE, OnNoteDelete);
 		COMMAND_ID_HANDLER_EX(ID_TNM_RESTORE, OnNoteRestore);
 		COMMAND_ID_HANDLER_EX(ID_NOTEBOOK_OPEN, OnNotebookOpen);
-		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
-		COMMAND_RANGE_HANDLER_EX(NOTEBOOK_CMD_FIRST + 1, NOTEBOOK_CMD_LAST, OnNotebookSelected)
-//		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnOpenNote)
+		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected);
+		COMMAND_RANGE_HANDLER_EX(NOTEBOOK_CMD_FIRST, NOTEBOOK_CMD_LAST, /*OnNotebookSelected*/OnNotebookOpen);
 
-		CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
+CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
 #ifdef COOL_CONTEXT_MENU
 		CHAIN_MSG_MAP(CCoolContextMenu<CTrayWnd>)
 #endif
@@ -95,12 +95,12 @@ public:
 	void OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSysCommand(UINT nID, CPoint pt);
 	void OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnNotebookSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnClearLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnMoveToNotebook(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCheck(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCheckAll(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -140,4 +140,5 @@ private:
 	std::auto_ptr<CSettingsSheet> m_pSettingsDlg;
 	_tstring m_newLabel;
 	CPoint m_menupoint;
+
 };

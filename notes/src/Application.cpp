@@ -33,7 +33,7 @@ CApplication::~CApplication()
 }
 
 /**/
-_tstring CApplication::GetAppFolder()
+_tstring CApplication::GetAppFolder() const
 {
 	TCHAR destBuf[MAX_PATH] = _T("");
 	TCHAR pathBuf[MAX_PATH] = _T("");
@@ -53,6 +53,7 @@ _tstring CApplication::GetAppFolder()
 /**/
 void CApplication::OpenDataFile(LPCTSTR file_name)
 {
+	CloseAllNotes();
 	m_datafile = std::auto_ptr<CDataFile>(new CDataFile(file_name));
 	m_config.SetLastDataFile(m_datafile->GetStorage().GetFileName().c_str());
 	m_local_storage.Write(m_config);
@@ -67,34 +68,35 @@ void CApplication::EnumNoteWnds(NotesProcessFunc func)
 	}
 }
 
-class CNotesFileDialog : public CFileDialogImpl<CNotesFileDialog>
+_tstring CApplication::OpenNotebookDialog() const
 {
-public:
-  // Construction
-  CNotesFileDialog ( BOOL bOpenFileDialog,
-                  LPCTSTR szDefExt = 0U,
-                  LPCTSTR szFileName = 0U, 
-                  DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-                  LPCTSTR szFilter = 0U,
-                  HWND hwndParent = NULL ) :
-    CFileDialogImpl<CNotesFileDialog>(bOpenFileDialog, szDefExt, szFileName, dwFlags,
-		szFilter, hwndParent) {}
- 
-	void OnInitDone(LPOFNOTIFY pnmh)
+
+	class CNotesFileDialog : public CFileDialogImpl<CNotesFileDialog>
 	{
-		POINT pt;
-		GetCursorPos(&pt);
-		CWindowRect rc(m_hWnd);
-		rc.MoveToXY(pt);
-		winutils::AdjustScreenRect(rc);
-		SetWindowPos(HWND_TOP, &rc, SWP_NOSIZE);
-	}
+	public:
+	  // Construction
+	  CNotesFileDialog ( BOOL bOpenFileDialog,
+					  LPCTSTR szDefExt = 0U,
+					  LPCTSTR szFileName = 0U, 
+					  DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+					  LPCTSTR szFilter = 0U,
+					  HWND hwndParent = NULL ) :
+		CFileDialogImpl<CNotesFileDialog>(bOpenFileDialog, szDefExt, szFileName, dwFlags,
+			szFilter, hwndParent) {}
+	 
+		void OnInitDone(LPOFNOTIFY pnmh)
+		{
+			POINT pt;
+			GetCursorPos(&pt);
+			CWindowRect rc(m_hWnd);
+			rc.MoveToXY(pt);
+			winutils::AdjustScreenRect(rc);
+			SetWindowPos(HWND_TOP, &rc, SWP_NOSIZE);
+		}
 
-};
+	};
 
-/**/
-void CApplication::OpenNotebook()
-{
+
 	_tstring sSelectedFile;
 	CNotesFileDialog fileDlg ( true, _T("dat"), NULL,
                       OFN_HIDEREADONLY,
@@ -105,12 +107,8 @@ void CApplication::OpenNotebook()
 	if ( IDOK == fileDlg.DoModal() )
 	{
 		sSelectedFile = fileDlg.m_szFileName;
-		if (GetDataFileName() != sSelectedFile)
-		{
-			CloseAllNotes();
-			OpenDataFile(sSelectedFile.c_str());
-		}
 	}
+	return sSelectedFile;
 }
 
 /**/

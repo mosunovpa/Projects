@@ -31,7 +31,7 @@ class CApplication : public CSimpleSinglton<CApplication>
 	friend class CSimpleSinglton<CApplication>;
 public:
 	void CreateAppWindow();
-	void OpenNotebook();
+	_tstring OpenNotebookDialog() const;
 	void OpenDataFile(LPCTSTR file_name);
 	HWND CreateNote(_tstring const& sText = _tstring(), DWORD nFlag = NF_NONE);
 	BOOL IsNoteVisible(int nNoteId) const;
@@ -61,7 +61,7 @@ public:
 	void SetNoteLabel(int nNoteId, LPCTSTR label);
 	_tstring GetNoteText(int nNoteId);
 	void DuplicateNote(int nNoteId);
-	_tstring GetAppFolder();
+	_tstring GetAppFolder() const;
 	void EnumNoteWnds(NotesProcessFunc func);
 	const _tstring & GetDataFileName() const;
 

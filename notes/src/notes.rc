@@ -152,6 +152,11 @@ BEGIN
         BEGIN
             MENUITEM "&New Label...",               ID_TNM_NEWLABEL
         END
+        POPUP "Move To"
+        BEGIN
+            MENUITEM SEPARATOR
+            MENUITEM "&Open...",                    ID_TNM_NOTEBOOK
+        END
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_REMOVE
         MENUITEM SEPARATOR
@@ -180,6 +185,11 @@ BEGIN
         POPUP "&Label"
         BEGIN
             MENUITEM "&New Label...",               ID_TNM_NEWLABEL
+        END
+        POPUP "Move To"
+        BEGIN
+            MENUITEM SEPARATOR
+            MENUITEM "&Open...",                    ID_TNM_NOTEBOOK
         END
         MENUITEM SEPARATOR
         MENUITEM "&Delete",                     ID_TNM_REMOVE
