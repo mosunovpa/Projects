@@ -13,6 +13,9 @@
 
 using namespace dateutils;
 
+const int TRASH_MENU_OFFSET = 9;
+const int NOTEBOOK_MENU_OFFSET = 4;
+
 
 ///////////////////////////////////////////////////////////
 // CTrayWnd
@@ -42,13 +45,13 @@ CMenuHandle CTrayWnd::GetMenuNotes() const
 }
 
 /**/
-CMenuHandle CTrayWnd::GetDeletedMenu() const
+CMenuHandle CTrayWnd::GetSubMenu(int offset) const
 {
 	CMenuHandle menuNotes = GetMenuNotes();
 	if (menuNotes.m_hMenu)
 	{
 		int nCount = menuNotes.GetMenuItemCount();
-		return menuNotes.GetSubMenu(nCount - 9);
+		return menuNotes.GetSubMenu(nCount - offset);
 	}
 	return 0;
 }
@@ -344,6 +347,14 @@ void CTrayWnd::OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl)
 void CTrayWnd::OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CApplication::Get().ShowNote(GET_NOTE_ID_FROM_CMD(nID));
+}
+
+/* NOTEBOOK_CMD_FIRST - NOTEBOOK_CMD_LAST */
+void CTrayWnd::OnNotebookSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	int index = GET_NOTEBOOK_ID_FROM_CMD(nID);
+	CApplication::Get().OpenDataFile(CApplication::Get().GetConfig().GetDataFile(index).GetName().c_str());
+	PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 }
 
 /**/
@@ -712,6 +723,8 @@ void CTrayWnd::OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_NOTEBOOK_OPEN */
 void CTrayWnd::OnNotebookOpen(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
+	CApplication::Get().OpenNotebook();
+	PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 }
 
 /* ID_POPUP_NEWANDPASTE */
@@ -832,7 +845,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	}
 
 	// show deleted notes
-	CMenuHandle menuDeleted = GetDeletedMenu();
+	CMenuHandle menuDeleted = GetSubMenu(TRASH_MENU_OFFSET);
 	std::sort(notes.begin(), notes.end(), compare_by_deleted_date);
 	if (bIsDeletedNotesExists)
 	{
@@ -858,6 +871,21 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 			}
 			--nMaxDelCnt;
 		}
+	}
+	// show notebooks
+	CMenuHandle menuNotebooks = GetSubMenu(NOTEBOOK_MENU_OFFSET);
+	const CConfig::CRecentFileList& rf =  CApplication::Get().GetConfig().GetRecentFiles();
+	CConfig::CRecentFileList::const_iterator it;
+	int pos = 0;
+	for (it = rf.begin(); it != rf.end(); ++it)
+	{
+		int nCmd = CREATE_NOTEBOOK_CMD(pos);
+		menuNotebooks.InsertMenu(pos, MF_BYPOSITION, nCmd, it->GetName().c_str());
+		if (CApplication::Get().GetDataFileName() == it->GetName())
+		{
+			menuNotebooks.CheckMenuRadioItem(NOTEBOOK_CMD_FIRST, NOTEBOOK_CMD_LAST, nCmd, MF_BYCOMMAND);
+		}
+		++pos;
 	}
 }
 

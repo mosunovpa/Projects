@@ -11,7 +11,7 @@ public:
 	CStorage();
 	~CStorage(void);
 	void SetDataFile(LPCTSTR fileName);
-	_tstring GetFileName() { return m_fileName; }
+	const _tstring& GetFileName() const { return m_fileName; }
 	void Release();
 	int SaveNote(CNote const& note, UINT nMask);
 	void DeleteNote(int nNoteId);

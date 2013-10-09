@@ -11,14 +11,6 @@
 #include <math.h>
 #include "Clipboard.h"
 
-//#ifdef _DEBUG
-//#define DATAFILE _T("notesd.dat")
-//#define LOCALOPTIONS_DATAFILE _T("notesd.cfg")
-//#else
-#define DATAFILE _T("notes.dat")
-
-//#endif
-
 using namespace dateutils;
 
 CDataFile::CDataFile(LPCTSTR file_name)
@@ -31,15 +23,7 @@ CDataFile::CDataFile(LPCTSTR file_name)
 CApplication::CApplication()
 {
 	m_local_storage.Read(m_config);
-
-	_tstring last_datafile_name = m_config.GetLastDataFileName();
-	if (last_datafile_name.empty())
-	{
-		last_datafile_name.resize(MAX_PATH);
-		_tstring sAppFolder = GetAppFolder();
-		::PathCombine(&last_datafile_name[0], sAppFolder.c_str(), DATAFILE);
-	}
-
+	const _tstring& last_datafile_name = m_config.GetLastDataFile().GetName();
 	OpenDataFile(last_datafile_name.c_str());
 }
 
@@ -70,7 +54,7 @@ _tstring CApplication::GetAppFolder()
 void CApplication::OpenDataFile(LPCTSTR file_name)
 {
 	m_datafile = std::auto_ptr<CDataFile>(new CDataFile(file_name));
-	m_config.SetLastDataFileName(m_datafile->GetStorage().GetFileName());
+	m_config.SetLastDataFile(m_datafile->GetStorage().GetFileName().c_str());
 	m_local_storage.Write(m_config);
 }
 
@@ -80,6 +64,52 @@ void CApplication::EnumNoteWnds(NotesProcessFunc func)
 	for (std::list<CNoteWnd*>::iterator it = m_listNotes.begin(); it != m_listNotes.end(); ++it)
 	{
 		((*it)->*func)();
+	}
+}
+
+class CNotesFileDialog : public CFileDialogImpl<CNotesFileDialog>
+{
+public:
+  // Construction
+  CNotesFileDialog ( BOOL bOpenFileDialog,
+                  LPCTSTR szDefExt = 0U,
+                  LPCTSTR szFileName = 0U, 
+                  DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+                  LPCTSTR szFilter = 0U,
+                  HWND hwndParent = NULL ) :
+    CFileDialogImpl<CNotesFileDialog>(bOpenFileDialog, szDefExt, szFileName, dwFlags,
+		szFilter, hwndParent) {}
+ 
+	void OnInitDone(LPOFNOTIFY pnmh)
+	{
+		POINT pt;
+		GetCursorPos(&pt);
+		CWindowRect rc(m_hWnd);
+		rc.MoveToXY(pt);
+		winutils::AdjustScreenRect(rc);
+		SetWindowPos(HWND_TOP, &rc, SWP_NOSIZE);
+	}
+
+};
+
+/**/
+void CApplication::OpenNotebook()
+{
+	_tstring sSelectedFile;
+	CNotesFileDialog fileDlg ( true, _T("dat"), NULL,
+                      OFN_HIDEREADONLY,
+                      _T("MyNotes files(*.dat)\0*.dat\0All Files(*.*)\0*.*\0") );
+ 
+	_tstring folder = GetAppFolder();
+	fileDlg.m_ofn.lpstrInitialDir = folder.c_str();
+	if ( IDOK == fileDlg.DoModal() )
+	{
+		sSelectedFile = fileDlg.m_szFileName;
+		if (GetDataFileName() != sSelectedFile)
+		{
+			CloseAllNotes();
+			OpenDataFile(sSelectedFile.c_str());
+		}
 	}
 }
 
@@ -302,6 +332,12 @@ void CApplication::ActivateTopNote()
 	{
 		::SetFocus(winutils::GetTopWnd(NOTE_WND_CLASS_NAME));
 	}
+}
+
+/**/
+const _tstring & CApplication::GetDataFileName() const
+{
+	return m_datafile->GetStorage().GetFileName();
 }
 
 /**/

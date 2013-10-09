@@ -4,6 +4,7 @@
 #include "Application.h"
 
 #define LOCALSTORAGE_DATAFILE _T("notes.cfg")
+#define DATAFILE _T("notes.dat")
 
 CLocalStorage::CLocalStorage(void)
 {
@@ -22,7 +23,7 @@ CLocalStorage::CLocalStorage(void)
 	}
 	else
 	{
-		CComBSTR sXml(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?><config><last-file></last-file></config>"));
+		CComBSTR sXml(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?><config><recent-files></recent-files></config>"));
 		CHECK_HR_MSG(s_spDoc->loadXML(sXml, &bSuccess), _T("Load xml error"));
 	}
 }
@@ -38,23 +39,66 @@ void CLocalStorage::Release()
 
 void CLocalStorage::Read(CConfig& cfg)
 {
-	CComPtr<IXMLDOMNode> spNode;
-	CHECK_HR(s_spDoc->selectSingleNode(CComBSTR(_T("config/last-file")),&spNode));
-	if (spNode)
+	long len = 0;
+	CComPtr<IXMLDOMNodeList> spFiles;
+
+	CHECK_HR(s_spDoc->getElementsByTagName(L"config/recent-files/file", &spFiles));
+	CHECK_HR(spFiles->get_length(&len));
+	if (len == 0)
 	{
-		CComBSTR s;
-		spNode->get_text(&s);
-		cfg.SetLastDataFileName((LPCTSTR)s);
+		_tstring last_datafile_name;
+		last_datafile_name.resize(MAX_PATH);
+		_tstring sAppFolder = CApplication::Get().GetAppFolder();
+		::PathCombine(&last_datafile_name[0], sAppFolder.c_str(), DATAFILE);
+
+		cfg.SetLastDataFile(last_datafile_name.c_str());
+	}
+	for (int i = len - 1; i >= 0; --i)
+	{
+		CComPtr<IXMLDOMNode> spChild;
+		CHECK_HR(spFiles->get_item(i, &spChild));
+
+		CComPtr<IXMLDOMElement> spElement;
+		CHECK_HR(spChild.QueryInterface(&spElement));
+
+		CComVariant val;
+		CHECK_HR(spElement->getAttribute(L"name", &val));
+
+		if(::PathFileExists((LPCTSTR)val.bstrVal))
+		{
+			cfg.SetLastDataFile((LPCTSTR)val.bstrVal);
+		}
 	}
 }
 
 void CLocalStorage::Write(CConfig const& cfg)
 {
-	CComPtr<IXMLDOMNode> spNode;
-	CHECK_HR(s_spDoc->selectSingleNode(CComBSTR(_T("config/last-file")),&spNode));
-	if (spNode)
+	long len = 0;
+	CComPtr<IXMLDOMNode> spRecentFiles;
+	CComPtr<IXMLDOMNodeList> spFiles;
+	CHECK_HR(s_spDoc->selectSingleNode(CComBSTR(_T("config/recent-files")),&spRecentFiles));
+	if (spRecentFiles)
 	{
-		spNode->put_text(CComBSTR( cfg.GetLastDataFileName().c_str() ));
+		// удалить узлы <file>
+		CHECK_HR(spRecentFiles->get_childNodes(&spFiles));
+		CHECK_HR(spFiles->get_length(&len));
+		for (int i = len - 1; i>=0; --i)
+		{
+			CComPtr<IXMLDOMNode> spChild;
+			CHECK_HR(spFiles->get_item(i, &spChild));
+			CHECK_HR(spRecentFiles->removeChild(spChild, NULL));
+		}
+
+		// добавить узлы <file>
+		const std::list<CConfig::CRecentFile>& rf = cfg.GetRecentFiles();
+		std::list<CConfig::CRecentFile>::const_iterator it;
+		for (it = rf.begin(); it != rf.end(); ++it)
+		{
+			CComPtr<IXMLDOMElement> spChildElem;
+			CHECK_HR(s_spDoc->createElement(_T("file"), &spChildElem));
+			CHECK_HR(spChildElem->setAttribute(L"name", CComVariant(it->GetName().c_str())));
+			CHECK_HR(spRecentFiles->appendChild(spChildElem, NULL));
+		}
 	}
 	CHECK_HR(s_spDoc->save(CComVariant(m_fileName.c_str())));
 }

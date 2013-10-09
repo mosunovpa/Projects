@@ -69,6 +69,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_RESTORE, OnNoteRestore);
 		COMMAND_ID_HANDLER_EX(ID_NOTEBOOK_OPEN, OnNotebookOpen);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected)
+		COMMAND_RANGE_HANDLER_EX(NOTEBOOK_CMD_FIRST + 1, NOTEBOOK_CMD_LAST, OnNotebookSelected)
 //		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnOpenNote)
 
 		CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
@@ -94,6 +95,7 @@ public:
 	void OnPopupExit(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSysCommand(UINT nID, CPoint pt);
 	void OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNotebookSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -124,8 +126,8 @@ private:
 	UINT GetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition);
 	void UncheckAll(CMenuHandle menu);
 
-	CMenuHandle GetDeletedMenu() const;
 	CMenuHandle GetMenuNotes() const;
+	CMenuHandle GetSubMenu(int offset) const;
 
 	int m_nSelectedNoteCmd;
 	CMenuHandle m_menuWithChecked;

@@ -31,6 +31,8 @@ class CApplication : public CSimpleSinglton<CApplication>
 	friend class CSimpleSinglton<CApplication>;
 public:
 	void CreateAppWindow();
+	void OpenNotebook();
+	void OpenDataFile(LPCTSTR file_name);
 	HWND CreateNote(_tstring const& sText = _tstring(), DWORD nFlag = NF_NONE);
 	BOOL IsNoteVisible(int nNoteId) const;
 	int SaveNote(CNoteWnd* pWnd, UINT nMask);
@@ -46,21 +48,22 @@ public:
 	void ShowNote(int nNoteId);
 	void CloseAllNotes(CNoteWnd* pExceptWnd = NULL);
 	int GetOpenedNotesCount() const;
-	int GetAllNotes(CNote::List& notes, UINT nMask) ;
-	int GetHiddenNotesCount() ;
+	int GetAllNotes(CNote::List& notes, UINT nMask);
+	int GetHiddenNotesCount();
 	void ActivateTopNote();
-	LPCTSTR GetDataFileName();
 	COptions& GetOptions();
+	const CConfig& GetConfig() const { return m_config; }
 	void SaveOptions();
 	void NoteTextToClipboard(int nNoteId);
 	_tstring GetNoteCaption(_tstring const& text);
-	void GetLabels(std::list<_tstring>& list) ;
-	_tstring GetNoteLabel(int nNoteId) ;
+	void GetLabels(std::list<_tstring>& list);
+	_tstring GetNoteLabel(int nNoteId);
 	void SetNoteLabel(int nNoteId, LPCTSTR label);
-	_tstring GetNoteText(int nNoteId) ;
+	_tstring GetNoteText(int nNoteId);
 	void DuplicateNote(int nNoteId);
 	_tstring GetAppFolder();
 	void EnumNoteWnds(NotesProcessFunc func);
+	const _tstring & GetDataFileName() const;
 
 	// events
 	void OnNoteClosed(CNoteWnd* pWnd);
@@ -83,7 +86,6 @@ private:
 		CNote::List const& notes);
 	CNote FindNote(int nNoteId) ;
 	void UpdateNoteWnd( CNoteWnd* pWnd, CNote const& note );
-	void OpenDataFile(LPCTSTR file_name);
 
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;

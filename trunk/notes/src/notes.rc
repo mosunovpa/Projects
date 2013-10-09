@@ -77,7 +77,6 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Note&books"
         BEGIN
-            MENUITEM "(Empty)",                     ID_NOTEBOOK_EMPTY
             MENUITEM SEPARATOR
             MENUITEM "&Open...",                    ID_NOTEBOOK_OPEN
         END
