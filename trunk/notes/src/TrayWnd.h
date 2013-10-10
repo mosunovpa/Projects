@@ -60,6 +60,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_CLEARLABEL, OnClearLabel)
 		COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
 		COMMAND_ID_HANDLER_EX(ID_TNM_NOTEBOOK, OnMoveToNotebook)
+		COMMAND_RANGE_HANDLER_EX(MOVE_NOTEBOOK_CMD_FIRST, MOVE_NOTEBOOK_CMD_LAST, OnMoveToNotebook);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DUPLICATE, OnNoteDuplicate);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECK, OnNoteCheck);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKALL, OnNoteCheckAll);
@@ -70,7 +71,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_RESTORE, OnNoteRestore);
 		COMMAND_ID_HANDLER_EX(ID_NOTEBOOK_OPEN, OnNotebookOpen);
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected);
-		COMMAND_RANGE_HANDLER_EX(NOTEBOOK_CMD_FIRST, NOTEBOOK_CMD_LAST, /*OnNotebookSelected*/OnNotebookOpen);
+		COMMAND_RANGE_HANDLER_EX(NOTEBOOK_CMD_FIRST, NOTEBOOK_CMD_LAST, OnNotebookOpen);
 
 CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
 #ifdef COOL_CONTEXT_MENU
@@ -121,7 +122,8 @@ private:
 	LRESULT DisplayShortcutMenu();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
 	void ProcessCheckedMenu(Actions action);
-	void PopulateLabelMenu(CMenuHandle menu, _tstring const& sLabel, BOOL bCheckPadio = TRUE);
+	void PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel, BOOL bCheckPadio = TRUE);
+	void PopulateMoveNotebooksMenu(CMenuHandle menuNotebooks);
 	BOOL SetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition, UINT nFlagEx);
 	UINT GetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition);
 	void UncheckAll(CMenuHandle menu);

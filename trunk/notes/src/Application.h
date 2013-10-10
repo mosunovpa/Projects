@@ -6,7 +6,7 @@
 #include "Storage.h"
 #include "LocalStorage.h"
 #include "Options.h"
-#include "Config.h"
+#include "AppState.h"
 #include "defines.h"
 
 class CNoteWnd;
@@ -52,7 +52,7 @@ public:
 	int GetHiddenNotesCount();
 	void ActivateTopNote();
 	COptions& GetOptions();
-	const CConfig& GetConfig() const { return m_config; }
+	const CAppState& GetState() const { return m_state; }
 	void SaveOptions();
 	void NoteTextToClipboard(int nNoteId);
 	_tstring GetNoteCaption(_tstring const& text);
@@ -90,7 +90,7 @@ private:
 	CTrayWnd m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;
 	CLocalStorage m_local_storage;
-	CConfig m_config;
+	CAppState m_state;
 
 	std::auto_ptr<CDataFile> m_datafile;
 };
