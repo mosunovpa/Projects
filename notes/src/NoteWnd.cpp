@@ -223,20 +223,22 @@ void CNoteWnd::PopulateLabelMenu(CMenuHandle menuLabels)
 		menuLabels.AppendMenu(MF_SEPARATOR);
 	}
 	menuLabels.EnableMenuItem(ID_LABEL_CLEAR, GetLabel().empty() ? MF_GRAYED : MF_ENABLED);
-	int nSelCmd = LABEL_CMD_FIRST;
+	//int nSelCmd = LABEL_CMD_FIRST;
+
 	int pos = 1;
 	for (std::list<_tstring>::iterator it = m_listLabels.begin();
 		it != m_listLabels.end(); ++it)
 	{
 		int nCmd = CREATE_LABEL_CMD(pos);
 		menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
-		if (*it == GetLabel())
+		if (*it == m_label)
 		{
-			nSelCmd = nCmd;
+			//nSelCmd = nCmd;	
+			menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nCmd, MF_BYCOMMAND);
 		}
 		++pos;
 	}
-	menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
+	//menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
 }
 
 
@@ -1143,11 +1145,12 @@ BOOL CNoteWnd::IsDeleted()
 /**/
 void CNoteWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	if (nID == LABEL_CMD_FIRST)
-	{
-		SetLabel(_T(""));
-	}
-	else if (IS_LABEL_CMD(nID))
+	//if (nID == LABEL_CMD_FIRST)
+	//{
+	//	SetLabel(_T(""));
+	//}
+	//else 
+	if (IS_LABEL_CMD(nID))
 	{
 		int pos = GET_LABEL_ID_FROM_CMD(nID);
 		int i = 1;

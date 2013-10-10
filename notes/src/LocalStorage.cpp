@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "Config.h"
+#include "AppState.h"
 #include "LocalStorage.h"
 #include "Application.h"
 
@@ -37,7 +37,7 @@ void CLocalStorage::Release()
 	s_spDoc.Release();
 }
 
-void CLocalStorage::Read(CConfig& cfg)
+void CLocalStorage::Read(CAppState& cfg)
 {
 	long len = 0;
 	CComPtr<IXMLDOMNodeList> spFiles;
@@ -71,7 +71,7 @@ void CLocalStorage::Read(CConfig& cfg)
 	}
 }
 
-void CLocalStorage::Write(CConfig const& cfg)
+void CLocalStorage::Write(CAppState const& cfg)
 {
 	long len = 0;
 	CComPtr<IXMLDOMNode> spRecentFiles;
@@ -90,8 +90,8 @@ void CLocalStorage::Write(CConfig const& cfg)
 		}
 
 		// добавить узлы <file>
-		const std::list<CConfig::CRecentFile>& rf = cfg.GetRecentFiles();
-		std::list<CConfig::CRecentFile>::const_iterator it;
+		const std::list<CAppState::CRecentFile>& rf = cfg.GetRecentFiles();
+		std::list<CAppState::CRecentFile>::const_iterator it;
 		for (it = rf.begin(); it != rf.end(); ++it)
 		{
 			CComPtr<IXMLDOMElement> spChildElem;

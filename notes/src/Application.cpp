@@ -22,8 +22,8 @@ CDataFile::CDataFile(LPCTSTR file_name)
 /**/
 CApplication::CApplication()
 {
-	m_local_storage.Read(m_config);
-	const _tstring& last_datafile_name = m_config.GetLastDataFile().GetName();
+	m_local_storage.Read(m_state);
+	const _tstring& last_datafile_name = m_state.GetLastDataFile().GetName();
 	OpenDataFile(last_datafile_name.c_str());
 }
 
@@ -55,8 +55,8 @@ void CApplication::OpenDataFile(LPCTSTR file_name)
 {
 	CloseAllNotes();
 	m_datafile = std::auto_ptr<CDataFile>(new CDataFile(file_name));
-	m_config.SetLastDataFile(m_datafile->GetStorage().GetFileName().c_str());
-	m_local_storage.Write(m_config);
+	m_state.SetLastDataFile(m_datafile->GetStorage().GetFileName().c_str());
+	m_local_storage.Write(m_state);
 }
 
 /**/
