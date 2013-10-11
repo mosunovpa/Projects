@@ -317,10 +317,10 @@ void CTrayWnd::ProcessCheckedMenu(Actions action)
 					}
 				}
 			}
-			if (!clipboartText.empty())
-			{
-				CClipboard::SetText(clipboartText.c_str(), m_hWnd);
-			}
+		}
+		if (!clipboartText.empty())
+		{
+			CClipboard::SetText(clipboartText.c_str(), m_hWnd);
 		}
 	}
 }
