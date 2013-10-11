@@ -252,6 +252,7 @@ HWND CApplication::CreateNote(_tstring const& sText /*= _tstring()*/, DWORD nFla
 		if (!sText.empty())
 		{
 			pWnd->SetText(sText);
+			pWnd->SetId(SaveNote(pWnd, NM_ALL)); // сохранить заметку, если указан текст
 		}
 		if ( nFlag & NF_ROLLUP )
 		{
