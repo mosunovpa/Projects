@@ -28,21 +28,22 @@ LRESULT CNoteSettingPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 int CNoteSettingPage::OnApply()
 {
+	COptions opt = CApplication::Get().GetOptions();
 	CComboBox cb = GetDlgItem(IDC_COMBO_NOTE_FONT_SIZE);
 	switch (cb.GetCurSel())
 	{
 	case 0:
-		CApplication::Get().GetOptions().SetFontSize(COptions::FS_SMALL);
+		opt.SetFontSize(COptions::FS_SMALL);
 		break;
 	case 1:
-		CApplication::Get().GetOptions().SetFontSize(COptions::FS_MEDIUM);
+		opt.SetFontSize(COptions::FS_MEDIUM);
 		break;
 	case 2:
-		CApplication::Get().GetOptions().SetFontSize(COptions::FS_LARGE);
+		opt.SetFontSize(COptions::FS_LARGE);
 		break;
 	}
 
-	CApplication::Get().SaveOptions();
+	CApplication::Get().SaveOptions(opt);
 	CApplication::Get().OptionsUpdated();
 	return PSNRET_NOERROR;
 }

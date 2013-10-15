@@ -404,8 +404,9 @@ void CStorage::DeleteNote(int nNoteId)
 	}
 }
 
-void CStorage::ReadOptions( COptions& opt ) 
+COptions CStorage::ReadOptions( ) 
 {
+	COptions opt;
 	CComPtr<IXMLDOMDocument> spDoc = _GetDocument();
 	CComPtr<IXMLDOMNode> spOptions = _GetOptionsNode(spDoc);
 	CComPtr<IXMLDOMNode> spNode;
@@ -457,6 +458,7 @@ void CStorage::ReadOptions( COptions& opt )
 		}
 		opt.SetNewNoteSize(sz);
 	}
+	return opt;
 }
 
 void CStorage::WriteOptions( COptions const& opt ) 

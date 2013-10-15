@@ -2,7 +2,6 @@
 #pragma once
 
 #include "simplesinglton.h"
-#include "TrayWnd.h"
 #include "Storage.h"
 #include "LocalStorage.h"
 #include "Options.h"
@@ -10,19 +9,8 @@
 #include "defines.h"
 
 class CNoteWnd;
+class CTrayWnd;
 typedef void (CNoteWnd::* NotesProcessFunc)();
-
-class CDataFile
-{
-public:
-	CDataFile(LPCTSTR file_name);
-	COptions& GetOptions() { return m_options; }
-	CStorage& GetStorage() { return m_datafile_storage; }
-private:
-	CStorage m_datafile_storage;
-	COptions m_options;
-};
-
 
 /* CApplication */
 
@@ -32,6 +20,7 @@ class CApplication : public CSimpleSinglton<CApplication>
 public:
 	void CreateAppWindow();
 	_tstring OpenNotebookDialog() const;
+	void MoveToNotebook(LPCTSTR sFileName, int nNoteId);
 	void OpenDataFile(LPCTSTR file_name);
 	HWND CreateNote(_tstring const& sText = _tstring(), DWORD nFlag = NF_NONE);
 	BOOL IsNoteVisible(int nNoteId) const;
@@ -51,9 +40,9 @@ public:
 	int GetAllNotes(CNote::List& notes, UINT nMask);
 	int GetHiddenNotesCount();
 	void ActivateTopNote();
-	COptions& GetOptions();
+	COptions GetOptions();
 	const CAppState& GetState() const { return m_state; }
-	void SaveOptions();
+	void SaveOptions(COptions const& opt);
 	void NoteTextToClipboard(int nNoteId);
 	_tstring GetNoteCaption(_tstring const& text);
 	void GetLabels(std::list<_tstring>& list);
@@ -87,10 +76,10 @@ private:
 	CNote FindNote(int nNoteId) ;
 	void UpdateNoteWnd( CNoteWnd* pWnd, CNote const& note );
 
-	CTrayWnd m_TrayWnd;
+	std::auto_ptr<CTrayWnd> m_TrayWnd;
 	std::list<CNoteWnd*> m_listNotes;
 	CLocalStorage m_local_storage;
 	CAppState m_state;
 
-	std::auto_ptr<CDataFile> m_datafile;
+	std::auto_ptr<CStorage> m_datafile;
 };

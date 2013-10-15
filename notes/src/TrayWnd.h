@@ -8,11 +8,13 @@
 #include "MenuTooltip.h"
 #include "defines.h"
 #include "CoolContextMenu.h"
+#include "NotesView.h"
 
 /* CTrayWnd */
 class CTrayWnd : 
 	public CWindowImpl<CTrayWnd>,
-	public CMenuTooltip<CTrayWnd>
+	public CMenuTooltip<CTrayWnd>,
+	public CNotesView
 #ifdef COOL_CONTEXT_MENU
 	,
 	public CCoolContextMenu<CTrayWnd>
@@ -116,13 +118,11 @@ CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
 	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
 
 private:
-	enum Actions { acNone = 0, acDelete, acOpen, acLabel, acClipboard, acRestore };
-
 
 	LRESULT DisplayShortcutMenu();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
-	void ProcessCheckedMenu(Actions action);
-	void PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel, BOOL bCheckPadio = TRUE);
+	void ProcessCheckedMenu(NotesActions action, LPCTSTR sParam = NULL);
+	void GetSelectedNotes(std::list<int>& notes);
 	void PopulateMoveNotebooksMenu(CMenuHandle menuNotebooks);
 	BOOL SetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition, UINT nFlagEx);
 	UINT GetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition);
@@ -137,10 +137,7 @@ private:
 
 	CMenu m_menuNoteActions;
 
-	std::list<_tstring> m_listLabels;
-
 	std::auto_ptr<CSettingsSheet> m_pSettingsDlg;
-	_tstring m_newLabel;
 	CPoint m_menupoint;
 
 };

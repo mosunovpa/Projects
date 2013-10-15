@@ -208,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NotesView.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\NoteWnd.cpp"
 				>
 			</File>
@@ -311,6 +315,10 @@
 			</File>
 			<File
 				RelativePath=".\NotesMenuActions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NotesView.h"
 				>
 			</File>
 			<File
