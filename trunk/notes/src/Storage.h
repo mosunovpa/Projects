@@ -18,7 +18,7 @@ public:
 	void GetAllNotes(CNote::List& list, UINT nMask);
 	void GetLabels(std::list<_tstring>& list);
 	CNote GetNote(int nNoteId);
-	void ReadOptions(COptions& opt);
+	COptions ReadOptions();
 	void WriteOptions(COptions const& opt);
 
 private:

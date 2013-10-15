@@ -9,6 +9,7 @@
 
 //#include "StaticSysIcon.h"
 #include "resource.h"
+#include "user_messages.h"
 #include "menuutils.h"
 #include "defines.h"
 #include "CoolContextMenu.h"

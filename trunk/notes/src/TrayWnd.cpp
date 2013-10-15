@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "TrayWnd.h"
 #include "resutils.h"
-#include "Application.h"
 #include "menuutils.h"
 #include "shlwapi.h"
 #include "NewLabelDialog.h"
 #include "Clipboard.h"
 #include "defines.h"
 #include "dateutils.h"
+#include "Application.h"
 
 #define MFT_EX_DELETED 0x00000001L
 
@@ -272,57 +272,35 @@ void CTrayWnd::OnUnInitMenuPopup(UINT nID, CMenuHandle menu)
 }
 
 /**/
-void CTrayWnd::ProcessCheckedMenu(Actions action)
+void CTrayWnd::GetSelectedNotes(std::list<int>& notes)
 {
 	if (m_menuWithChecked.IsMenu())
 	{
-		_tstring clipboartText;
-		_tstring textSeparator = _T("\r\n---\r\n");
+		notes.clear();
 
 		int i = m_menuWithChecked.GetMenuItemCount() - 1;
 		for (; i >= 0 ; --i)
 		{
-			Sleep(1); // пауза в 1 милисек, чтобы времена модификации (или удаления) заметок отличались 
 			UINT state  = m_menuWithChecked.GetMenuState(i, MF_BYPOSITION);
 			if ((state & MF_CHECKED) == MF_CHECKED)
 			{
 				int itemCmd = m_menuWithChecked.GetMenuItemID(i);
 				if (IS_NOTE_CMD(itemCmd))
 				{
-					int noteId = GET_NOTE_ID_FROM_CMD(itemCmd);
-					switch (action)
-					{
-					case acOpen:
-						CApplication::Get().ShowNote(noteId);
-						break;
-					case acDelete:
-						CApplication::Get().DeleteNote(noteId);
-						break;
-					case acLabel:
-						CApplication::Get().SetNoteLabel(noteId, m_newLabel.c_str());
-						break;
-					case acClipboard:
-						{
-							_tstring s = CApplication::Get().GetNoteText(noteId);
-							if (!clipboartText.empty()) 
-							{
-								clipboartText += textSeparator;
-							}
-							clipboartText += s;
-						}
-						break;
-					case acRestore:
-						CApplication::Get().RestoreNote(noteId);
-						break;
-					}
+					notes.push_back(GET_NOTE_ID_FROM_CMD(itemCmd));
 				}
 			}
 		}
-		if (!clipboartText.empty())
-		{
-			CClipboard::SetText(clipboartText.c_str(), m_hWnd);
-		}
 	}
+}
+
+/**/
+void CTrayWnd::ProcessCheckedMenu(NotesActions action, LPCTSTR sParam /*= NULL*/)
+{
+	std::list<int> notes;
+
+	GetSelectedNotes(notes);
+	ProcessSelectedNotes(notes, action, sParam);
 }
 
 
@@ -350,45 +328,21 @@ void CTrayWnd::OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 }
 
 /**/
-void CTrayWnd::PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel, BOOL bCheckPadio /*= TRUE*/)
-{
-	m_listLabels.clear();
-	CApplication::Get().GetLabels(m_listLabels);
-	if (!m_listLabels.empty())
-	{
-		menuLabels.AppendMenu(MF_SEPARATOR);
-	}
-	int pos = 1;
-	for (std::list<_tstring>::iterator it = m_listLabels.begin();
-		it != m_listLabels.end(); ++it)
-	{
-		int nCmd = CREATE_LABEL_CMD(pos);
-		menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
-		if (*it == sLabel)
-		{
-			menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nCmd, MF_BYCOMMAND);
-		}
-		++pos;
-	}
-}
-
-/**/
 void CTrayWnd::PopulateMoveNotebooksMenu(CMenuHandle menuNotebooks)
 {
 	const CAppState::CRecentFileList& rf = CApplication::Get().GetState().GetRecentFiles();
 	CAppState::CRecentFileList::const_iterator it;
 	int pos = 0;
+	int nCmd = CREATE_MOVE_NOTEBOOK_CMD(0);
 	bool added = false;
 	for (it = rf.begin(); it != rf.end(); ++it)
 	{
-		if (::PathFileExists(it->GetName().c_str()) 
-			&& CApplication::Get().GetDataFileName() != it->GetName())
+		if (CApplication::Get().GetDataFileName() != it->GetName())
 		{
-			int nCmd = CREATE_MOVE_NOTEBOOK_CMD(pos);
-			menuNotebooks.InsertMenu(pos, MF_BYPOSITION, nCmd, it->GetName().c_str());
+			menuNotebooks.InsertMenu(pos++, MF_BYPOSITION, nCmd, it->GetName().c_str());
 			added = true;
-			++pos;
 		}
+		++nCmd;
 	}
 	if (!added)
 	{
@@ -521,8 +475,7 @@ LRESULT CTrayWnd::OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if ((state & MF_CHECKED) == MF_CHECKED)
 		{
-			m_newLabel = dlg.m_sLabel;
-			ProcessCheckedMenu(acLabel);
+			ProcessCheckedMenu(acLabel, dlg.m_sLabel.c_str());
 		}
 		else
 		{
@@ -543,12 +496,6 @@ LRESULT CTrayWnd::OnDisplayShortcutMenu(UINT uMsg, WPARAM wParam, LPARAM lParam)
 /* ID_TNM_NEWLABEL */
 void CTrayWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-// 	EndMenu();
-// 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
-// 	{
-// 		PostMessage(WMU_NEW_LABEL, m_nSelectedNoteCmd);
-// 	}
-
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
 		SendMessage(WMU_NEW_LABEL, m_nSelectedNoteCmd);
@@ -563,8 +510,7 @@ void CTrayWnd::OnClearLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
 		UINT state = m_selectedMenu.GetMenuState(m_nSelectedNoteCmd, MF_BYCOMMAND);
 		if ((state & MF_CHECKED) == MF_CHECKED)
 		{
-			m_newLabel = _T("");
-			ProcessCheckedMenu(acLabel);
+			ProcessCheckedMenu(acLabel, _T(""));
 		}
 		else
 		{
@@ -579,28 +525,7 @@ void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		_tstring sLabel;
-		//if (nID == LABEL_CMD_FIRST)
-		//{
-		//	sLabel = _T("");
-		//}
-		//else 
-		if (IS_LABEL_CMD(nID))
-		{
-			int pos = GET_LABEL_ID_FROM_CMD(nID);
-			int i = 1;
-			for (std::list<_tstring>::iterator it = m_listLabels.begin();
-				it != m_listLabels.end(); ++it)
-			{
-				if (pos == i)
-				{
-					sLabel = it->c_str();
-					break;
-				}
-				++i;
-			}
-		}
-
+		_tstring sLabel = GetLabelFromCmd(nID);
 		_tstring label = CApplication::Get().GetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
 		if (label == sLabel)
 		{
@@ -610,8 +535,7 @@ void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 		UINT state = m_selectedMenu.GetMenuState(m_nSelectedNoteCmd, MF_BYCOMMAND);
 		if ((state & MF_CHECKED) == MF_CHECKED)
 		{
-			m_newLabel = sLabel;
-			ProcessCheckedMenu(acLabel);
+			ProcessCheckedMenu(acLabel, sLabel.c_str());
 		}
 		else
 		{
@@ -627,12 +551,23 @@ void CTrayWnd::OnMoveToNotebook(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
+		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd); 
+		_tstring sFile;
 		if (nID == ID_TNM_NOTEBOOK) // открыть блокнот для перемещения
 		{
+			sFile = CApplication::Get().OpenNotebookDialog();
 		}
 		else // переместить в указанный блокнот
 		{
+			int index = GET_MOVE_NOTEBOOK_ID_FROM_CMD(nID);
+			sFile = CApplication::Get().GetState().GetDataFile(index).GetName();
 		}
+		if (!sFile.empty() && CApplication::Get().GetDataFileName() != sFile)
+		{
+			CApplication::Get().MoveToNotebook(sFile.c_str(), nNoteId);
+		}
+		EndMenu();
+		PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 	}
 }
 
@@ -923,16 +858,13 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	int pos = 0;
 	for (it = rf.begin(); it != rf.end(); ++it)
 	{
-		if (::PathFileExists(it->GetName().c_str()))
+		int nCmd = CREATE_NOTEBOOK_CMD(pos);
+		menuNotebooks.InsertMenu(pos, MF_BYPOSITION, nCmd, it->GetName().c_str());
+		if (CApplication::Get().GetDataFileName() == it->GetName())
 		{
-			int nCmd = CREATE_NOTEBOOK_CMD(pos);
-			menuNotebooks.InsertMenu(pos, MF_BYPOSITION, nCmd, it->GetName().c_str());
-			if (CApplication::Get().GetDataFileName() == it->GetName())
-			{
-				menuNotebooks.CheckMenuRadioItem(NOTEBOOK_CMD_FIRST, NOTEBOOK_CMD_LAST, nCmd, MF_BYCOMMAND);
-			}
-			++pos;
+			menuNotebooks.CheckMenuRadioItem(NOTEBOOK_CMD_FIRST, NOTEBOOK_CMD_LAST, nCmd, MF_BYCOMMAND);
 		}
+		++pos;
 	}
 }
 
