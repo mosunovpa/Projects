@@ -62,7 +62,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_TNM_CLEARLABEL, OnClearLabel)
 		COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
 		COMMAND_ID_HANDLER_EX(ID_TNM_NOTEBOOK, OnMoveToNotebook)
-		COMMAND_RANGE_HANDLER_EX(MOVE_NOTEBOOK_CMD_FIRST, MOVE_NOTEBOOK_CMD_LAST, OnMoveToNotebook);
+		COMMAND_RANGE_HANDLER_EX(MOVE_TO_NOTEBOOK_CMD_FIRST, MOVE_TO_NOTEBOOK_CMD_LAST, OnMoveToNotebook);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DUPLICATE, OnNoteDuplicate);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECK, OnNoteCheck);
 		COMMAND_ID_HANDLER_EX(ID_TNM_CHECKALL, OnNoteCheckAll);
@@ -123,7 +123,7 @@ private:
 	void ModifyNotesMenu(CMenuHandle menuNotes);
 	void ProcessCheckedMenu(NotesActions action, LPCTSTR sParam = NULL);
 	void GetSelectedNotes(std::list<int>& notes);
-	void PopulateMoveNotebooksMenu(CMenuHandle menuNotebooks);
+	void PopulateMoveToNotebooksMenu(CMenuHandle menuNotebooks);
 	BOOL SetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition, UINT nFlagEx);
 	UINT GetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition);
 	void UncheckAll(CMenuHandle menu);
