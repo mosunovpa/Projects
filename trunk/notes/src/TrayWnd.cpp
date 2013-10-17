@@ -328,23 +328,9 @@ void CTrayWnd::OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 }
 
 /**/
-void CTrayWnd::PopulateMoveNotebooksMenu(CMenuHandle menuNotebooks)
+void CTrayWnd::PopulateMoveToNotebooksMenu(CMenuHandle menuNotebooks)
 {
-	const CAppState::CRecentFileList& rf = CApplication::Get().GetState().GetRecentFiles();
-	CAppState::CRecentFileList::const_iterator it;
-	int pos = 0;
-	int nCmd = CREATE_MOVE_NOTEBOOK_CMD(0);
-	bool added = false;
-	for (it = rf.begin(); it != rf.end(); ++it)
-	{
-		if (CApplication::Get().GetDataFileName() != it->GetName())
-		{
-			menuNotebooks.InsertMenu(pos++, MF_BYPOSITION, nCmd, it->GetName().c_str());
-			added = true;
-		}
-		++nCmd;
-	}
-	if (!added)
+	if (!CNotesView::PopulateMoveToNotebooksMenu(menuNotebooks))
 	{
 		menuNotebooks.DeleteMenu(0, MF_BYPOSITION);
 	}
@@ -398,7 +384,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 			submenu = m_menuNoteActions.GetSubMenu(2);
 			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
 			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel/*, FALSE*/);
-			PopulateMoveNotebooksMenu(submenu.GetSubMenu(3));
+			PopulateMoveToNotebooksMenu(submenu.GetSubMenu(3));
 		}
 	}
 	else
@@ -413,7 +399,7 @@ void CTrayWnd::OnMenuRButtonUp(WPARAM wParam, CMenuHandle menu)
 			submenu = m_menuNoteActions.GetSubMenu(0);
 			submenu.SetMenuDefaultItem(ID_TNM_OPEN_NOTE);
 			PopulateLabelMenu(submenu.GetSubMenu(2), sLabel);
-			PopulateMoveNotebooksMenu(submenu.GetSubMenu(3));
+			PopulateMoveToNotebooksMenu(submenu.GetSubMenu(3));
 		}
 	}
 
@@ -552,20 +538,7 @@ void CTrayWnd::OnMoveToNotebook(UINT uNotifyCode, int nID, CWindow wndCtl)
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
 		int nNoteId = GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd); 
-		_tstring sFile;
-		if (nID == ID_TNM_NOTEBOOK) // открыть блокнот для перемещения
-		{
-			sFile = CApplication::Get().OpenNotebookDialog();
-		}
-		else // переместить в указанный блокнот
-		{
-			int index = GET_MOVE_NOTEBOOK_ID_FROM_CMD(nID);
-			sFile = CApplication::Get().GetState().GetDataFile(index).GetName();
-		}
-		if (!sFile.empty() && CApplication::Get().GetDataFileName() != sFile)
-		{
-			CApplication::Get().MoveToNotebook(sFile.c_str(), nNoteId);
-		}
+		ProcessMoveToNotebook(nID, nNoteId);
 		EndMenu();
 		PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 	}
@@ -688,21 +661,7 @@ void CTrayWnd::OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_NOTEBOOK_OPEN */ /* NOTEBOOK_CMD_FIRST - NOTEBOOK_CMD_LAST */
 void CTrayWnd::OnNotebookOpen(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	_tstring sFile;
-	if (nID == ID_NOTEBOOK_OPEN)
-	{
-		sFile = CApplication::Get().OpenNotebookDialog();
-	}
-	else
-	{
-		int index = GET_NOTEBOOK_ID_FROM_CMD(nID);
-		sFile = CApplication::Get().GetState().GetDataFile(index).GetName();
-	}
-
-	if (!sFile.empty() && CApplication::Get().GetDataFileName() != sFile)
-	{
-		CApplication::Get().OpenDataFile(sFile.c_str());
-	}
+	ProcessNotebookOpen(nID);
 	PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 }
 
@@ -853,19 +812,7 @@ void CTrayWnd::ModifyNotesMenu(CMenuHandle menuNotes)
 	}
 	// show notebooks
 	CMenuHandle menuNotebooks = GetSubMenu(NOTEBOOK_MENU_OFFSET);
-	const CAppState::CRecentFileList& rf =  CApplication::Get().GetState().GetRecentFiles();
-	CAppState::CRecentFileList::const_iterator it;
-	int pos = 0;
-	for (it = rf.begin(); it != rf.end(); ++it)
-	{
-		int nCmd = CREATE_NOTEBOOK_CMD(pos);
-		menuNotebooks.InsertMenu(pos, MF_BYPOSITION, nCmd, it->GetName().c_str());
-		if (CApplication::Get().GetDataFileName() == it->GetName())
-		{
-			menuNotebooks.CheckMenuRadioItem(NOTEBOOK_CMD_FIRST, NOTEBOOK_CMD_LAST, nCmd, MF_BYCOMMAND);
-		}
-		++pos;
-	}
+	PopulateNotebooksMenu(menuNotebooks);
 }
 
 /* WM_MENUSELECT */
