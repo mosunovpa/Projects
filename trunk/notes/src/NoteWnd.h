@@ -63,6 +63,7 @@ public:
 
 	BEGIN_MSG_MAP(CNoteWnd)
 		MSG_WM_CREATE(OnCreate)
+		MSG_WM_CLOSE(OnClose)
 		MSG_WM_DESTROY(OnDestroy)
 		MESSAGE_HANDLER_EX(WMU_INITNOTE, OnInitNote)
 		MESSAGE_HANDLER_EX(WMU_ESCAPEFOCUS, OnEscapeFocus)
@@ -124,6 +125,7 @@ public:
 	virtual void OnFinalMessage(HWND hWnd);
 
 	LRESULT OnCreate(LPCREATESTRUCT lParam);
+	void OnClose();
 	void OnDestroy();
 	LRESULT OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnEscapeFocus(UINT uMsg, WPARAM wParam, LPARAM lParam);

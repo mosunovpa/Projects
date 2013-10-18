@@ -14,7 +14,7 @@
 class CTrayWnd : 
 	public CWindowImpl<CTrayWnd>,
 	public CMenuTooltip<CTrayWnd>,
-	public CNotesView
+	public CNotesView<CTrayWnd>
 #ifdef COOL_CONTEXT_MENU
 	,
 	public CCoolContextMenu<CTrayWnd>
@@ -116,13 +116,12 @@ CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
 	void OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl);
 
 	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
+	void GetSelectedNotes(std::list<int>& notes);
 
 private:
 
 	LRESULT DisplayShortcutMenu();
 	void ModifyNotesMenu(CMenuHandle menuNotes);
-	void ProcessCheckedMenu(NotesActions action, LPCTSTR sParam = NULL);
-	void GetSelectedNotes(std::list<int>& notes);
 	void PopulateMoveToNotebooksMenu(CMenuHandle menuNotebooks);
 	BOOL SetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition, UINT nFlagEx);
 	UINT GetMenuItemTypeEx(CMenuHandle menu, UINT uItem, BOOL bByPosition);
