@@ -20,14 +20,14 @@ class CApplication : public CSimpleSinglton<CApplication>
 public:
 	void CreateAppWindow();
 	_tstring OpenNotebookDialog() const;
-	void MoveToNotebook(LPCTSTR sFileName, int nNoteId);
+	void MoveToNotebook(int nNoteId, LPCTSTR sFileName);
 	void OpenDataFile(LPCTSTR file_name);
 	HWND CreateNote(_tstring const& sText = _tstring(), DWORD nFlag = NF_NONE);
 	BOOL IsNoteVisible(int nNoteId) const;
 	int SaveNote(CNoteWnd* pWnd, UINT nMask);
 	int SaveNote(CNote const& note, UINT nMask);
-	void DeleteFromStorage(int nNoteId);
-	void DeleteNote(int nNoteId);
+	void DeleteFromStorage(int nNoteId, bool forever = false);
+	void DeleteNote(int nNoteId, int forever = false);
 	void RestoreNote(int nNoteId);
 	BOOL IsNoteDeleted(int nNoteId);
 	BOOL IsNoteExists(int nNoteId);
@@ -43,7 +43,7 @@ public:
 	COptions GetOptions();
 	const CAppState& GetState() const { return m_state; }
 	void SaveOptions(COptions const& opt);
-	void NoteTextToClipboard(int nNoteId);
+	//void NoteTextToClipboard(int nNoteId);
 	_tstring GetNoteCaption(_tstring const& text);
 	void GetLabels(std::list<_tstring>& list);
 	_tstring GetNoteLabel(int nNoteId);

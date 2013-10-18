@@ -60,65 +60,6 @@ CNoteWnd::CNoteWnd(int nNoteId /*= 0*/)
 {
 	timebn::clear(m_dtCreated);
 	timebn::clear(m_dtDeleted);
-
-
-
-	 struct _timeb timebuffer;
-	 struct _timeb timebuffer2;
-	 struct _timeb timebuffer3;
-	 struct _timeb timebuffer4;
-	 struct _timeb timebuffer5;
-
-	 time_t tt;
-	 time(&tt);
-	_ftime_s(&timebuffer);
-	Sleep(1);
-	_ftime_s(&timebuffer2);
-	Sleep(1);
-	_ftime_s(&timebuffer3);
-	Sleep(1);
-	_ftime_s(&timebuffer4);
-	Sleep(1);
-	_ftime_s(&timebuffer5);
-
-	_tstring s4 = ToString(timebuffer.time, TRUE);
-	_tstring s5 = ToString(timebuffer.time, FALSE);
-
-
-    long timezone;
-    _get_timezone( &timezone );
-/*
-	
-	using namespace boost::posix_time;
-//	using namespace boost::date_time;
-
-	ptime t(microsec_clock::universal_time());
-
-	ptime lt = boost::date_time::c_local_adjustor<ptime>::utc_to_local(t);
-	
-	string s = to_iso_string(t);
-	string s2 = to_iso_string(t);
-	string ls = to_iso_string(lt);
-	ptime lt2 = from_iso_string(ls);
-
-	wtime_facet* ltf = new wtime_facet();
-
-	wstringstream ss;
-	ss.imbue(locale(locale::classic(), ltf));
-//	ss.imbue(locale(ss.getloc(), ltf));
-
-	ltf->format(L"%a %b %d, %H:%M %z");
-
-	ss << t;
-
-	wstring s3 = ss.str();
-	*/
-/*
-	  local_time_facet* output_facet = new local_time_facet();
-  local_time_input_facet* input_facet = new local_time_input_facet();
-  ss.imbue(locale(locale::classic(), output_facet));
-  ss.imbue(locale(ss.getloc(), input_facet));
-  */
 }
 
 /**
@@ -449,19 +390,28 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	return 0;
 }
 
-/**
-WM_DESTROY
+/*
+WM_CLOSE 
 */
-void CNoteWnd::OnDestroy()
+void CNoteWnd::OnClose()
 {
 	if (GetText().empty())
 	{
-		CApplication::Get().DeleteFromStorage(GetId());
+		CApplication::Get().DeleteFromStorage(m_nNoteId);
 	}
 	else
 	{
 		StoreNote();
 	}
+	DestroyWindow();
+}
+
+/**
+WM_DESTROY
+*/
+void CNoteWnd::OnDestroy()
+{
+
 }
 
 /* WMU_INITNOTE */
@@ -470,10 +420,6 @@ LRESULT CNoteWnd::OnInitNote(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	m_flagSave = NM_NONE;
 	m_edit.EmptyUndoBuffer();
 	m_bInitialized = TRUE;
-	if (!GetText().empty())
-	{
-//		PostMessage(WMU_ESCAPEFOCUS);
-	}
 	return 0;
 }
 
@@ -917,16 +863,15 @@ void CNoteWnd::OnDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_DELETE & ID_REMOVE */
 void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 {
-	try
+	if (!GetText().empty()) 
 	{
-		StoreNote(); // save content before deleting for undelete
+		StoreNote();
+		CApplication::Get().DeleteNote(m_nNoteId);
 	}
-	CATCH_ALL_ERRORS(m_hWnd)
-
-	SetText(_T(""));
-	SendMessage(WM_CLOSE);
-//	PostMessage(WM_CLOSE);
-
+	else
+	{
+		SendMessage(WM_CLOSE); // если пусто, удалится в OnClose
+	}
 }
 
 /* ID_ROLLUP */
@@ -994,22 +939,9 @@ void CNoteWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu
 /**/
 void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 {
-/* тут обработку клика на иконке
-	if (GetButtonAtPos(point) == GetButtonIndex(ID_SYSMENU))
-	{
-		PostMessage(WM_CLOSE);
-		return;
-	}
-*/
-//	ScreenToClient(&point);
-	
 	if (nHitTest == HTCAPTION)
 	{
-		if (m_bMinimized)
-		{
-			//Unroll();
-		}
-		else
+		if (!m_bMinimized)
 		{
 			Rollup();
 		}

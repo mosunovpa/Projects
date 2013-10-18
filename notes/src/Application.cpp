@@ -109,19 +109,20 @@ _tstring CApplication::OpenNotebookDialog() const
 }
 
 /**/
-void CApplication::MoveToNotebook(LPCTSTR sFileName, int nNoteId)
+void CApplication::MoveToNotebook(int nNoteId, LPCTSTR sFileName)
 {
 	if (GetDataFileName() != sFileName)
 	{
 		CNote note = m_datafile->GetNote(nNoteId);
 		note.SetId(0);
+		note.SetModifiedDate(dateutils::GetCurrentDateTime());
 		CStorage target;
 		target.SetDataFile(sFileName);
 		target.SaveNote(note, NM_ALL);
 		target.Release();
 		m_state.SetLastDataFile(sFileName);
 		m_local_storage.Write(m_state);
-		DeleteNote(nNoteId);
+		DeleteNote(nNoteId, true);
 	}
 }
 
@@ -411,13 +412,12 @@ int CApplication::GetHiddenNotesCount()
 }
 
 /**/
-void CApplication::DeleteFromStorage(int nNoteId)
+void CApplication::DeleteFromStorage(int nNoteId, bool forever /*= false*/)
 {
 	if (nNoteId > 0)
 	{
 		CNote note = m_datafile->GetNote(nNoteId);
-//		note.SetLabel(_tstring());
-		if (note.GetDeletedDate().time == 0)
+		if (note.GetDeletedDate().time == 0 && !forever)
 		{
 			note.SetDeletedDate(dateutils::GetCurrentDateTime());
 			note.SetModifiedDate(dateutils::GetCurrentDateTime());
@@ -429,7 +429,6 @@ void CApplication::DeleteFromStorage(int nNoteId)
 		}
 	}
 }
-
 
 /**/
 CNoteWnd* CApplication::FindNoteWnd(int nNoteId) const
@@ -490,7 +489,7 @@ CNoteWnd* CApplication::CreateNoteWnd(CRect& rc)
 		//  		WS_THICKFRAME | WS_OVERLAPPED /*| WS_MINIMIZEBOX | WS_MAXIMIZEBOX*/, 
 		//  		WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR | WS_EX_WINDOWEDGE | WS_EX_APPWINDOW
 		);
-//	m_TrayWnd.ShowWindow(SW_SHOW);
+	//m_TrayWnd->ShowWindow(SW_SHOW);
 	return pWnd;
 }
 
@@ -548,34 +547,30 @@ void CApplication::DuplicateNote(int nNoteId)
 	}
 }
 
-/**/
-void CApplication::NoteTextToClipboard(int nNoteId)
-{
-	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
-	if (pNoteWnd)
-	{
-		pNoteWnd->PostMessage(WM_COMMAND, ID_CLIPBRD_COPY);
-	}
-	else
-	{
-		CNote note = m_datafile->GetNote(nNoteId);
-		CClipboard::SetText(note.GetText().c_str(), m_TrayWnd->m_hWnd);
-	}
-}
+///**/
+//void CApplication::NoteTextToClipboard(int nNoteId)
+//{
+//	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
+//	if (pNoteWnd)
+//	{
+//		pNoteWnd->PostMessage(WM_COMMAND, ID_CLIPBRD_COPY);
+//	}
+//	else
+//	{
+//		CNote note = m_datafile->GetNote(nNoteId);
+//		CClipboard::SetText(note.GetText().c_str(), m_TrayWnd->m_hWnd);
+//	}
+//}
 
 /**/
-void CApplication::DeleteNote(int nNoteId)
+void CApplication::DeleteNote(int nNoteId, int forever /*= false*/)
 {
 	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
 	if (pNoteWnd)
 	{
-		pNoteWnd->SendMessage(WM_COMMAND, ID_DELETE);
-//		pNoteWnd->PostMessage(WM_COMMAND, ID_DELETE);
+		::DestroyWindow(pNoteWnd->m_hWnd);
 	}
-	else
-	{
-		DeleteFromStorage(nNoteId);
-	}
+	DeleteFromStorage(nNoteId, forever);
 }
 
 /**/
