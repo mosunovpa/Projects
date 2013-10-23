@@ -49,7 +49,7 @@ public:
 		MSG_WM_INITMENUPOPUP(OnInitMenuPopup)
 		MSG_WM_UNINITMENUPOPUP(OnUnInitMenuPopup)
 		MESSAGE_HANDLER_EX(WMU_NOTIFYICON, OnNotifyIcon)
-		MESSAGE_HANDLER_EX(WMU_NEW_LABEL, OnWMUNewLabel)
+		//MESSAGE_HANDLER_EX(WMU_NEW_LABEL, OnWMUNewLabel)
 		MESSAGE_HANDLER_EX(WMU_DISPLAY_SHORCUT_MENU, OnDisplayShortcutMenu)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWNOTE, OnPopupNewnote)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWANDPASTE, OnNewAndPaste)
@@ -58,9 +58,9 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_SETTINGS, OnSettings)
 		COMMAND_ID_HANDLER_EX(ID_TNM_OPEN_NOTE, OnOpenNote);
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
-		COMMAND_ID_HANDLER_EX(ID_TNM_NEWLABEL, OnNewLabel)
-		COMMAND_ID_HANDLER_EX(ID_TNM_CLEARLABEL, OnClearLabel)
+		COMMAND_ID_HANDLER_EX(ID_TNM_NEWLABEL, OnLabelSelected/*OnNewLabel*/)
 		COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
+		//COMMAND_ID_HANDLER_EX(ID_TNM_CLEARLABEL, OnClearLabel)
 		COMMAND_ID_HANDLER_EX(ID_TNM_NOTEBOOK, OnMoveToNotebook)
 		COMMAND_RANGE_HANDLER_EX(MOVE_TO_NOTEBOOK_CMD_FIRST, MOVE_TO_NOTEBOOK_CMD_LAST, OnMoveToNotebook);
 		COMMAND_ID_HANDLER_EX(ID_TNM_DUPLICATE, OnNoteDuplicate);
@@ -90,7 +90,7 @@ CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
 	void OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu);
 	void OnUnInitMenuPopup(UINT nID, CMenuHandle menu);
 	LRESULT OnNotifyIcon(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	LRESULT OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	//LRESULT OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnDisplayShortcutMenu(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void OnPopupNewnote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNewAndPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -100,8 +100,8 @@ CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
 	void OnNoteSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnOpenNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnClearLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
+	//void OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
+	//void OnClearLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnMoveToNotebook(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl);

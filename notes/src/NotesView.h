@@ -16,10 +16,19 @@ public:
 
 
 	/**/
-	void PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel, BOOL bCheckPadio = TRUE)
+	void PopulateLabelMenu(CMenuHandle menuLabels, _tstring const& sLabel)
 	{
 		m_listLabels.clear();
 		CApplication::Get().GetLabels(m_listLabels);
+		if (!sLabel.empty())
+		{
+			std::list<_tstring>::iterator it = std::find(m_listLabels.begin(), m_listLabels.end(), sLabel);
+			if (it == m_listLabels.end())
+			{
+				m_listLabels.push_back(sLabel);
+				m_listLabels.sort();
+			}
+		}
 		if (!m_listLabels.empty())
 		{
 			menuLabels.AppendMenu(MF_SEPARATOR);
@@ -238,6 +247,11 @@ public:
 	void ProcessMoveToNotebook(int nCmd)
 	{
 		_tstring sFile;
+		std::list<int> notes;
+		
+		T* pT = static_cast<T*>(this);
+		pT->GetSelectedNotes(notes);
+
 		if (nCmd == ID_TNM_NOTEBOOK) // открыть блокнот для перемещения
 		{
 			sFile = CApplication::Get().OpenNotebookDialog();
@@ -248,10 +262,43 @@ public:
 		}
 		if (!sFile.empty() && CApplication::Get().GetDataFileName() != sFile)
 		{
-			ProcessSelectedNotes(acMoveToNotebook, sFile.c_str());
+			ProcessSelectedNotes(notes, acMoveToNotebook, sFile.c_str());
 		}
 	}
 
+	/**/
+	void ProcessLabelSelected(int nCmd)
+	{
+		_tstring sLabel;
+		std::list<int> notes;
+		
+		T* pT = static_cast<T*>(this);
+		pT->GetSelectedNotes(notes);
+		if (notes.empty())
+		{
+			return;
+		}
+
+		if (nCmd == ID_TNM_NEWLABEL)
+		{
+			CNewLabelDialog	dlg;
+			dlg.m_nInitParam = (CNewLabelDialog::ipCursorPos | CNewLabelDialog::ipPopup);
+			if (dlg.DoModal() == IDOK)
+			{
+				sLabel = dlg.m_sLabel;
+			}
+		}
+		else
+		{
+			sLabel = GetLabelFromCmd(nCmd);
+			_tstring label = CApplication::Get().GetNoteLabel(*notes.begin());
+			if (label == sLabel)
+			{
+				sLabel = _T(""); // если выбрана та же метка - очистить
+			}
+		}
+		ProcessSelectedNotes(notes, acLabel, sLabel.c_str());
+	}
 private:
 	std::list<_tstring> m_listLabels;
 	std::list<_tstring> m_listNotebooks;

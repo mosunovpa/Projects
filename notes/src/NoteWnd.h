@@ -14,6 +14,7 @@
 #include "defines.h"
 #include "CoolContextMenu.h"
 #include "CaptionButton.h"
+#include "NotesView.h"
 
 #if defined(SCINTILLA)
 	#include "ScintillaNoteEdit.h"
@@ -28,7 +29,8 @@
 
 class CNoteWnd : public CWindowImpl<CNoteWnd>,
 	public CCoolContextMenu<CNoteWnd>,
-	public CCaptionButton<CNoteWnd>
+	public CCaptionButton<CNoteWnd>,
+	public CNotesView<CNoteWnd>
 {
 public:
 	CNoteWnd(int nNoteId = 0);
@@ -73,7 +75,6 @@ public:
 		MSG_WM_PAINT(OnPaint)
 		MSG_WM_NCACTIVATE(OnNcActivate)
 		MSG_WM_ACTIVATE(OnActivate)
-		MSG_WM_MOUSEACTIVATE(OnMouseActivate)
 		MSG_WM_ACTIVATEAPP(OnActivateApp)
 		MSG_WM_ERASEBKGND(OnErasebkgnd)
 		MSG_WM_GETMINMAXINFO(OnGetMinMaxInfo)
@@ -87,24 +88,29 @@ public:
 		MSG_WM_CONTEXTMENU(OnContextMenu)
 		MSG_WM_NCRBUTTONUP(OnNcRButtonUp)
 
-		MSG_WM_LBUTTONUP(OnLButtonUp)
 		MSG_WM_ENTERSIZEMOVE(OnEnterSizeMove)
-		MSG_WM_EXITSIZEMOVE(OnExitSizeMove)
-		MSG_WM_NCLBUTTONDOWN(OnNcLButtonDown)
-		MSG_WM_NCLBUTTONUP(OnNcLButtonUp)
+
+		// не нужно пока
+		//MSG_WM_EXITSIZEMOVE(OnExitSizeMove)
+		//MSG_WM_LBUTTONUP(OnLButtonUp)
+		//MSG_WM_NCLBUTTONDOWN(OnNcLButtonDown)
+		//MSG_WM_NCLBUTTONUP(OnNcLButtonUp)
+		//MSG_WM_MOUSEACTIVATE(OnMouseActivate)
 
 		COMMAND_ID_HANDLER_EX(ID_CLIPBRD_COPY, OnCopyToClipboard)
 		COMMAND_ID_HANDLER_EX(ID_RESTORE, OnRestore)
 		COMMAND_ID_HANDLER_EX(ID_DUPLICATE, OnDuplicate)
+		COMMAND_ID_HANDLER_EX(ID_LABEL_NEWLABEL, OnLabelSelected/*OnNewLabel*/)
 		COMMAND_RANGE_HANDLER_EX(LABEL_CMD_FIRST, LABEL_CMD_LAST, OnLabelSelected)
-		COMMAND_ID_HANDLER_EX(ID_LABEL_NEWLABEL, OnNewLabel);
-		COMMAND_ID_HANDLER_EX(ID_LABEL_CLEAR, OnLabelClear);
+		//COMMAND_ID_HANDLER_EX(ID_LABEL_CLEAR, OnLabelClear)
 		COMMAND_ID_HANDLER_EX(ID_PASTE, OnPaste)
 		COMMAND_ID_HANDLER_EX(ID_CLOSEALL, OnNoteCloseAll)
 		COMMAND_ID_HANDLER_EX(ID_CLOSEALLBUTTHIS, OnNoteCloseAllButThis)
 		COMMAND_ID_HANDLER_EX(ID_CLOSE, OnNoteClose)
 		COMMAND_ID_HANDLER_EX(ID_DELETE, OnNoteDelete)
 		COMMAND_ID_HANDLER_EX(ID_REMOVE, OnNoteDelete)
+		COMMAND_ID_HANDLER_EX(ID_TNM_NOTEBOOK, OnMoveToNotebook)
+		COMMAND_RANGE_HANDLER_EX(MOVE_TO_NOTEBOOK_CMD_FIRST, MOVE_TO_NOTEBOOK_CMD_LAST, OnMoveToNotebook);
 		COMMAND_ID_HANDLER_EX(ID_ROLLUP, OnRollUp)
 		COMMAND_ID_HANDLER_EX(ID_UNROLL, OnUnroll)
 		COMMAND_ID_HANDLER_EX(ID_SYSMENU, OnSysMenu)
@@ -113,6 +119,7 @@ public:
 		CHAIN_COMMANDS_MEMBER(m_edit)
 
 		CHAIN_MSG_MAP(CCoolContextMenu<CNoteWnd>)
+
 		CHAIN_MSG_MAP(CCaptionButton<CNoteWnd>)
 		
 		REFLECT_NOTIFICATIONS();
@@ -160,22 +167,24 @@ public:
 	void OnRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnDuplicate(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
-	void OnLabelClear(UINT uNotifyCode, int nID, CWindow wndCtl);
+	//void OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl);
+	//void OnLabelClear(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnPaste(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteCloseAllButThis(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteClose(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNoteDelete(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnMoveToNotebook(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnRollUp(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnUnroll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSysMenu(UINT uNotifyCode, int nID, CWindow wndCtl);
 	LRESULT OnLink(LPNMHDR pnmh);
 	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
 	POINT CNoteWnd::GetButtonPos(int index);
+	void GetSelectedNotes(std::list<int>& notes);
 
 private:
-	void PopulateLabelMenu(CMenuHandle menuLabels);
+	//void PopulateLabelMenu(CMenuHandle menuLabels);
 
 	CRect GetInnerCaptionRect();
 	CRect GetOutterCaptionRect();
@@ -213,7 +222,7 @@ private:
 
 	BOOL m_bActive;
 	BOOL m_bActiveApp;
-	std::list<_tstring> m_listLabels;
+	//std::list<_tstring> m_listLabels;
 	DWORD m_flagInit;
 
 	CMenuHandle m_activeMenu;

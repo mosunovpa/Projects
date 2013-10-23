@@ -99,7 +99,8 @@ BEGIN
         MENUITEM "&Delete",                     ID_REMOVE
         POPUP "&Move To Notebook"
         BEGIN
-            MENUITEM "(Empty)",                     ID_NOBOOKS
+            MENUITEM SEPARATOR
+            MENUITEM "Open/New...",                 ID_TNM_NOTEBOOK
         END
         MENUITEM SEPARATOR
         MENUITEM "Roll &Up",                    ID_ROLLUP
@@ -185,13 +186,13 @@ BEGIN
         BEGIN
             MENUITEM "&New Label...",               ID_TNM_NEWLABEL
         END
-        POPUP "Move To"
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete",                     ID_TNM_REMOVE
+        POPUP "Move To Notebook"
         BEGIN
             MENUITEM SEPARATOR
             MENUITEM "&Open...",                    ID_TNM_NOTEBOOK
         END
-        MENUITEM SEPARATOR
-        MENUITEM "&Delete",                     ID_TNM_REMOVE
         MENUITEM SEPARATOR
         MENUITEM "D&eselect",                   ID_TNM_UNCHECK
         MENUITEM "Deselect &All",               ID_TNM_UNCHECKALL
