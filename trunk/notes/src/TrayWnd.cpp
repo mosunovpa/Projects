@@ -445,34 +445,18 @@ void CTrayWnd::OnCopyAllToClipboard(UINT uNotifyCode, int nID, CWindow wndCtl)
 	}
 }
 
-/* WMU_NEW_LABEL */
-LRESULT CTrayWnd::OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	CNewLabelDialog	dlg;
-	dlg.m_nInitParam = (CNewLabelDialog::ipCursorPos | CNewLabelDialog::ipPopup);
-
-	//UINT nId = GET_NOTE_ID_FROM_CMD(wParam);
-
-	//UINT state = m_selectedMenu.GetMenuState(wParam, MF_BYCOMMAND);
-	//if ((state & MF_CHECKED) != MF_CHECKED)
-	//{
-	//	dlg.m_sLabel = CApplication::Get().GetNoteLabel(nId); 
-	//}
-
-	if (dlg.DoModal() == IDOK)
-	{
-		//if ((state & MF_CHECKED) == MF_CHECKED)
-		//{
-			ProcessSelectedNotes(acLabel, dlg.m_sLabel.c_str());
-		//}
-		//else
-		//{
-		//	CApplication::Get().SetNoteLabel(nId, dlg.m_sLabel.c_str());
-		//}
-	}
-	PostMessage(WMU_DISPLAY_SHORCUT_MENU);
-	return 0;
-}
+///* WMU_NEW_LABEL */
+//LRESULT CTrayWnd::OnWMUNewLabel(UINT uMsg, WPARAM wParam, LPARAM lParam)
+//{
+//	CNewLabelDialog	dlg;
+//	dlg.m_nInitParam = (CNewLabelDialog::ipCursorPos | CNewLabelDialog::ipPopup);
+//	if (dlg.DoModal() == IDOK)
+//	{
+//		ProcessSelectedNotes(acLabel, dlg.m_sLabel.c_str());
+//	}
+//	PostMessage(WMU_DISPLAY_SHORCUT_MENU);
+//	return 0;
+//}
 
 /* WMU_DISPLAY_SHORCUT_MENU */
 LRESULT CTrayWnd::OnDisplayShortcutMenu(UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -480,55 +464,40 @@ LRESULT CTrayWnd::OnDisplayShortcutMenu(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	DisplayShortcutMenu();
 	return 0;
 }
+//
+///* ID_TNM_NEWLABEL */
+//void CTrayWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
+//{
+//	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
+//	{
+//		SendMessage(WMU_NEW_LABEL, m_nSelectedNoteCmd);
+//	}
+//}
+//
+///* ID_TNM_CLEARLABEL */
+//void CTrayWnd::OnClearLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
+//{
+//	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
+//	{
+//		UINT state = m_selectedMenu.GetMenuState(m_nSelectedNoteCmd, MF_BYCOMMAND);
+//		if ((state & MF_CHECKED) == MF_CHECKED)
+//		{
+//			ProcessSelectedNotes(acLabel, _T(""));
+//		}
+//		else
+//		{
+//			CApplication::Get().SetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), _T(""));
+//		}
+//		EndMenu();
+//	}
+//}
 
-/* ID_TNM_NEWLABEL */
-void CTrayWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
-	{
-		SendMessage(WMU_NEW_LABEL, m_nSelectedNoteCmd);
-	}
-}
-
-/* ID_TNM_CLEARLABEL */
-void CTrayWnd::OnClearLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
-	{
-		UINT state = m_selectedMenu.GetMenuState(m_nSelectedNoteCmd, MF_BYCOMMAND);
-		if ((state & MF_CHECKED) == MF_CHECKED)
-		{
-			ProcessSelectedNotes(acLabel, _T(""));
-		}
-		else
-		{
-			CApplication::Get().SetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), _T(""));
-		}
-		EndMenu();
-	}
-}
-
-/* LABEL_CMD_FIRST, LABEL_CMD_LAST*/
+/* ID_TNM_NEWLABEL, LABEL_CMD_FIRST - LABEL_CMD_LAST*/
 void CTrayWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		_tstring sLabel = GetLabelFromCmd(nID);
-		_tstring label = CApplication::Get().GetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd));
-		if (label == sLabel)
-		{
-			sLabel = _T(""); // если выбрана та же метка - очистить
-		}
-
-		//UINT state = m_selectedMenu.GetMenuState(m_nSelectedNoteCmd, MF_BYCOMMAND);
-		//if ((state & MF_CHECKED) == MF_CHECKED)
-		//{
-			ProcessSelectedNotes(acLabel, sLabel.c_str());
-		//}
-		//else
-		//{
-		//	CApplication::Get().SetNoteLabel(GET_NOTE_ID_FROM_CMD(m_nSelectedNoteCmd), sLabel.c_str());
-		//}
+		ProcessLabelSelected(nID);
 		EndMenu();
 		PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 	}

@@ -100,7 +100,10 @@ void CNoteWnd::ShowSystemMenu(CPoint pt)
 			return;
 		}
 		CMenuHandle menuLabels = menuPopup.GetSubMenu(1);
-		PopulateLabelMenu(menuLabels);
+		PopulateLabelMenu(menuLabels, m_label);
+
+		CMenuHandle menuNotes = menuPopup.GetSubMenu(4);
+		PopulateMoveToNotebooksMenu(menuNotes);
 	}
 
 	menuPopup.SetMenuDefaultItem(ID_CLOSE);
@@ -139,7 +142,7 @@ void CNoteWnd::ShowLabelMenu(CPoint pt)
 		return;
 	}
 	CMenuHandle menuLabels = menuPopup.GetSubMenu(1);
-	PopulateLabelMenu(menuLabels);
+	PopulateLabelMenu(menuLabels, m_label);
 
 	if (!menuLabels.TrackPopupMenu(TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
 		pt.x, pt.y, m_hWnd))
@@ -148,40 +151,37 @@ void CNoteWnd::ShowLabelMenu(CPoint pt)
 	}
 	m_activeMenu.DestroyMenu();
 }
-
-/**/
-void CNoteWnd::PopulateLabelMenu(CMenuHandle menuLabels)
-{
-	m_listLabels.clear();
-	CApplication::Get().GetLabels(m_listLabels);
-	if (!m_label.empty() && (m_flagSave & NM_LABEL))
-	{
-		m_listLabels.push_back(m_label);
-		m_listLabels.sort();
-		m_listLabels.unique();
-	}
-	if (!m_listLabels.empty())
-	{
-		menuLabels.AppendMenu(MF_SEPARATOR);
-	}
-	menuLabels.EnableMenuItem(ID_LABEL_CLEAR, GetLabel().empty() ? MF_GRAYED : MF_ENABLED);
-	//int nSelCmd = LABEL_CMD_FIRST;
-
-	int pos = 1;
-	for (std::list<_tstring>::iterator it = m_listLabels.begin();
-		it != m_listLabels.end(); ++it)
-	{
-		int nCmd = CREATE_LABEL_CMD(pos);
-		menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
-		if (*it == m_label)
-		{
-			//nSelCmd = nCmd;	
-			menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nCmd, MF_BYCOMMAND);
-		}
-		++pos;
-	}
-	//menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nSelCmd, MF_BYCOMMAND);
-}
+//
+///**/
+//void CNoteWnd::PopulateLabelMenu(CMenuHandle menuLabels)
+//{
+//	m_listLabels.clear();
+//	CApplication::Get().GetLabels(m_listLabels);
+//	if (!m_label.empty() && (m_flagSave & NM_LABEL))
+//	{
+//		m_listLabels.push_back(m_label);
+//		m_listLabels.sort();
+//		m_listLabels.unique();
+//	}
+//	if (!m_listLabels.empty())
+//	{
+//		menuLabels.AppendMenu(MF_SEPARATOR);
+//	}
+//	menuLabels.EnableMenuItem(ID_LABEL_CLEAR, GetLabel().empty() ? MF_GRAYED : MF_ENABLED);
+//
+//	int pos = 1;
+//	for (std::list<_tstring>::iterator it = m_listLabels.begin();
+//		it != m_listLabels.end(); ++it)
+//	{
+//		int nCmd = CREATE_LABEL_CMD(pos);
+//		menuLabels.AppendMenu(MF_STRING, nCmd, it->c_str());
+//		if (*it == m_label)
+//		{
+//			menuLabels.CheckMenuRadioItem(LABEL_CMD_FIRST, LABEL_CMD_LAST, nCmd, MF_BYCOMMAND);
+//		}
+//		++pos;
+//	}
+//}
 
 
 /**
@@ -554,14 +554,12 @@ BOOL CNoteWnd::OnNcActivate(BOOL bActive)
  */
 void CNoteWnd::OnActivate(UINT nState, BOOL bMinimized, HWND hWndOther)
 {
-
-	//SendMessage(WM_NCPAINT);
-
 	if (nState == WA_INACTIVE)
 	{
 		StoreNote();
 	}
-	PostMessage(WMU_ACTIVATEPOST);
+	SetMsgHandled(FALSE);
+	//PostMessage(WMU_ACTIVATEPOST);
 }
 
 /* WM_MOUSEACTIVATE */
@@ -874,6 +872,22 @@ void CNoteWnd::OnNoteDelete( UINT uNotifyCode, int nID, CWindow wndCtl )
 	}
 }
 
+/* */
+void CNoteWnd::GetSelectedNotes(std::list<int>& notes)
+{
+	notes.push_back(m_nNoteId);
+}
+
+/* ID_NOTEBOOK_OPEN */
+void CNoteWnd::OnMoveToNotebook(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	if (!GetText().empty()) 
+	{
+		StoreNote();
+		ProcessMoveToNotebook(nID);
+	}
+}
+
 /* ID_ROLLUP */
 void CNoteWnd::OnRollUp(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
@@ -1078,51 +1092,68 @@ BOOL CNoteWnd::IsDeleted()
 /**/
 void CNoteWnd::OnLabelSelected(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	//if (nID == LABEL_CMD_FIRST)
-	//{
-	//	SetLabel(_T(""));
-	//}
-	//else 
-	if (IS_LABEL_CMD(nID))
+	if (nID == ID_LABEL_NEWLABEL)
 	{
-		int pos = GET_LABEL_ID_FROM_CMD(nID);
-		int i = 1;
-		for (std::list<_tstring>::iterator it = m_listLabels.begin();
-			it != m_listLabels.end(); ++it)
+		CNewLabelDialog	dlg;
+		dlg.m_sLabel = GetLabel();
+		if (dlg.DoModal(this->m_hWnd) == IDOK)
 		{
-			if (pos == i)
+			SetLabel(dlg.m_sLabel.c_str());
+		}
+	}
+	else
+	{	
+		if (IS_LABEL_CMD(nID))
+		{
+			_tstring label = GetLabelFromCmd(nID);
+			if (label == m_label)
 			{
-				if (GetLabel() == _tstring(it->c_str()))
-				{
-					SetLabel(_T("")); // если выбрана та же метка - очистить
-				}
-				else
-				{
-					SetLabel(it->c_str());
-				}
-				return;
+				SetLabel(_T("")); // если выбрана та же метка - очистить
 			}
-			++i;
+			else
+			{
+				SetLabel(label.c_str());
+			}
+
+			//int pos = GET_LABEL_ID_FROM_CMD(nID);
+			//int i = 1;
+			//for (std::list<_tstring>::iterator it = m_listLabels.begin();
+			//	it != m_listLabels.end(); ++it)
+			//{
+			//	if (pos == i)
+			//	{
+			//		if (GetLabel() == _tstring(it->c_str()))
+			//		{
+			//			SetLabel(_T("")); // если выбрана та же метка - очистить
+			//		}
+			//		else
+			//		{
+			//			SetLabel(it->c_str());
+			//		}
+			//		return;
+			//	}
+			//	++i;
+			//}
 		}
 	}
 }
 
-/**/
-void CNoteWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	CNewLabelDialog	dlg;
-	dlg.m_sLabel = GetLabel();
-	if (dlg.DoModal(this->m_hWnd) == IDOK)
-	{
-		SetLabel(dlg.m_sLabel.c_str());
-	}
-}
-
-/**/
-void CNoteWnd::OnLabelClear(UINT uNotifyCode, int nID, CWindow wndCtl)
-{
-	SetLabel(_T(""));
-}
+///**/
+//void CNoteWnd::OnNewLabel(UINT uNotifyCode, int nID, CWindow wndCtl)
+//{
+//	CNewLabelDialog	dlg;
+//	dlg.m_sLabel = GetLabel();
+//	if (dlg.DoModal(this->m_hWnd) == IDOK)
+//	{
+//		SetLabel(dlg.m_sLabel.c_str());
+//	}
+//}
+//
+///**/
+//void CNoteWnd::OnLabelClear(UINT uNotifyCode, int nID, CWindow wndCtl)
+//{
+//	SetLabel(_T(""));
+//}
 
 /**/
 void CNoteWnd::SetInitFlags(DWORD nFlags)

@@ -171,13 +171,14 @@
 #define ID_Menu                         40154
 #define ID_TRAYNOTEMENU_MOVETO          40155
 #define ID_TNM_NOTEBOOK                 40157
+#define ID_MOVETONOTEBOOK_OPEN          40158
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        131
-#define _APS_NEXT_COMMAND_VALUE         40158
+#define _APS_NEXT_COMMAND_VALUE         40159
 #define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
