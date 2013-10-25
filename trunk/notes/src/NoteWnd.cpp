@@ -32,6 +32,7 @@ using namespace dateutils;
 const INT s_nCornerSize = 14;
 const INT s_nStatusBarSize = 15;
 const INT s_nCaptionDelta = 4;
+const INT s_nSysIconSize = 16;
 
 const COLORREF black = RGB(0,0,0);
 const COLORREF gray = RGB(128, 128, 128);
@@ -189,8 +190,13 @@ void CNoteWnd::ShowLabelMenu(CPoint pt)
  */
 CRect CNoteWnd::GetInnerCaptionRect()
 {
-	int leftAlignIdx = GetButtonIndex(ID_SYSMENU);
 	CRect rc;
+	int leftAlignIdx = GetButtonIndex(ID_SYSMENU);
+	if (leftAlignIdx == - 1)
+	{
+		leftAlignIdx = GetButtonCount();
+	}
+
 	int cnt = GetButtonCount();
 	if (cnt > 0) 
 	{
@@ -207,6 +213,9 @@ CRect CNoteWnd::GetInnerCaptionRect()
 				rc.left = bp.x + bs.cx + 5;
 		}
 	}
+	if (!rc.left) 
+		rc.left = s_nSysIconSize + 8;
+
 	return rc;
 }
 
@@ -222,6 +231,17 @@ CRect CNoteWnd::GetOutterCaptionRect()
 		rc.bottom = rc.top + GetSystemMetrics(SM_CYSMCAPTION) + s_nCaptionDelta;
 	}
 
+	return rc;
+}
+
+/**/
+CRect CNoteWnd::GetSysIconRect()
+{
+	CWindowRect rc(m_hWnd);
+	//rc.DeflateRect(GetSystemMetrics(SM_CYSIZEFRAME), GetSystemMetrics(SM_CYSIZEFRAME));
+	rc.OffsetRect(GetSystemMetrics(SM_CYSIZEFRAME), GetSystemMetrics(SM_CYSIZEFRAME));
+	rc.right = rc.left + s_nSysIconSize;
+	rc.bottom = rc.top + s_nSysIconSize;
 	return rc;
 }
 
@@ -357,6 +377,8 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 {
 	GetSystemSettings();
 
+	//SetIcon(::LoadIcon(NULL, IDI_APPLICATION), FALSE);
+
 	// images for menu icons
 	m_ImageList.CreateFromImage(IDB_TRAY_MENU, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 
@@ -374,13 +396,14 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 	il3.CreateFromImage(IDB_UNROLL_BTNS_3, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	AddButton(ID_UNROLL, 16, 16, il3, _T("Unroll"), CAPTION_BTN_HIDDEN);
 */
-	CImageList	il4;
-	il4.CreateFromImage(IDB_NOTES, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
-	AddButton(ID_SYSMENU, 16, 16, il4, _T("Menu"));
 
-	CImageList	il5;
-	il5.CreateFromImage(IDB_TRASH_BTNS, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
-	AddButton(ID_TRASHSYSMENU, 16, 16, il5, _T("Menu"), CAPTION_BTN_HIDDEN);
+	//CImageList	il4;
+	//il4.CreateFromImage(IDB_NOTES, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+	//AddButton(ID_SYSMENU, 16, 16, il4, _T("Menu"));
+
+	//CImageList	il5;
+	//il5.CreateFromImage(IDB_TRASH_BTNS, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+	//AddButton(ID_TRASHSYSMENU, 16, 16, il5, _T("Menu"), CAPTION_BTN_HIDDEN);
 
 	m_edit.Create(m_hWnd);
 	m_edit.Init(yellow);
@@ -428,9 +451,10 @@ WM_NCHITTEST
 */
 LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 {	
-	if (ID_SYSMENU == GetButtonId(GetButtonAtScreenPos(pt)))
+	//if (ID_SYSMENU == GetButtonId(GetButtonAtScreenPos(pt)))
+	if (GetSysIconRect().PtInRect(pt))
 	{
-		return HTSYSMENU;
+		//return HTSYSMENU;
 	}
 	if (ID_CLOSE == GetButtonId(GetButtonAtScreenPos(pt)))
 	{
@@ -599,6 +623,19 @@ void CNoteWnd::OnNcRButtonUp(UINT nHitTest, CPoint point)
 /* WM_LBUTTONUP */
 void CNoteWnd::OnLButtonUp(UINT nFlags, CPoint point)
 {
+	//ReleaseCapture();
+	SetMsgHandled(FALSE);
+}
+
+/* WM_LBUTTONDBLCLK */
+void CNoteWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	SetMsgHandled(FALSE);
+}
+
+/* WM_SYSCOMMAND */
+void CNoteWnd::OnSysCommand(UINT nID, CPoint pt)
+{
 	SetMsgHandled(FALSE);
 }
 
@@ -653,9 +690,37 @@ void CNoteWnd::OnNcLButtonDown(UINT nHitTest, CPoint point)
 void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
 {
 	SetMsgHandled(FALSE);
-//	return;
+		BOOL res = 0;
+		MSG msg;
+		POINT p = {0, 0};
+	if (nHitTest == HTSYSMENU)
+	{
+		//SetMsgHandled(TRUE);
+		ClientToScreen(&p);
+		//PostMessage(WM_COMMAND, ID_SYSMENU);
+		//DefWindowProc();
+		//SetCapture();
+		res = PeekMessage(&msg, m_hWnd, WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK, PM_NOREMOVE);
+		//ShowSystemMenu(p);
+		PostMessage(WM_LBUTTONDBLCLK);
+		res = PeekMessage(&msg, m_hWnd, WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK, PM_NOREMOVE);
+		if (res)
+			PostMessage(WM_NULL, 0, 0);
+	}
 	if (nHitTest == HTCAPTION)
 	{
+		if (GetSysIconRect().PtInRect(point))
+		{
+			PostMessage(WM_COMMAND, ID_SYSMENU);
+
+			ClientToScreen(&p);
+			PostMessage(WM_LBUTTONDBLCLK);
+			res = PeekMessage(&msg, m_hWnd, WM_MOUSEFIRST, WM_MOUSELAST, /*WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK,*/ PM_NOREMOVE);		
+			//	POINT p = {0, 0};
+			//ShowSystemMenu(p);
+			res = PeekMessage(&msg, m_hWnd, WM_MOUSEFIRST, WM_MOUSELAST, /*WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK,*/ PM_NOREMOVE);
+			return;
+		}
 		m_bCaptionClick = TRUE;
 		BOOL bAlreadyActive = m_bActive;
 //		BOOL bAlreadyActiveApp = m_bActiveApp;
@@ -912,7 +977,15 @@ void CNoteWnd::OnSysMenu(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	POINT p = {0, 0};
 	ClientToScreen(&p);
+
+		BOOL res = 0;
+		MSG msg;
+
+	//PostMessage(WM_LBUTTONDBLCLK);
+	res = PeekMessage(&msg, m_hWnd, WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK, PM_NOREMOVE);
+
 	ShowSystemMenu(p);
+		res = PeekMessage(&msg, m_hWnd, WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK, PM_NOREMOVE);
 
 }
 
@@ -953,6 +1026,7 @@ void CNoteWnd::OnInitMenuPopup(CMenuHandle menuPopup, UINT nIndex, BOOL bSysMenu
 /**/
 void CNoteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 {
+	SetMsgHandled(FALSE);
 	if (nHitTest == HTCAPTION)
 	{
 		if (!m_bMinimized)
@@ -1207,15 +1281,15 @@ void CNoteWnd::Refresh()
 {
 	if (IsDeleted())
 	{
-		ShowButton(GetButtonIndex(ID_SYSMENU), false);
-		ShowButton(GetButtonIndex(ID_TRASHSYSMENU), true);
+		//ShowButton(GetButtonIndex(ID_SYSMENU), false);
+		//ShowButton(GetButtonIndex(ID_TRASHSYSMENU), true);
 
 		SetReadOnly(TRUE);
 	}
 	else
 	{
-		ShowButton(GetButtonIndex(ID_SYSMENU), true);
-		ShowButton(GetButtonIndex(ID_TRASHSYSMENU), false);
+		//ShowButton(GetButtonIndex(ID_SYSMENU), true);
+		//ShowButton(GetButtonIndex(ID_TRASHSYSMENU), false);
 
 		SetReadOnly(FALSE);
 	}
@@ -1284,6 +1358,9 @@ POINT CNoteWnd::GetButtonPos(int index)
 	rcWindow.DeflateRect(GetSystemMetrics(SM_CXSIZEFRAME), GetSystemMetrics(SM_CYSIZEFRAME));
 
 	int leftAlignIdx = GetButtonIndex(ID_SYSMENU);
+	if (leftAlignIdx == -1)
+		leftAlignIdx = GetButtonCount();
+
 	CPoint	pt(rcWindow.left, rcWindow.top);
 
 	if (index >= leftAlignIdx) 

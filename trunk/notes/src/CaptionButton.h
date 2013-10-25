@@ -221,10 +221,18 @@ public:
 		return (btn.uStatus != CAPTION_BTN_DISABLED);
 	}
 
+	bool CheckIndex(int index)
+	{
+		return (index >= 0 && index < m_buttons.size());
+	}
+
 	/////////////////////////////////////////////////////////////////////////////
 	// show/hide button at given position
 	void ShowButton(int index, bool bVisible, bool bRepaint = false)
 	{
+		if (!CheckIndex(index))
+			return;
+
 		T* pT = static_cast<T*>(this);
 
 		_button &btn = m_buttons[index];
