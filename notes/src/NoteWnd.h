@@ -90,9 +90,12 @@ public:
 
 		MSG_WM_ENTERSIZEMOVE(OnEnterSizeMove)
 
+		MSG_WM_LBUTTONUP(OnLButtonUp)
+		MSG_WM_LBUTTONDBLCLK(OnLButtonDblClk)
+		MSG_WM_SYSCOMMAND(OnSysCommand)
+
 		// не нужно пока
 		//MSG_WM_EXITSIZEMOVE(OnExitSizeMove)
-		//MSG_WM_LBUTTONUP(OnLButtonUp)
 		//MSG_WM_NCLBUTTONDOWN(OnNcLButtonDown)
 		//MSG_WM_NCLBUTTONUP(OnNcLButtonUp)
 		//MSG_WM_MOUSEACTIVATE(OnMouseActivate)
@@ -157,6 +160,8 @@ public:
 	void OnNcRButtonUp(UINT nHitTest, CPoint point);
 
 	void OnLButtonUp(UINT nFlags, CPoint point);
+	void OnLButtonDblClk(UINT nFlags, CPoint point);
+	void OnSysCommand(UINT nID, CPoint pt);
 	void OnEnterSizeMove();
 	void OnExitSizeMove();
 	void OnNcLButtonDown(UINT nHitTest, CPoint point);
@@ -188,6 +193,7 @@ private:
 
 	CRect GetInnerCaptionRect();
 	CRect GetOutterCaptionRect();
+	CRect GetSysIconRect();
 	int GetMinimizedHeight();
 	int GetMinimizedWidth();
 	CRect GetBottomBorderRect();
