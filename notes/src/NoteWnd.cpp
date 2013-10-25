@@ -377,7 +377,7 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 {
 	GetSystemSettings();
 
-	//SetIcon(::LoadIcon(NULL, IDI_APPLICATION), FALSE);
+	SetIcon(::LoadIcon(NULL, IDI_APPLICATION), FALSE);
 
 	// images for menu icons
 	m_ImageList.CreateFromImage(IDB_TRAY_MENU, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
@@ -454,7 +454,7 @@ LRESULT CNoteWnd::OnNcHittest(CPoint pt)
 	//if (ID_SYSMENU == GetButtonId(GetButtonAtScreenPos(pt)))
 	if (GetSysIconRect().PtInRect(pt))
 	{
-		//return HTSYSMENU;
+		return HTSYSMENU;
 	}
 	if (ID_CLOSE == GetButtonId(GetButtonAtScreenPos(pt)))
 	{
@@ -700,27 +700,26 @@ void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
 		//PostMessage(WM_COMMAND, ID_SYSMENU);
 		//DefWindowProc();
 		//SetCapture();
-		res = PeekMessage(&msg, m_hWnd, WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK, PM_NOREMOVE);
+		//res = PeekMessage(&msg, m_hWnd, WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK, PM_NOREMOVE);
 		//ShowSystemMenu(p);
-		PostMessage(WM_LBUTTONDBLCLK);
-		res = PeekMessage(&msg, m_hWnd, WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK, PM_NOREMOVE);
-		if (res)
-			PostMessage(WM_NULL, 0, 0);
+		//PostMessage(WM_LBUTTONDBLCLK);
+		//res = PeekMessage(&msg, m_hWnd, WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK, PM_NOREMOVE);
+		//if (res)
+		//	PostMessage(WM_NULL, 0, 0);
 	}
 	if (nHitTest == HTCAPTION)
 	{
-		if (GetSysIconRect().PtInRect(point))
-		{
-			PostMessage(WM_COMMAND, ID_SYSMENU);
-
-			ClientToScreen(&p);
-			PostMessage(WM_LBUTTONDBLCLK);
-			res = PeekMessage(&msg, m_hWnd, WM_MOUSEFIRST, WM_MOUSELAST, /*WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK,*/ PM_NOREMOVE);		
+		//if (GetSysIconRect().PtInRect(point))
+		//{
+			//PostMessage(WM_COMMAND, ID_SYSMENU);
+			//ClientToScreen(&p);
+			//PostMessage(WM_LBUTTONDBLCLK);
+			//res = PeekMessage(&msg, m_hWnd, WM_MOUSEFIRST, WM_MOUSELAST, /*WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK,*/ PM_NOREMOVE);		
 			//	POINT p = {0, 0};
 			//ShowSystemMenu(p);
-			res = PeekMessage(&msg, m_hWnd, WM_MOUSEFIRST, WM_MOUSELAST, /*WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK,*/ PM_NOREMOVE);
-			return;
-		}
+			//res = PeekMessage(&msg, m_hWnd, WM_MOUSEFIRST, WM_MOUSELAST, /*WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK,*/ PM_NOREMOVE);
+		//	return;
+		//}
 		m_bCaptionClick = TRUE;
 		BOOL bAlreadyActive = m_bActive;
 //		BOOL bAlreadyActiveApp = m_bActiveApp;
