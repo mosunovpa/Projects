@@ -7,6 +7,7 @@
 #include "atlscintilla.h"
 #include "noteshook.h"
 #include "fileutils.h"
+#include "user_messages.h"
 
 CAppModule _Module;
 
@@ -44,6 +45,29 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	return 0;
 }
 
+HHOOK g_mouse_hook = 0;
+
+LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+    if (nCode < 0)  // не обрабатываем сообщение
+        return CallNextHookEx(g_mouse_hook, nCode, wParam, lParam);
+	
+	if (wParam == WM_LBUTTONDBLCLK && nCode == HC_ACTION)
+	{
+		const int len = 100;
+		TCHAR class_name[len];
+		LPMOUSEHOOKSTRUCT pmhs = (LPMOUSEHOOKSTRUCT)lParam;
+		if (GetClassName(pmhs->hwnd, class_name, len))
+		{
+			if (lstrcmp(class_name, NOTE_WND_CLASS_NAME) == 0)
+			{
+				SendMessage(pmhs->hwnd, WMU_LBUTTONDBLCLK, wParam, lParam);
+			}
+		}
+	}
+    return CallNextHookEx(g_mouse_hook, nCode, wParam, lParam);
+}
+
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
 	if (apputils::SetOneInstance(_T("706CB7A9-A3B4-40e2-AB12-9E5B0A3D4C8B")))
@@ -75,11 +99,17 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	SetHook();
 
+	/* установить хук на мышку, чтоб поймать двойной клик на системной иконке */
+	g_mouse_hook = SetWindowsHookEx(WH_MOUSE, MouseProc, NULL, GetCurrentThreadId());
+
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 
 	_Module.Term();
 
 	RemoveHook();
+
+	UnhookWindowsHookEx(g_mouse_hook);
+
 	::CoUninitialize();
 
 	return nRet;

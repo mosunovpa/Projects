@@ -377,8 +377,6 @@ LRESULT CNoteWnd::OnCreate(LPCREATESTRUCT lParam)
 {
 	GetSystemSettings();
 
-	SetIcon(::LoadIcon(NULL, IDI_APPLICATION), FALSE);
-
 	// images for menu icons
 	m_ImageList.CreateFromImage(IDB_TRAY_MENU, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 
@@ -690,39 +688,17 @@ void CNoteWnd::OnNcLButtonDown(UINT nHitTest, CPoint point)
 void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
 {
 	SetMsgHandled(FALSE);
-		BOOL res = 0;
-		MSG msg;
-		POINT p = {0, 0};
+
 	if (nHitTest == HTSYSMENU)
 	{
-		//SetMsgHandled(TRUE);
+		POINT p = {0, 0};
 		ClientToScreen(&p);
-		//PostMessage(WM_COMMAND, ID_SYSMENU);
-		//DefWindowProc();
-		//SetCapture();
-		//res = PeekMessage(&msg, m_hWnd, WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK, PM_NOREMOVE);
-		//ShowSystemMenu(p);
-		//PostMessage(WM_LBUTTONDBLCLK);
-		//res = PeekMessage(&msg, m_hWnd, WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK, PM_NOREMOVE);
-		//if (res)
-		//	PostMessage(WM_NULL, 0, 0);
+		ShowSystemMenu(p);
 	}
 	if (nHitTest == HTCAPTION)
 	{
-		//if (GetSysIconRect().PtInRect(point))
-		//{
-			//PostMessage(WM_COMMAND, ID_SYSMENU);
-			//ClientToScreen(&p);
-			//PostMessage(WM_LBUTTONDBLCLK);
-			//res = PeekMessage(&msg, m_hWnd, WM_MOUSEFIRST, WM_MOUSELAST, /*WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK,*/ PM_NOREMOVE);		
-			//	POINT p = {0, 0};
-			//ShowSystemMenu(p);
-			//res = PeekMessage(&msg, m_hWnd, WM_MOUSEFIRST, WM_MOUSELAST, /*WM_LBUTTONDBLCLK, WM_LBUTTONDBLCLK,*/ PM_NOREMOVE);
-		//	return;
-		//}
 		m_bCaptionClick = TRUE;
 		BOOL bAlreadyActive = m_bActive;
-//		BOOL bAlreadyActiveApp = m_bActiveApp;
 
 		SetMsgHandled(TRUE);
 		DefWindowProc(); // обработка по умолчанию, здесь придут OnEnterSizeMove, OnExitSizeMove и другие сообщения
@@ -733,16 +709,10 @@ void CNoteWnd::OnNcLButtonDownDef(UINT nHitTest, CPoint point)
 			if (m_bMinimized)
 			{
 				Unroll();
-//				if (!bAlreadyActive/*App*/)
-//				{
-//					PostMessage(WMU_ESCAPEFOCUS);
-//				}
 			}
 		}
 		else 
 		{
-//			if (!bAlreadyActive/*App /*|| m_bMinimized*/) // перемещение окна за заголовок
-//			if (!GetText().empty() && !m_edit.GetModify())
 			if (m_bMinimized)
 			{
 				PostMessage(WMU_ESCAPEFOCUS);
@@ -1246,6 +1216,18 @@ LRESULT CNoteWnd::OnActivatePost(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	return 0;
 }
+
+/* WMU_LBUTTONDBLCLK */
+LRESULT CNoteWnd::OnSysMenuDblClk(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	LPMOUSEHOOKSTRUCT pmhs = (LPMOUSEHOOKSTRUCT)lParam;
+	if (GetSysIconRect().PtInRect(pmhs->pt))
+	{
+		PostMessage(WM_CLOSE);
+	}
+	return 0;
+}
+
 
 /**/
 void CNoteWnd::EscapeFocus()
