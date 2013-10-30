@@ -212,7 +212,7 @@ CRect CNoteWnd::GetInnerCaptionRect()
 		}
 	}
 	if (!rc.left) 
-		rc.left = s_nSysIconSize + 8;
+		rc.left = s_nSysIconSize + 2 * GetSystemMetrics(SM_CYSIZEFRAME);
 
 	return rc;
 }
