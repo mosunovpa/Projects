@@ -40,6 +40,8 @@
 #define IDB_NOTES                       128
 #define IDB_TAG_BTNS                    129
 #define IDB_TRASH_BTNS                  130
+#define IDB_BITMAP1                     133
+#define IDB_NOTE_SYS_ICON               133
 #define IDICON                          1001
 #define IDC_COMBO_NOTE_FONT_SIZE        1002
 #define IDC_EDIT_LABEL                  1003
@@ -177,7 +179,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        131
+#define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         40159
 #define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           103

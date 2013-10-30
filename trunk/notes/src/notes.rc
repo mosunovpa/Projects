@@ -191,7 +191,7 @@ BEGIN
         POPUP "Move To Notebook"
         BEGIN
             MENUITEM SEPARATOR
-            MENUITEM "&Open...",                    ID_TNM_NOTEBOOK
+            MENUITEM "&Open/New...",                ID_TNM_NOTEBOOK
         END
         MENUITEM SEPARATOR
         MENUITEM "D&eselect",                   ID_TNM_UNCHECK
@@ -227,6 +227,7 @@ IDB_UNROLL_BTNS_3       BITMAP                  "res\\unroll_btns_3.bmp"
 IDB_NOTES               BITMAP                  "res\\notes.bmp"
 IDB_TAG_BTNS            BITMAP                  "res\\tag_btns.bmp"
 IDB_TRASH_BTNS          BITMAP                  "res\\trash_btns.bmp"
+IDB_NOTE_SYS_ICON       BITMAP                  "res\\note_sys_icon.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

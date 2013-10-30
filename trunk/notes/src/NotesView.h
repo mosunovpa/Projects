@@ -173,12 +173,12 @@ public:
 	}
 
 	/**/
-	void ProcessNotebookOpen(int nCmd)
+	void ProcessNotebookOpen(int nCmd, HWND parent)
 	{
 		_tstring sFile;
 		if (nCmd == ID_NOTEBOOK_OPEN)
 		{
-			sFile = CApplication::Get().OpenNotebookDialog();
+			sFile = CApplication::Get().OpenNotebookDialog(parent);
 		}
 		else
 		{
@@ -244,7 +244,7 @@ public:
 	}
 
 	/**/
-	void ProcessMoveToNotebook(int nCmd)
+	void ProcessMoveToNotebook(int nCmd, HWND parent)
 	{
 		_tstring sFile;
 		std::list<int> notes;
@@ -254,7 +254,7 @@ public:
 
 		if (nCmd == ID_TNM_NOTEBOOK) // открыть блокнот для перемещения
 		{
-			sFile = CApplication::Get().OpenNotebookDialog();
+			sFile = CApplication::Get().OpenNotebookDialog(parent);
 		}
 		else // переместить в указанный блокнот
 		{
@@ -283,9 +283,10 @@ public:
 		{
 			CNewLabelDialog	dlg;
 			dlg.m_nInitParam = (CNewLabelDialog::ipCursorPos | CNewLabelDialog::ipPopup);
-			if (dlg.DoModal() == IDOK)
+			if (dlg.DoModal(pT->m_hWnd) == IDOK)
 			{
 				sLabel = dlg.m_sLabel;
+				ProcessSelectedNotes(notes, acLabel, sLabel.c_str());
 			}
 		}
 		else
@@ -296,8 +297,8 @@ public:
 			{
 				sLabel = _T(""); // если выбрана та же метка - очистить
 			}
+			ProcessSelectedNotes(notes, acLabel, sLabel.c_str());
 		}
-		ProcessSelectedNotes(notes, acLabel, sLabel.c_str());
 	}
 private:
 	std::list<_tstring> m_listLabels;

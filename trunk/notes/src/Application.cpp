@@ -65,7 +65,7 @@ void CApplication::EnumNoteWnds(NotesProcessFunc func)
 	}
 }
 
-_tstring CApplication::OpenNotebookDialog() const
+_tstring CApplication::OpenNotebookDialog(HWND parent) const
 {
 
 	class CNotesFileDialog : public CFileDialogImpl<CNotesFileDialog>
