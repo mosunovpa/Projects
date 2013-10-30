@@ -384,7 +384,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\note_sm.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\note_sm.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\note_sys_icon.bmp"
 				>
 			</File>
 			<File

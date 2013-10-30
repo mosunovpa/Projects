@@ -11,7 +11,7 @@ CSettingsSheet::CSettingsSheet( _U_STRINGorID title /*= (LPCTSTR) NULL*/,
 //	AddPage(m_pageSyncSettings);
 //	AddPage(m_pageNotebookSettings);
 	AddPage(m_pageKeybSettings);
-	AddPage(m_pageNoteSettings);
+	//AddPage(m_pageNoteSettings);
 }
 
 void CSettingsSheet::OnShowWindow(BOOL bShow, UINT nStatus)

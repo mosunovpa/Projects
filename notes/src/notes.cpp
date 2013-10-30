@@ -99,7 +99,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	SetHook();
 
-	/* установить хук на мышку, чтоб поймать двойной клик на системной иконке */
+	/* установить хук на мышку, чтоб поймать двойной клик на иконке окна в заколовке */
 	g_mouse_hook = SetWindowsHookEx(WH_MOUSE, MouseProc, NULL, GetCurrentThreadId());
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);

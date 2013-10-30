@@ -39,12 +39,10 @@ const COLORREF gray = RGB(128, 128, 128);
 const COLORREF yellow = RGB(255, 255, 204);
 
 CBrush CNoteWnd::m_hBgBrush = CreateSolidBrush(RGB(255, 255, 204));
-CIcon CNoteWnd::m_hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
-								  IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
-
 CPen CNoteWnd::m_hPen = ::CreatePen(PS_SOLID, 1, RGB(0,0,0));
 CPen CNoteWnd::m_hGrayPen = ::CreatePen(PS_SOLID, 1, RGB(128, 128, 128));
 CFont CNoteWnd::m_hStatusFont = CFontHandle().CreatePointFont(80, _T("MS Shell Dlg"));
+CSysIconImageList CNoteWnd::m_ilSysIcon;
 
 /**
  Constructor
@@ -514,6 +512,7 @@ void CNoteWnd::OnNcPaint(HRGN wParam)
 		memDc.Rectangle(&rcWindow);
 		memDc.SelectPen(hOldPen);
 		memDc.SelectBrush(hOldBrush);
+		DrawSysIcon(memDc);
 		DrawCaptionButtons(memDc);
 		memDc.FillRect(&rcClient, m_hBgBrush);
 		if (!m_bMinimized)
@@ -526,6 +525,20 @@ void CNoteWnd::OnNcPaint(HRGN wParam)
 			DrawTextInCaption(memDc, CApplication::Get().GetNoteCaption(GetText().c_str()), RGB(0, 0, 0));
 		}
 	}	
+}
+
+/* */
+void CNoteWnd::DrawSysIcon(CDC& dc)
+{
+	CPoint pt(GetSystemMetrics(SM_CYSIZEFRAME), GetSystemMetrics(SM_CYSIZEFRAME));
+	if (IsDeleted())
+	{
+		m_ilSysIcon.Draw(dc, 1, pt, ILD_NORMAL);
+	}
+	else
+	{
+		m_ilSysIcon.Draw(dc, 0, pt, ILD_NORMAL);
+	}
 }
 
 /**/
@@ -918,7 +931,7 @@ void CNoteWnd::OnMoveToNotebook(UINT uNotifyCode, int nID, CWindow wndCtl)
 	if (!GetText().empty()) 
 	{
 		StoreNote();
-		ProcessMoveToNotebook(nID);
+		ProcessMoveToNotebook(nID, m_hWnd);
 	}
 }
 

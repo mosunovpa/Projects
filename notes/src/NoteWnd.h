@@ -24,6 +24,23 @@
 	typedef CRichNoteEdit CNoteEdit;
 #endif
 
+	
+//////////////////////////////////////////////////////////////////////////
+//
+
+class CSysIconImageList : public CImageList
+{
+public:
+	CSysIconImageList() 
+	{
+		CreateFromImage(IDB_NOTE_SYS_ICON, 16, 1, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+	}
+	~CSysIconImageList() 
+	{
+		Destroy();
+	}
+};
+
 //////////////////////////////////////////////////////////////////////////
 //
 
@@ -204,12 +221,11 @@ private:
 	CMenuHandle AdjustSystemMenu();
 	void StoreNote();
 	void DrawStatusBar(CDC& dc);
+	void DrawSysIcon(CDC& dc);
 	void DrawTextInCaption(CDC& dc, const _tstring& text, COLORREF color);
 
+	static CSysIconImageList m_ilSysIcon;
 	static CBrush m_hBgBrush;
-	static CIcon m_hIcon;
-	static CIcon m_hIconSm;
-	static CIcon m_hIconTrash;
 	static CPen m_hPen;
 	static CPen m_hGrayPen;
 	static CFont m_hStatusFont;

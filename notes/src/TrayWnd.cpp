@@ -508,7 +508,7 @@ void CTrayWnd::OnMoveToNotebook(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	if (IS_NOTE_CMD(m_nSelectedNoteCmd))
 	{
-		ProcessMoveToNotebook(nID);
+		ProcessMoveToNotebook(nID, m_hWnd);
 		EndMenu();
 		PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 	}
@@ -631,7 +631,7 @@ void CTrayWnd::OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl)
 /* ID_NOTEBOOK_OPEN */ /* NOTEBOOK_CMD_FIRST - NOTEBOOK_CMD_LAST */
 void CTrayWnd::OnNotebookOpen(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	ProcessNotebookOpen(nID);
+	ProcessNotebookOpen(nID, m_hWnd);
 	PostMessage(WMU_DISPLAY_SHORCUT_MENU);
 }
 

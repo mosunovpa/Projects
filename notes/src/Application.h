@@ -19,7 +19,7 @@ class CApplication : public CSimpleSinglton<CApplication>
 	friend class CSimpleSinglton<CApplication>;
 public:
 	void CreateAppWindow();
-	_tstring OpenNotebookDialog() const;
+	_tstring OpenNotebookDialog(HWND parent) const;
 	void MoveToNotebook(int nNoteId, LPCTSTR sFileName);
 	void OpenDataFile(LPCTSTR file_name);
 	HWND CreateNote(_tstring const& sText = _tstring(), DWORD nFlag = NF_NONE);
