@@ -305,7 +305,7 @@ CRect CNoteWnd::GetBottomRightRect()
 void CNoteWnd::OnFinalMessage(HWND hWnd)
 {
 	CApplication::Get().OnNoteClosed(this);
-	EscapeFocus();
+	//EscapeFocus();
 	
 }
 

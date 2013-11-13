@@ -568,6 +568,7 @@ void CApplication::DeleteNote(int nNoteId, int forever /*= false*/)
 	CNoteWnd* pNoteWnd = FindNoteWnd(nNoteId);
 	if (pNoteWnd)
 	{
+		//pNoteWnd->PostMessage(WM_DESTROY);
 		::DestroyWindow(pNoteWnd->m_hWnd);
 	}
 	DeleteFromStorage(nNoteId, forever);
