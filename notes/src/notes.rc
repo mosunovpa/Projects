@@ -109,6 +109,8 @@ BEGIN
         MENUITEM "&Close\tEsc",                 ID_CLOSE
         MENUITEM "Close &All",                  ID_CLOSEALL
         MENUITEM "Close All But &This",         ID_CLOSEALLBUTTHIS
+        MENUITEM SEPARATOR
+        MENUITEM "&New Note",                   ID_NEWNOTE
     END
     POPUP "NoteMenuDeleted"
     BEGIN
