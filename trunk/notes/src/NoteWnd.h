@@ -136,6 +136,8 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_UNROLL, OnUnroll)
 		COMMAND_ID_HANDLER_EX(ID_SYSMENU, OnSysMenu)
 		COMMAND_ID_HANDLER_EX(ID_TRASHSYSMENU, OnSysMenu)
+		COMMAND_ID_HANDLER_EX(ID_NEWNOTE, OnNewNote)
+
 		NOTIFY_CODE_HANDLER_EX(EN_LINK, OnLink)
 		CHAIN_COMMANDS_MEMBER(m_edit)
 
@@ -202,6 +204,7 @@ public:
 	void OnRollUp(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnUnroll(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSysMenu(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnNewNote(UINT uNotifyCode, int nID, CWindow wndCtl);
 	LRESULT OnLink(LPNMHDR pnmh);
 	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
 	POINT CNoteWnd::GetButtonPos(int index);

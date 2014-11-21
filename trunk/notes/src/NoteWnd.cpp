@@ -971,6 +971,12 @@ void CNoteWnd::OnSysMenu(UINT uNotifyCode, int nID, CWindow wndCtl)
 
 }
 
+/* ID_NOTEMENU_NEWNOTE */
+void CNoteWnd::OnNewNote(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CApplication::Get().CreateNote();
+}
+
 /* ID_CLOSEALL */
 void CNoteWnd::OnNoteCloseAll(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
