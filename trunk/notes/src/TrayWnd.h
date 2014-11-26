@@ -55,6 +55,7 @@ public:
 		COMMAND_ID_HANDLER_EX(ID_POPUP_NEWANDPASTE, OnNewAndPaste)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_ABOUT, OnPopupAbout)
 		COMMAND_ID_HANDLER_EX(ID_POPUP_EXIT, OnPopupExit)
+		COMMAND_ID_HANDLER_EX(ID_OPENNOTES, OnOpenNotes)
 		COMMAND_ID_HANDLER_EX(ID_SETTINGS, OnSettings)
 		COMMAND_ID_HANDLER_EX(ID_TNM_OPEN_NOTE, OnOpenNote);
 		COMMAND_ID_HANDLER_EX(ID_TNM_COPYALLTOCLIPBOARD, OnCopyAllToClipboard);
@@ -75,7 +76,7 @@ public:
 		COMMAND_RANGE_HANDLER_EX(NOTE_CMD_FIRST + 1, NOTE_CMD_LAST, OnNoteSelected);
 		COMMAND_RANGE_HANDLER_EX(NOTEBOOK_CMD_FIRST, NOTEBOOK_CMD_LAST, OnNotebookOpen);
 
-CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
+		CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
 #ifdef COOL_CONTEXT_MENU
 		CHAIN_MSG_MAP(CCoolContextMenu<CTrayWnd>)
 #endif
@@ -114,6 +115,7 @@ CHAIN_MSG_MAP(CMenuTooltip<CTrayWnd>)
 	void OnNoteRestore(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnNotebookOpen(UINT uNotifyCode, int nID, CWindow wndCtl);
 	void OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl);
+	void OnOpenNotes(UINT uNotifyCode, int nID, CWindow wndCtl);
 
 	void AssociateImage(CMenuItemInfo& mii, MenuItemData * pMI);
 	void GetSelectedNotes(std::list<int>& notes);
@@ -136,7 +138,6 @@ private:
 
 	CMenu m_menuNoteActions;
 
-	std::auto_ptr<CSettingsSheet> m_pSettingsDlg;
 	CPoint m_menupoint;
 
 };

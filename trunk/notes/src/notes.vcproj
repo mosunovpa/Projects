@@ -176,6 +176,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExplorerWnd.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\KeyboardSettingPage.cpp"
 				>
 			</File>
@@ -283,6 +287,10 @@
 			</File>
 			<File
 				RelativePath=".\defines.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExplorerWnd.h"
 				>
 			</File>
 			<File

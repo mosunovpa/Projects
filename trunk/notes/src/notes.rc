@@ -75,6 +75,7 @@ BEGIN
         MENUITEM "&New Note",                   ID_POPUP_NEWNOTE
         MENUITEM "New and &Paste",              ID_POPUP_NEWANDPASTE
         MENUITEM SEPARATOR
+        MENUITEM "Open Notes...",               ID_OPENNOTES
         POPUP "Note&books"
         BEGIN
             MENUITEM SEPARATOR
