@@ -11,6 +11,7 @@
 #include <math.h>
 #include "Clipboard.h"
 #include "TrayWnd.h"
+#include "explorerwnd.h"
 
 using namespace dateutils;
 
@@ -696,3 +697,33 @@ _tstring CApplication::GetNoteText(int nNoteId)
 	return note.GetText();
 }
 
+void CApplication::ShowSettings()
+{
+	if (m_pSettingsDlg.get() != NULL && ::IsWindow(m_pSettingsDlg->m_hWnd))
+	{
+		::SetForegroundWindow(m_pSettingsDlg->m_hWnd);
+	}
+	else
+	{
+		m_pSettingsDlg = std::auto_ptr<CSettingsSheet>(new CSettingsSheet(IDS_SETTINGS));
+		m_pSettingsDlg->DoModal(m_TrayWnd->m_hWnd);
+		m_pSettingsDlg.reset();
+	}
+}
+
+void CApplication::ShowExplorer()
+{
+	if (m_pExplorer.get() != NULL && ::IsWindow(m_pExplorer->m_hWnd))
+	{
+		if (::IsIconic(m_pExplorer->m_hWnd))
+		{
+			::ShowWindow(m_pExplorer->m_hWnd, SW_RESTORE);
+		}
+		::SetForegroundWindow(m_pExplorer->m_hWnd);
+	}
+	else
+	{
+		m_pExplorer = std::auto_ptr<CExplorerWnd>(new CExplorerWnd());
+		m_pExplorer->CreateEx(m_TrayWnd->m_hWnd, 0, WS_OVERLAPPEDWINDOW | WS_VISIBLE, 0);
+	}
+}

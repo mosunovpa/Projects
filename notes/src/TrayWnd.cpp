@@ -13,7 +13,7 @@
 
 using namespace dateutils;
 
-const int TRASH_MENU_OFFSET = 9;
+const int TRASH_MENU_OFFSET = 10;
 const int NOTEBOOK_MENU_OFFSET = 4;
 
 
@@ -802,16 +802,13 @@ void CTrayWnd::OnMenuSelect(UINT nItemID, UINT nFlags, CMenuHandle menu)
 /**/
 void CTrayWnd::OnSettings(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-	if (m_pSettingsDlg.get() != NULL && ::IsWindow(m_pSettingsDlg->m_hWnd))
-	{
-		::SetForegroundWindow(m_pSettingsDlg->m_hWnd);
-	}
-	else
-	{
-		m_pSettingsDlg = std::auto_ptr<CSettingsSheet>(new CSettingsSheet(IDS_SETTINGS));
-		m_pSettingsDlg->DoModal(m_hWnd);
-		m_pSettingsDlg.reset();
-	}
+	CApplication::Get().ShowSettings( );
+}
+
+/**/
+void CTrayWnd::OnOpenNotes(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+	CApplication::Get().ShowExplorer( );
 }
 
 /**/

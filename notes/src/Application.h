@@ -10,6 +10,9 @@
 
 class CNoteWnd;
 class CTrayWnd;
+class CSettingsSheet;
+class CExplorerWnd;
+
 typedef void (CNoteWnd::* NotesProcessFunc)();
 
 /* CApplication */
@@ -53,6 +56,8 @@ public:
 	_tstring GetAppFolder() const;
 	void EnumNoteWnds(NotesProcessFunc func);
 	const _tstring & GetDataFileName() const;
+	void ShowSettings();
+	void ShowExplorer();
 
 	// events
 	void OnNoteClosed(CNoteWnd* pWnd);
@@ -77,6 +82,9 @@ private:
 	void UpdateNoteWnd( CNoteWnd* pWnd, CNote const& note );
 
 	std::auto_ptr<CTrayWnd> m_TrayWnd;
+	std::auto_ptr<CSettingsSheet> m_pSettingsDlg;
+	std::auto_ptr<CExplorerWnd> m_pExplorer;
+
 	std::list<CNoteWnd*> m_listNotes;
 	CLocalStorage m_local_storage;
 	CAppState m_state;
